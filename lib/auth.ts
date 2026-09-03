@@ -1,12 +1,11 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || "pnr_super_secure_bakery_jwt_secret_2026",
+  trustHost: true,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
