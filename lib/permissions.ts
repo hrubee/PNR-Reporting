@@ -1,0 +1,97 @@
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+
+export type SheetId =
+  | "HYGIENE_REPORT"
+  | "GLASS_REPORT"
+  | "FRIDGE_REPORT"
+  | "KITCHEN"
+  | "PRODUCTION"
+  | "PUFF_ROOM"
+  | "CAKE_ROOM";
+
+export const SHEET_LABELS: Record<SheetId, string> = {
+  HYGIENE_REPORT: "Hygiene Report",
+  GLASS_REPORT: "Glass Report",
+  FRIDGE_REPORT: "Fridge Report",
+  KITCHEN: "Kitchen",
+  PRODUCTION: "Production",
+  PUFF_ROOM: "Puff Room",
+  CAKE_ROOM: "Cake Room",
+};
+
+export const SHEET_ROUTES: Record<SheetId, string> = {
+  HYGIENE_REPORT: "/hygiene",
+  GLASS_REPORT: "/glass",
+  FRIDGE_REPORT: "/fridge",
+  KITCHEN: "/kitchen",
+  PRODUCTION: "/production",
+  PUFF_ROOM: "/puff-room",
+  CAKE_ROOM: "/cake-room",
+};
+
+export const SUPERVISORS = ["Aboli Wagh", "Sandeep Gargate", "Admin"];
+
+export const SHEET_STAFF: Record<SheetId, string[]> = {
+  HYGIENE_REPORT: ["Shridhar Jadhav", "Pravin Jadhav", "Mavshi"],
+  GLASS_REPORT: ["Sanjay Jadhav", "Suresh"],
+  FRIDGE_REPORT: ["Aboli Wagh", "Sandeep Gargate"],
+  KITCHEN: ["Sagar Yadav", "Pravin Jadhav", "Mavshi", "Suresh"],
+  PRODUCTION: ["Sagar Yadav", "Pravin Jadhav", "Mavshi"],
+  PUFF_ROOM: ["Dilip", "Sandeep Gargate"],
+  CAKE_ROOM: ["Meraj Khan", "Jaseen Siddique", "Nadeem Faruqi"],
+};
+
+export const ALL_STAFF = [
+  "Aboli Wagh",
+  "Sandeep Gargate",
+  "Shridhar Jadhav",
+  "Pravin Jadhav",
+  "Mavshi",
+  "Sanjay Jadhav",
+  "Suresh",
+  "Sagar Yadav",
+  "Dilip",
+  "Meraj Khan",
+  "Jaseen Siddique",
+  "Nadeem Faruqi",
+];
+
+export async function getUserSheetAccess(userId: string): Promise<SheetId[]> {
+  const access = await prisma.sheetAccess.findMany({
+    where: { userId },
+    select: { sheet: true },
+  });
+  return access.map((a) => a.sheet as SheetId);
+}
+
+export async function hasSheetAccess(
+  userId: string,
+  sheet: SheetId,
+  role: string
+): Promise<boolean> {
+  if (role === "ADMIN") return true;
+  const access = await prisma.sheetAccess.findUnique({
+    where: { userId_sheet: { userId, sheet } },
+  });
+  return !!access;
+}
+
+export function getTodayString(): string {
+  return new Date().toISOString().split("T")[0];
+}
+
+export function formatDate(dateStr: string): string {
+  const d = new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString("en-IN", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+export function getDayName(dateStr: string): string {
+  const d = new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString("en-IN", { weekday: "long" });
+}

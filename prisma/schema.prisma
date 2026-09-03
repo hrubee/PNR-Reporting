@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Role: "ADMIN" | "EMPLOYEE"
+// Sheet: "HYGIENE_REPORT" | "GLASS_REPORT" | "FRIDGE_REPORT" | "KITCHEN" | "PRODUCTION" | "PUFF_ROOM" | "CAKE_ROOM"
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("EMPLOYEE")
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sheetAccess       SheetAccess[]
+  hygieneEntries    HygieneEntry[]
+  glassEntries      GlassEntry[]
+  fridgeEntries     FridgeEntry[]
+  kitchenEntries    KitchenEntry[]
+  productionEntries ProductionEntry[]
+  puffRoomEntries   PuffRoomEntry[]
+  cakeRoomEntries   CakeRoomEntry[]
+}
+
+model SheetAccess {
+  id        String   @id @default(cuid())
+  userId    String
+  sheet     String
+  grantedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sheet])
+}
+
+// ─── HYGIENE REPORT ───────────────────────────────────────────────────────────
+model HygieneEntry {
+  id            String   @id @default(cuid())
+  date          String
+  day           String
+  submittedById String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  areaChecks       String
+  supervisorName   String @default("")
+  comments         String @default("")
+  correctiveAction String @default("")
+
+  submittedBy User @relation(fields: [submittedById], references: [id])
+
+  @@index([date])
+}
+
+// ─── GLASS REPORT ─────────────────────────────────────────────────────────────
+model GlassEntry {
+  id            String   @id @default(cuid())
+  date          String
+  submittedById String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  locationChecks   String
+  supervisorName   String @default("")
+  comments         String @default("")
+  correctiveAction String @default("")
+
+  submittedBy User @relation(fields: [submittedById], references: [id])
+
+  @@index([date])
+}
+
+// ─── FRIDGE REPORT ────────────────────────────────────────────────────────────
+model FridgeEntry {
+  id            String   @id @default(cuid())
+  date          String
+  supervisedBy  String   @default("")
+  submittedById String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  fridgeChecks     String
+  hygiene          String @default("")
+  comments         String @default("")
+  correctiveAction String @default("")
+
+  submittedBy User @relation(fields: [submittedById], references: [id])
+
+  @@index([date])
+}
+
+// ─── KITCHEN ──────────────────────────────────────────────────────────────────
+model KitchenEntry {
+  id            String   @id @default(cuid())
+  date          String
+  submittedById String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  equipmentChecks  String
+  supervisorName   String @default("")
+  workerName       String @default("")
+  comments         String @default("")
+  correctiveAction String @default("")
+
+  submittedBy User @relation(fields: [submittedById], references: [id])
+
+  @@index([date])
+}
+
+// ─── PRODUCTION ───────────────────────────────────────────────────────────────
+model ProductionEntry {
+  id            String   @id @default(cuid())
+  date          String
+  submittedById String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  equipmentChecks  String
+  supervisorName   String @default("")
+  workerName       String @default("")
+  comments         String @default("")
+  correctiveAction String @default("")
+
+  submittedBy User @relation(fields: [submittedById], references: [id])
+
+  @@index([date])
+}
+
+// ─── PUFF ROOM ────────────────────────────────────────────────────────────────
+model PuffRoomEntry {
+  id            String   @id @default(cuid())
+  date          String
+  submittedById String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  equipmentChecks  String
+  supervisorName   String @default("")
+  workerName       String @default("")
+  comments         String @default("")
+  correctiveAction String @default("")
+
+  submittedBy User @relation(fields: [submittedById], references: [id])
+
+  @@index([date])
+}
+
+// ─── CAKE ROOM ────────────────────────────────────────────────────────────────
+model CakeRoomEntry {
+  id            String   @id @default(cuid())
+  date          String
+  submittedById String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  equipmentChecks  String
+  supervisorName   String @default("")
+  workerName       String @default("")
+  comments         String @default("")
+  correctiveAction String @default("")
+
+  submittedBy User @relation(fields: [submittedById], references: [id])
+
+  @@index([date])
+}
