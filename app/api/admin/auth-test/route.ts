@@ -1,35 +1,31 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import bcrypt from "bcryptjs";
 
 export async function GET() {
+  const envKeys = Object.keys(process.env).filter((k) =>
+    k.includes("DATA") || k.includes("POSTGRES") || k.includes("URL") || k.includes("AUTH")
+  );
+
+  const keyPreviews: Record<string, string> = {};
+  for (const k of envKeys) {
+    const val = process.env[k] || "";
+    keyPreviews[k] = val.length > 15 ? val.substring(0, 15) + "..." : val;
+  }
+
   try {
-    const user = await prisma.user.findUnique({
-      where: { email: "admin@pnr.com" },
-    });
-
-    if (!user) {
-      const allUsers = await prisma.user.findMany({ select: { email: true, name: true, role: true } });
-      return NextResponse.json({
-        found: false,
-        message: "admin@pnr.com not found in database",
-        existingUsers: allUsers,
-      });
-    }
-
-    const isMatch = await bcrypt.compare("Admin@123", user.passwordHash);
-
+    const user = await prisma.user.findFirst();
     return NextResponse.json({
-      found: true,
-      email: user.email,
-      name: user.name,
-      isActive: user.isActive,
-      passwordMatches: isMatch,
+      success: true,
+      userFound: !!user,
+      envKeysPresent: envKeys,
+      keyPreviews,
     });
   } catch (error: any) {
     return NextResponse.json({
+      success: false,
       error: error?.message || "Unknown error",
-      stack: error?.stack,
-    }, { status: 500 });
+      envKeysPresent: envKeys,
+      keyPreviews,
+    });
   }
 }
