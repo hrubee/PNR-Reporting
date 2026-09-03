@@ -19,26 +19,24 @@ function getSanitizedDbUrl(): string {
   return url.trim().replace(/^["']|["']$/g, "");
 }
 
-const rawUrl = getSanitizedDbUrl();
+let rawUrl = getSanitizedDbUrl();
 
-if (rawUrl && !process.env.DATABASE_URL) {
+// Ensure protocol is postgresql:// for Prisma engine
+if (rawUrl.startsWith("prisma+postgres://")) {
+  rawUrl = rawUrl.replace("prisma+postgres://", "postgresql://");
+} else if (rawUrl.startsWith("prisma://")) {
+  rawUrl = rawUrl.replace("prisma://", "postgresql://");
+}
+
+if (rawUrl) {
   process.env.DATABASE_URL = rawUrl;
 }
 
 function createPrismaClient() {
-  const isAccelerate =
-    rawUrl.startsWith("prisma+postgres://") || rawUrl.startsWith("prisma://");
-
-  const baseClient = new PrismaClient({
+  return new PrismaClient({
     ...(rawUrl ? { datasourceUrl: rawUrl } : {}),
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
-
-  if (isAccelerate) {
-    return baseClient.$extends(withAccelerate());
-  }
-
-  return baseClient;
 }
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
