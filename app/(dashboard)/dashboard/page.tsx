@@ -58,7 +58,7 @@ export default async function DashboardPage() {
       where: { userId: user.id },
       select: { sheet: true },
     });
-    accessibleSheets = new Set(access.map((a) => a.sheet));
+    accessibleSheets = new Set(access.map((a: { sheet: string }) => a.sheet));
   }
 
   const completedSheetsCount = sheetsData.filter((s) => s.list.length > 0).length;

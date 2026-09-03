@@ -62,7 +62,7 @@ export async function getUserSheetAccess(userId: string): Promise<SheetId[]> {
     where: { userId },
     select: { sheet: true },
   });
-  return access.map((a) => a.sheet as SheetId);
+  return access.map((a: { sheet: string }) => a.sheet as SheetId);
 }
 
 export async function hasSheetAccess(

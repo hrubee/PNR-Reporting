@@ -13,7 +13,7 @@ async function getSheetStatuses(userId: string, role: string, today: string) {
   const access = role === "ADMIN"
     ? sheetKeys
     : (await prisma.sheetAccess.findMany({ where: { userId }, select: { sheet: true } }))
-        .map((a) => a.sheet as keyof typeof SHEET_ROUTES);
+        .map((a: { sheet: string }) => a.sheet as keyof typeof SHEET_ROUTES);
 
   const accessSet = new Set(access);
 
