@@ -3,8 +3,15 @@ import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
 
+// Ensure NextAuth v5 finds AUTH_SECRET in process.env even if not set in Vercel Dashboard
+if (!process.env.AUTH_SECRET) {
+  process.env.AUTH_SECRET =
+    process.env.NEXTAUTH_SECRET ||
+    "pnr_super_secure_bakery_jwt_secret_2026_xyz_auth_token_9918";
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || "pnr_super_secure_bakery_jwt_secret_2026",
+  secret: process.env.AUTH_SECRET,
   trustHost: true,
   session: { strategy: "jwt" },
   pages: {
