@@ -17,6 +17,10 @@ const SHEETS = [
   { key: "oretaGlass", label: "Glass Report", icon: "🪟", route: "/oreta/glass", outlet: "oreta-world" },
   { key: "oretaMonthly", label: "Monthly Maintenance", icon: "🗓️", route: "/oreta/monthly", outlet: "oreta-world" },
   { key: "oretaFood", label: "Food", icon: "🍲", route: "/oreta/food", outlet: "oreta-world" },
+  // RNS World sheets
+  { key: "rnsEquipment", label: "RNS Equipment", icon: "🏢", route: "/rns/equipment", outlet: "rns-world" },
+  // Symphony World sheets
+  { key: "symphonyEquipment", label: "Symphony Equipment", icon: "🎼", route: "/symphony/equipment", outlet: "symphony-world" },
 ];
 
 type SheetEntry = {
@@ -125,7 +129,13 @@ export default function ReportsClient({ data }: Props) {
   function exportCSV() {
     const headers = ["Outlet", "Date", "Time", "Sheet", "Submitted By", "Supervisor/Worker", "Comments"];
     const rows = filtered.map((r) => [
-      r.outlet === "oreta-world" ? "Oreta World" : "Bakery",
+      r.outlet === "oreta-world"
+        ? "Oreta World"
+        : r.outlet === "rns-world"
+        ? "RNS World"
+        : r.outlet === "symphony-world"
+        ? "Symphony World"
+        : "Bakery",
       r.date,
       new Date(r.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
       r.sheetLabel,
@@ -365,7 +375,14 @@ export default function ReportsClient({ data }: Props) {
                   } catch {}
                   const timeLabel = row.createdAt ? String(row.createdAt).slice(11, 16) : "—";
                   const supervisor = row.supervisorName || row.supervisedBy || row.workerName || "—";
-                  const outletName = row.outlet === "oreta-world" ? "🌐 Oreta World" : "🥐 Bakery";
+                  const outletName =
+                    row.outlet === "oreta-world"
+                      ? "🌐 Oreta World"
+                      : row.outlet === "rns-world"
+                      ? "🏢 RNS World"
+                      : row.outlet === "symphony-world"
+                      ? "🎼 Symphony World"
+                      : "🥐 Bakery";
                   const submitterName = row.submittedBy?.name || "Staff";
 
                   return (

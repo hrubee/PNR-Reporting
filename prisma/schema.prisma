@@ -36,6 +36,8 @@ model User {
   oretaGlassEntries     OretaGlassEntry[]
   oretaMonthlyEntries   OretaMonthlyEntry[]
   oretaFoodEntries      OretaFoodEntry[]
+  rnsEquipmentEntries      RnsEquipmentEntry[]
+  symphonyEquipmentEntries SymphonyEquipmentEntry[]
 }
 
 model SheetAccess {
@@ -288,6 +290,42 @@ model OretaFoodEntry {
   tempChecks       String   // JSON array of 3 prep items (Boiled chicken, Spinach, Boiled Potato)
   vegChecks        String   // JSON array of 6 veg fillings & sauces
   nonVegChecks     String   // JSON array of 3 non-veg fillings
+  comments         String   @default("")
+  correctiveAction String   @default("")
+
+  submittedBy User @relation(fields: [submittedById], references: [id])
+
+  @@index([date])
+}
+
+// ─── RNS WORLD EQUIPMENT & HYGIENE ───────────────────────────────────────────
+model RnsEquipmentEntry {
+  id               String   @id @default(cuid())
+  date             String
+  submittedById    String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  equipmentChecks  String   // JSON array of 30 equipment & hygiene checks
+  supervisorName   String   @default("")
+  comments         String   @default("")
+  correctiveAction String   @default("")
+
+  submittedBy User @relation(fields: [submittedById], references: [id])
+
+  @@index([date])
+}
+
+// ─── SYMPHONY WORLD EQUIPMENT & HYGIENE ───────────────────────────────────────
+model SymphonyEquipmentEntry {
+  id               String   @id @default(cuid())
+  date             String
+  submittedById    String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  equipmentChecks  String   // JSON array of 32 equipment & hygiene checks
+  supervisorName   String   @default("")
   comments         String   @default("")
   correctiveAction String   @default("")
 

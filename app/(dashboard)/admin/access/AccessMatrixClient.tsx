@@ -16,6 +16,10 @@ const SHEETS = [
   { key: "ORETA_GLASS", label: "Oreta Glass", icon: "🪟", outlet: "Oreta World", outletId: "oreta-world" },
   { key: "ORETA_MONTHLY", label: "Oreta Monthly", icon: "🗓️", outlet: "Oreta World", outletId: "oreta-world" },
   { key: "ORETA_FOOD", label: "Oreta Food", icon: "🍲", outlet: "Oreta World", outletId: "oreta-world" },
+  // RNS World
+  { key: "RNS_EQUIPMENT", label: "RNS Equipment", icon: "🏢", outlet: "RNS World", outletId: "rns-world" },
+  // Symphony World
+  { key: "SYMPHONY_EQUIPMENT", label: "Symphony Equip", icon: "🎼", outlet: "Symphony World", outletId: "symphony-world" },
 ];
 
 interface UserType {
@@ -36,8 +40,8 @@ export default function AccessMatrixClient({
   );
   const [toggling, setToggling] = useState<string | null>(null);
   const [alert, setAlert] = useState<{ type: "success" | "error"; msg: string } | null>(null);
-  const [outletFilter, setOutletFilter] = useState<"all" | "bakery" | "oreta-world">("all");
-  const [employeeOutletFilter, setEmployeeOutletFilter] = useState<"all" | "bakery" | "oreta-world">("all");
+  const [outletFilter, setOutletFilter] = useState<"all" | "bakery" | "oreta-world" | "rns-world" | "symphony-world">("all");
+  const [employeeOutletFilter, setEmployeeOutletFilter] = useState<"all" | "bakery" | "oreta-world" | "rns-world" | "symphony-world">("all");
 
   function hasAccess(userId: string, sheet: string) {
     return access.has(`${userId}:${sheet}`);
@@ -108,21 +112,35 @@ export default function AccessMatrixClient({
             className={`btn btn-sm ${outletFilter === "all" ? "btn-primary" : "btn-secondary"}`}
             onClick={() => setOutletFilter("all")}
           >
-            All Sheets (13)
+            All Sheets ({SHEETS.length})
           </button>
           <button
             type="button"
             className={`btn btn-sm ${outletFilter === "bakery" ? "btn-primary" : "btn-secondary"}`}
             onClick={() => setOutletFilter("bakery")}
           >
-            🥐 Bakery Only (7)
+            🥐 Bakery (7)
           </button>
           <button
             type="button"
             className={`btn btn-sm ${outletFilter === "oreta-world" ? "btn-primary" : "btn-secondary"}`}
             onClick={() => setOutletFilter("oreta-world")}
           >
-            🌐 Oreta World Only (6)
+            🌐 Oreta World (6)
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm ${outletFilter === "rns-world" ? "btn-primary" : "btn-secondary"}`}
+            onClick={() => setOutletFilter("rns-world")}
+          >
+            🏢 RNS World (1)
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm ${outletFilter === "symphony-world" ? "btn-primary" : "btn-secondary"}`}
+            onClick={() => setOutletFilter("symphony-world")}
+          >
+            🎼 Symphony World (1)
           </button>
         </div>
 
@@ -147,7 +165,21 @@ export default function AccessMatrixClient({
             className={`btn btn-sm ${employeeOutletFilter === "oreta-world" ? "btn-primary" : "btn-secondary"}`}
             onClick={() => setEmployeeOutletFilter("oreta-world")}
           >
-            🌐 Oreta World
+            🌐 Oreta
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm ${employeeOutletFilter === "rns-world" ? "btn-primary" : "btn-secondary"}`}
+            onClick={() => setEmployeeOutletFilter("rns-world")}
+          >
+            🏢 RNS
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm ${employeeOutletFilter === "symphony-world" ? "btn-primary" : "btn-secondary"}`}
+            onClick={() => setEmployeeOutletFilter("symphony-world")}
+          >
+            🎼 Symphony
           </button>
         </div>
       </div>

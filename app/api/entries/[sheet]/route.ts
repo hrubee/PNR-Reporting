@@ -218,6 +218,32 @@ export async function POST(
         }
         return NextResponse.json(await prisma.oretaFoodEntry.create({ data: { ...data, date, submittedById: user.id } }));
       }
+      case "rns-equipment": {
+        const raw = body.equipmentChecks || body.checks;
+        const data = {
+          equipmentChecks: typeof raw === "string" ? raw : JSON.stringify(raw),
+          supervisorName: body.supervisorName || "",
+          comments: body.comments || "",
+          correctiveAction: body.correctiveAction || "",
+        };
+        if (id) {
+          return NextResponse.json(await prisma.rnsEquipmentEntry.update({ where: { id }, data }));
+        }
+        return NextResponse.json(await prisma.rnsEquipmentEntry.create({ data: { ...data, date, submittedById: user.id } }));
+      }
+      case "symphony-equipment": {
+        const raw = body.equipmentChecks || body.checks;
+        const data = {
+          equipmentChecks: typeof raw === "string" ? raw : JSON.stringify(raw),
+          supervisorName: body.supervisorName || "",
+          comments: body.comments || "",
+          correctiveAction: body.correctiveAction || "",
+        };
+        if (id) {
+          return NextResponse.json(await prisma.symphonyEquipmentEntry.update({ where: { id }, data }));
+        }
+        return NextResponse.json(await prisma.symphonyEquipmentEntry.create({ data: { ...data, date, submittedById: user.id } }));
+      }
       default:
         return NextResponse.json({ error: "Unknown sheet" }, { status: 400 });
     }
@@ -271,6 +297,10 @@ export async function GET(
         return NextResponse.json(await prisma.oretaMonthlyEntry.findMany({ where: month ? { month } : where, orderBy: { createdAt: "desc" }, take: 60, include: { submittedBy: true } }));
       case "oreta-food":
         return NextResponse.json(await prisma.oretaFoodEntry.findMany({ where, orderBy: { createdAt: "desc" }, take: 60, include: { submittedBy: true } }));
+      case "rns-equipment":
+        return NextResponse.json(await prisma.rnsEquipmentEntry.findMany({ where, orderBy: { createdAt: "desc" }, take: 60, include: { submittedBy: true } }));
+      case "symphony-equipment":
+        return NextResponse.json(await prisma.symphonyEquipmentEntry.findMany({ where, orderBy: { createdAt: "desc" }, take: 60, include: { submittedBy: true } }));
       default:
         return NextResponse.json({ error: "Unknown sheet" }, { status: 400 });
     }

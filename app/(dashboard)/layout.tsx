@@ -75,6 +75,12 @@ async function getSheetStatuses(userId: string, role: string, today: string) {
         case "ORETA_FOOD":
           submitted = !!(await prisma.oretaFoodEntry.findFirst({ where: { date: today } }));
           break;
+        case "RNS_EQUIPMENT":
+          submitted = !!(await prisma.rnsEquipmentEntry.findFirst({ where: { date: today } }));
+          break;
+        case "SYMPHONY_EQUIPMENT":
+          submitted = !!(await prisma.symphonyEquipmentEntry.findFirst({ where: { date: today } }));
+          break;
       }
     } catch (e) {
       submitted = false;

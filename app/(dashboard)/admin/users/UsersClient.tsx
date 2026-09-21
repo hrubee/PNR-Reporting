@@ -123,6 +123,8 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
     if (outletFilter === "all") return true;
     if (outletFilter === "bakery") return u.outletId === "bakery" || u.outletId === "all" || !u.outletId;
     if (outletFilter === "oreta-world") return u.outletId === "oreta-world" || u.outletId === "all" || !u.outletId;
+    if (outletFilter === "rns-world") return u.outletId === "rns-world" || u.outletId === "all" || !u.outletId;
+    if (outletFilter === "symphony-world") return u.outletId === "symphony-world" || u.outletId === "all" || !u.outletId;
     return true;
   });
 
@@ -171,6 +173,20 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
           onClick={() => setOutletFilter("oreta-world")}
         >
           🌐 Oreta World Staff
+        </button>
+        <button
+          type="button"
+          className={`btn btn-sm ${outletFilter === "rns-world" ? "btn-primary" : "btn-secondary"}`}
+          onClick={() => setOutletFilter("rns-world")}
+        >
+          🏢 RNS World Staff
+        </button>
+        <button
+          type="button"
+          className={`btn btn-sm ${outletFilter === "symphony-world" ? "btn-primary" : "btn-secondary"}`}
+          onClick={() => setOutletFilter("symphony-world")}
+        >
+          🎼 Symphony World Staff
         </button>
       </div>
 
@@ -254,7 +270,15 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
                   </td>
                   <td>
                     <span className="badge badge-submitted">
-                      {u.outletId === "bakery" ? "🥐 Bakery" : u.outletId === "oreta-world" ? "🌐 Oreta World" : "🌐 All Outlets"}
+                      {u.outletId === "bakery"
+                        ? "🥐 Bakery"
+                        : u.outletId === "oreta-world"
+                        ? "🌐 Oreta World"
+                        : u.outletId === "rns-world"
+                        ? "🏢 RNS World"
+                        : u.outletId === "symphony-world"
+                        ? "🎼 Symphony World"
+                        : "🌐 All Outlets"}
                     </span>
                   </td>
                   <td>
@@ -345,9 +369,11 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
                   <div className="form-group">
                     <label>Assigned Outlet</label>
                     <select value={form.outletId} onChange={(e) => setForm({ ...form, outletId: e.target.value })}>
-                      <option value="all">All Outlets</option>
+                      <option value="all">🌐 All Outlets</option>
                       <option value="bakery">🥐 Bakery</option>
                       <option value="oreta-world">🌐 Oreta World</option>
+                      <option value="rns-world">🏢 RNS World</option>
+                      <option value="symphony-world">🎼 Symphony World</option>
                     </select>
                   </div>
                 </div>

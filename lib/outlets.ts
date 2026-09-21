@@ -80,6 +80,36 @@ export const OUTLETS: OutletConfig[] = [
       },
     ],
   },
+  {
+    id: "rns-world",
+    name: "RNS World",
+    icon: "🏢",
+    tagline: "RNS World Outlet",
+    sheets: [
+      {
+        id: "RNS_EQUIPMENT",
+        label: "Equipment & Hygiene",
+        icon: "⚙️",
+        route: "/rns/equipment",
+        description: "Daily Equipment Cleaning & Sanitation Checklist (30 Items)",
+      },
+    ],
+  },
+  {
+    id: "symphony-world",
+    name: "Symphony World",
+    icon: "🎼",
+    tagline: "Symphony World Outlet",
+    sheets: [
+      {
+        id: "SYMPHONY_EQUIPMENT",
+        label: "Equipment & Hygiene",
+        icon: "⚙️",
+        route: "/symphony/equipment",
+        description: "Daily Equipment Cleaning & Sanitation Checklist (32 Items)",
+      },
+    ],
+  },
 ];
 
 export const DEFAULT_OUTLET = OUTLETS[0];
@@ -92,6 +122,12 @@ export function getOutletById(id?: string | null): OutletConfig {
 export function getOutletByRoute(pathname: string): OutletConfig {
   if (pathname.startsWith("/oreta")) {
     return OUTLETS.find((o) => o.id === "oreta-world") || DEFAULT_OUTLET;
+  }
+  if (pathname.startsWith("/rns")) {
+    return OUTLETS.find((o) => o.id === "rns-world") || DEFAULT_OUTLET;
+  }
+  if (pathname.startsWith("/symphony")) {
+    return OUTLETS.find((o) => o.id === "symphony-world") || DEFAULT_OUTLET;
   }
   return DEFAULT_OUTLET;
 }
@@ -308,4 +344,100 @@ export const TIME_PRESET_OPTIONS = [
   "09:30 PM",
   "10:00 PM",
 ];
+
+// ─── 7. RNS World Equipment & Hygiene Items (30 items) ────────────────────────
+export const RNS_EQUIPMENT_ITEMS = [
+  // Kitchen & Cooking
+  { id: 1, name: "Exhaust Fan", category: "Kitchen & Cooking", defaultCleanedBy: "Madhavi" },
+  { id: 2, name: "Griller 1", category: "Kitchen & Cooking", defaultCleanedBy: "Madhavi" },
+  { id: 3, name: "Griller 2", category: "Kitchen & Cooking", defaultCleanedBy: "Madhavi" },
+  // Beverage & Refrigeration
+  { id: 4, name: "Iced Tea Machine", category: "Beverage & Refrigeration", defaultCleanedBy: "Madhavi" },
+  { id: 5, name: "Coffee Machine 1", category: "Beverage & Refrigeration", defaultCleanedBy: "Madhavi" },
+  { id: 6, name: "Coffee Machine 2", category: "Beverage & Refrigeration", defaultCleanedBy: "Madhavi" },
+  { id: 7, name: "Fridge 1", category: "Beverage & Refrigeration", defaultCleanedBy: "Madhavi" },
+  { id: 8, name: "Fridge 2", category: "Beverage & Refrigeration", defaultCleanedBy: "Madhavi" },
+  { id: 9, name: "Freezer 1", category: "Beverage & Refrigeration", defaultCleanedBy: "Madhavi" },
+  { id: 10, name: "Freezer 2", category: "Beverage & Refrigeration", defaultCleanedBy: "Madhavi" },
+  // Containers & Prep
+  { id: 11, name: "Food Containers", category: "Containers & Prep", defaultCleanedBy: "Ashok" },
+  { id: 12, name: "Sauce Containers", category: "Containers & Prep", defaultCleanedBy: "Ashok" },
+  { id: 13, name: "Spice Containers", category: "Containers & Prep", defaultCleanedBy: "Ashok" },
+  { id: 14, name: "Weighing Scale 1", category: "Containers & Prep", defaultCleanedBy: "Ashok" },
+  { id: 15, name: "Weighing Scale 2", category: "Containers & Prep", defaultCleanedBy: "Ashok" },
+  { id: 16, name: "Wet and Dry Dustbins", category: "Containers & Prep", defaultCleanedBy: "Mavshi" },
+  // Display & Retail
+  { id: 17, name: "Cake Counter 1", category: "Display & Retail", defaultCleanedBy: "Nisha" },
+  { id: 18, name: "Cake Counter 2", category: "Display & Retail", defaultCleanedBy: "Nisha" },
+  { id: 19, name: "IceCream Counter 1", category: "Display & Retail", defaultCleanedBy: "Sachin" },
+  { id: 20, name: "IceCream Counter 2", category: "Display & Retail", defaultCleanedBy: "Sachin" },
+  { id: 21, name: "Food Rack", category: "Display & Retail", defaultCleanedBy: "Navin" },
+  { id: 22, name: "Cabinet Cleaning", category: "Display & Retail", defaultCleanedBy: "Ashok" },
+  { id: 23, name: "Cash Counter", category: "Display & Retail", defaultCleanedBy: "Nisha" },
+  { id: 24, name: "Gods Altar", category: "Display & Retail", defaultCleanedBy: "Nisha" },
+  { id: 25, name: "Pest Stop Cleaning", category: "Display & Retail", defaultCleanedBy: "Mavshi" },
+  { id: 26, name: "Pest Control", category: "Facility & Environment", defaultCleanedBy: "Mavshi" },
+  { id: 27, name: "Indoor Seating & Tables", category: "Facility & Environment", defaultCleanedBy: "Mavshi" },
+  // Facility & Environment
+  { id: 28, name: "Outdoor Area", category: "Facility & Environment", defaultCleanedBy: "Mavshi" },
+  { id: 29, name: "Web Cleaning", category: "Facility & Environment", defaultCleanedBy: "Mavshi" },
+  { id: 30, name: "Signage Board", category: "Facility & Environment", defaultCleanedBy: "Ashok" },
+];
+
+export const RNS_STAFF = ["Madhavi", "Ashok", "Mavshi", "Nisha", "Sachin", "Navin"];
+
+// ─── 8. Symphony World Equipment & Hygiene Items (32 items) ───────────────────
+export const SYMPHONY_EQUIPMENT_ITEMS = [
+  // Kitchen & Cooking
+  { id: 1, name: "Chimney", category: "Kitchen & Cooking", defaultCleanedBy: "Kamran" },
+  { id: 2, name: "Griller 1", category: "Kitchen & Cooking", defaultCleanedBy: "Kamran" },
+  { id: 3, name: "Griller 2", category: "Kitchen & Cooking", defaultCleanedBy: "Kamran" },
+  // Beverage & Refrigeration
+  { id: 4, name: "Iced Tea Machine", category: "Beverage & Refrigeration", defaultCleanedBy: "Bapu" },
+  { id: 5, name: "Coffee Machine 1", category: "Beverage & Refrigeration", defaultCleanedBy: "Bapu" },
+  { id: 6, name: "Coffee Machine 2", category: "Beverage & Refrigeration", defaultCleanedBy: "Bapu" },
+  { id: 7, name: "Fridge 1 Under Table", category: "Beverage & Refrigeration", defaultCleanedBy: "Kamran" },
+  { id: 8, name: "Freezer 1", category: "Beverage & Refrigeration", defaultCleanedBy: "Kamran" },
+  { id: 9, name: "Freezer 2 Store", category: "Beverage & Refrigeration", defaultCleanedBy: "Kamran" },
+  // Containers & Prep
+  { id: 10, name: "Food Containers", category: "Containers & Prep", defaultCleanedBy: "Bapu" },
+  { id: 11, name: "Sauce Containers", category: "Containers & Prep", defaultCleanedBy: "Bapu" },
+  { id: 12, name: "Spice Containers", category: "Containers & Prep", defaultCleanedBy: "Bapu" },
+  { id: 13, name: "Weighing Scale 1", category: "Containers & Prep", defaultCleanedBy: "Bapu" },
+  { id: 14, name: "Weighing Scale 2", category: "Containers & Prep", defaultCleanedBy: "Bapu" },
+  { id: 15, name: "Wet and Dry Dustbins", category: "Containers & Prep", defaultCleanedBy: "Mavshi" },
+  // Display & Retail
+  { id: 16, name: "Cake Counter 1", category: "Display & Retail", defaultCleanedBy: "Deva" },
+  { id: 17, name: "Cake Counter 2", category: "Display & Retail", defaultCleanedBy: "Deva" },
+  { id: 18, name: "Cake Counter 3", category: "Display & Retail", defaultCleanedBy: "Deva" },
+  { id: 19, name: "IceCream Counter", category: "Display & Retail", defaultCleanedBy: "Shagir" },
+  { id: 20, name: "Food Rack", category: "Display & Retail", defaultCleanedBy: "Gaurav" },
+  { id: 21, name: "Food Rack Top Counter", category: "Display & Retail", defaultCleanedBy: "Gaurav" },
+  { id: 22, name: "Cabinet Below Rack", category: "Display & Retail", defaultCleanedBy: "Rahul" },
+  { id: 23, name: "Store Rack", category: "Display & Retail", defaultCleanedBy: "Someshwar" },
+  { id: 24, name: "Store Room", category: "Display & Retail", defaultCleanedBy: "Someshwar" },
+  { id: 25, name: "Cash Counter", category: "Display & Retail", defaultCleanedBy: "Deva" },
+  { id: 26, name: "Gods Altar", category: "Display & Retail", defaultCleanedBy: "Rahul" },
+  { id: 27, name: "Pest Stop Cleaning", category: "Display & Retail", defaultCleanedBy: "Mavshi" },
+  { id: 28, name: "Pest Control", category: "Facility & Environment", defaultCleanedBy: "Mavshi" },
+  // Facility & Environment
+  { id: 29, name: "Indoor Seating & Tables", category: "Facility & Environment", defaultCleanedBy: "HK" },
+  { id: 30, name: "Outdoor Sitting Area", category: "Facility & Environment", defaultCleanedBy: "HK" },
+  { id: 31, name: "Web Cleaning", category: "Facility & Environment", defaultCleanedBy: "Mavshi" },
+  { id: 32, name: "Signage board", category: "Facility & Environment", defaultCleanedBy: "Rahul" },
+];
+
+export const SYMPHONY_STAFF = [
+  "Kamran",
+  "Bapu",
+  "Mavshi",
+  "Someshwar",
+  "Deva",
+  "Shagir",
+  "Gaurav",
+  "Rahul",
+  "HK",
+  "New Staff",
+];
+
 

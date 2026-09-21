@@ -16,7 +16,9 @@ export type SheetId =
   | "ORETA_GLASS"
   | "ORETA_MONTHLY"
   | "ORETA_FOOD"
-  | "ORETA_HYGIENE";
+  | "ORETA_HYGIENE"
+  | "RNS_EQUIPMENT"
+  | "SYMPHONY_EQUIPMENT";
 
 export const SHEET_LABELS: Record<SheetId, string> = {
   HYGIENE_REPORT: "Hygiene Report",
@@ -33,6 +35,8 @@ export const SHEET_LABELS: Record<SheetId, string> = {
   ORETA_MONTHLY: "Monthly Maintenance",
   ORETA_FOOD: "Food",
   ORETA_HYGIENE: "House Keeping",
+  RNS_EQUIPMENT: "Equipment & Hygiene",
+  SYMPHONY_EQUIPMENT: "Equipment & Hygiene",
 };
 
 export const SHEET_ROUTES: Record<SheetId, string> = {
@@ -50,6 +54,8 @@ export const SHEET_ROUTES: Record<SheetId, string> = {
   ORETA_MONTHLY: "/oreta/monthly",
   ORETA_FOOD: "/oreta/food",
   ORETA_HYGIENE: "/oreta/shop-cleaning",
+  RNS_EQUIPMENT: "/rns/equipment",
+  SYMPHONY_EQUIPMENT: "/symphony/equipment",
 };
 
 export const SUPERVISORS = [
@@ -57,6 +63,8 @@ export const SUPERVISORS = [
   "Sandeep Gargate",
   "Admin",
   "Oreta Supervisor",
+  "RNS Supervisor",
+  "Symphony Supervisor",
 ];
 
 export const SHEET_STAFF: Record<SheetId, string[]> = {
@@ -74,6 +82,8 @@ export const SHEET_STAFF: Record<SheetId, string[]> = {
   ORETA_MONTHLY: ["Mangla", "Rameshwar", "Bharti", "Arzaaan", "Admin"],
   ORETA_FOOD: ["Rameshwar", "Bharti", "Mangla", "Arzaaan", "New Staff", "Admin"],
   ORETA_HYGIENE: ["Rameshwar", "Bharti", "Mangla", "Arzaaan", "New Staff", "Admin"],
+  RNS_EQUIPMENT: ["Madhavi", "Ashok", "Mavshi", "Nisha", "Sachin", "Navin", "Admin"],
+  SYMPHONY_EQUIPMENT: ["Kamran", "Bapu", "Mavshi", "Someshwar", "Deva", "Shagir", "Gaurav", "Rahul", "HK", "New Staff", "Admin"],
 };
 
 export const ALL_STAFF = [

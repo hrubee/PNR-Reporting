@@ -135,10 +135,25 @@ async function main() {
     { name: "Jaseen Siddique", email: "jaseen@pnr.com", sheets: ["CAKE_ROOM"] },
     { name: "Nadeem Faruqi", email: "nadeem@pnr.com", sheets: ["CAKE_ROOM"] },
     // Oreta World Staff
-    { name: "Rameshwar", email: "rameshwar@pnr.com", sheets: ["ORETA_HYGIENE"] },
-    { name: "Bharti", email: "bharti@pnr.com", sheets: ["ORETA_HYGIENE"] },
-    { name: "Mangla", email: "mangla@pnr.com", sheets: ["ORETA_HYGIENE"] },
-    { name: "Arzaaan", email: "arzaaan@pnr.com", sheets: ["ORETA_HYGIENE"] },
+    { name: "Rameshwar", email: "rameshwar@pnr.com", outletId: "oreta-world", sheets: ["ORETA_HYGIENE", "ORETA_EQUIPMENT", "ORETA_FRIDGE", "ORETA_GLASS", "ORETA_MONTHLY", "ORETA_FOOD"] },
+    { name: "Bharti", email: "bharti@pnr.com", outletId: "oreta-world", sheets: ["ORETA_HYGIENE", "ORETA_EQUIPMENT", "ORETA_FRIDGE", "ORETA_GLASS", "ORETA_MONTHLY", "ORETA_FOOD"] },
+    { name: "Mangla", email: "mangla@pnr.com", outletId: "oreta-world", sheets: ["ORETA_HYGIENE", "ORETA_EQUIPMENT", "ORETA_FRIDGE", "ORETA_GLASS", "ORETA_MONTHLY", "ORETA_FOOD"] },
+    { name: "Arzaaan", email: "arzaaan@pnr.com", outletId: "oreta-world", sheets: ["ORETA_HYGIENE", "ORETA_EQUIPMENT", "ORETA_FRIDGE", "ORETA_GLASS", "ORETA_MONTHLY", "ORETA_FOOD"] },
+    // RNS World Staff
+    { name: "Madhavi", email: "madhavi@pnr.com", outletId: "rns-world", sheets: ["RNS_EQUIPMENT"] },
+    { name: "Ashok", email: "ashok@pnr.com", outletId: "rns-world", sheets: ["RNS_EQUIPMENT"] },
+    { name: "Nisha", email: "nisha@pnr.com", outletId: "rns-world", sheets: ["RNS_EQUIPMENT"] },
+    { name: "Sachin", email: "sachin@pnr.com", outletId: "rns-world", sheets: ["RNS_EQUIPMENT"] },
+    { name: "Navin", email: "navin@pnr.com", outletId: "rns-world", sheets: ["RNS_EQUIPMENT"] },
+    // Symphony World Staff
+    { name: "Kamran", email: "kamran@pnr.com", outletId: "symphony-world", sheets: ["SYMPHONY_EQUIPMENT"] },
+    { name: "Bapu", email: "bapu@pnr.com", outletId: "symphony-world", sheets: ["SYMPHONY_EQUIPMENT"] },
+    { name: "Someshwar", email: "someshwar@pnr.com", outletId: "symphony-world", sheets: ["SYMPHONY_EQUIPMENT"] },
+    { name: "Deva", email: "deva@pnr.com", outletId: "symphony-world", sheets: ["SYMPHONY_EQUIPMENT"] },
+    { name: "Shagir", email: "shagir@pnr.com", outletId: "symphony-world", sheets: ["SYMPHONY_EQUIPMENT"] },
+    { name: "Gaurav", email: "gaurav@pnr.com", outletId: "symphony-world", sheets: ["SYMPHONY_EQUIPMENT"] },
+    { name: "Rahul", email: "rahul@pnr.com", outletId: "symphony-world", sheets: ["SYMPHONY_EQUIPMENT"] },
+    { name: "HK", email: "hk@pnr.com", outletId: "symphony-world", sheets: ["SYMPHONY_EQUIPMENT"] },
   ];
 
   const createdStaff: Record<string, string> = {};
@@ -146,8 +161,8 @@ async function main() {
   for (const s of staffList) {
     const user = await prisma.user.upsert({
       where: { email: s.email },
-      update: { name: s.name },
-      create: { name: s.name, email: s.email, passwordHash: defaultPassword, role: "EMPLOYEE" },
+      update: { name: s.name, outletId: s.outletId || "all" },
+      create: { name: s.name, email: s.email, passwordHash: defaultPassword, role: "EMPLOYEE", outletId: s.outletId || "all" },
     });
     createdStaff[s.name] = user.id;
 

@@ -26,6 +26,8 @@ export default async function AdminReportsPage() {
     oretaGlass,
     oretaMonthly,
     oretaFood,
+    rnsEquipment,
+    symphonyEquipment,
   ] = await Promise.all([
     prisma.hygieneEntry.findMany({ orderBy: { date: "desc" }, take: 60, include: { submittedBy: { select: { name: true } } } }).catch(() => []),
     prisma.glassEntry.findMany({ orderBy: { date: "desc" }, take: 60, include: { submittedBy: { select: { name: true } } } }).catch(() => []),
@@ -40,6 +42,8 @@ export default async function AdminReportsPage() {
     prisma.oretaGlassEntry.findMany({ orderBy: { date: "desc" }, take: 60, include: { submittedBy: { select: { name: true } } } }).catch(() => []),
     prisma.oretaMonthlyEntry.findMany({ orderBy: { month: "desc" }, take: 24, include: { submittedBy: { select: { name: true } } } }).catch(() => []),
     prisma.oretaFoodEntry.findMany({ orderBy: { date: "desc" }, take: 60, include: { submittedBy: { select: { name: true } } } }).catch(() => []),
+    prisma.rnsEquipmentEntry.findMany({ orderBy: { date: "desc" }, take: 60, include: { submittedBy: { select: { name: true } } } }).catch(() => []),
+    prisma.symphonyEquipmentEntry.findMany({ orderBy: { date: "desc" }, take: 60, include: { submittedBy: { select: { name: true } } } }).catch(() => []),
   ]);
 
   return (
@@ -58,6 +62,8 @@ export default async function AdminReportsPage() {
         oretaGlass: JSON.parse(JSON.stringify(oretaGlass)),
         oretaMonthly: JSON.parse(JSON.stringify(oretaMonthly)),
         oretaFood: JSON.parse(JSON.stringify(oretaFood)),
+        rnsEquipment: JSON.parse(JSON.stringify(rnsEquipment)),
+        symphonyEquipment: JSON.parse(JSON.stringify(symphonyEquipment)),
       }}
     />
   );

@@ -21,6 +21,8 @@ const SHEET_ICONS: Record<SheetId, string> = {
   ORETA_GLASS: "🪟",
   ORETA_MONTHLY: "🗓️",
   ORETA_FOOD: "🍲",
+  RNS_EQUIPMENT: "🏢",
+  SYMPHONY_EQUIPMENT: "🎼",
 };
 
 async function getTodayStatus(today: string) {
@@ -40,6 +42,8 @@ async function getTodayStatus(today: string) {
     oretaGlass,
     oretaMonthly,
     oretaFood,
+    rnsEquipment,
+    symphonyEquipment,
   ] = await Promise.all([
     prisma.hygieneEntry.findMany({ where: { date: today }, orderBy: { createdAt: "desc" }, include: { submittedBy: true } }).catch(() => []),
     prisma.glassEntry.findMany({ where: { date: today }, orderBy: { createdAt: "desc" }, include: { submittedBy: true } }).catch(() => []),
@@ -54,6 +58,8 @@ async function getTodayStatus(today: string) {
     prisma.oretaGlassEntry.findMany({ where: { date: today }, orderBy: { createdAt: "desc" }, include: { submittedBy: true } }).catch(() => []),
     prisma.oretaMonthlyEntry.findMany({ where: { month: currentMonth }, orderBy: { createdAt: "desc" }, include: { submittedBy: true } }).catch(() => []),
     prisma.oretaFoodEntry.findMany({ where: { date: today }, orderBy: { createdAt: "desc" }, include: { submittedBy: true } }).catch(() => []),
+    prisma.rnsEquipmentEntry.findMany({ where: { date: today }, orderBy: { createdAt: "desc" }, include: { submittedBy: true } }).catch(() => []),
+    prisma.symphonyEquipmentEntry.findMany({ where: { date: today }, orderBy: { createdAt: "desc" }, include: { submittedBy: true } }).catch(() => []),
   ]);
 
   return {
@@ -70,6 +76,8 @@ async function getTodayStatus(today: string) {
     oretaGlass,
     oretaMonthly,
     oretaFood,
+    rnsEquipment,
+    symphonyEquipment,
   };
 }
 
@@ -106,6 +114,8 @@ export default async function DashboardPage({ searchParams }: PageProps) {
     ORETA_GLASS: statuses.oretaGlass,
     ORETA_MONTHLY: statuses.oretaMonthly,
     ORETA_FOOD: statuses.oretaFood,
+    RNS_EQUIPMENT: statuses.rnsEquipment,
+    SYMPHONY_EQUIPMENT: statuses.symphonyEquipment,
   };
 
   // Filter sheets to only the active outlet's sheets
