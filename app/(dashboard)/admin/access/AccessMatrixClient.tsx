@@ -89,7 +89,8 @@ export default function AccessMatrixClient({
   const filteredUsers = users.filter((u) => {
     if (employeeOutletFilter === "all") return true;
     if (!u.outletId || u.outletId === "all") return true;
-    return u.outletId === employeeOutletFilter;
+    const parts = u.outletId.split(",").map((s) => s.trim());
+    return parts.includes(employeeOutletFilter);
   });
 
   return (
@@ -97,7 +98,7 @@ export default function AccessMatrixClient({
       <div className="page-header">
         <div className="page-header-text">
           <h1>🔐 Multi-Outlet Access Matrix</h1>
-          <p>Assign sheets and permissions to employees across Bakery and Oreta World. Only authorized staff appear on forms.</p>
+          <p>Assign sheets and permissions to employees across Bakery, Oreta World, RNS World, and Symphony World. Only authorized staff appear on forms.</p>
         </div>
       </div>
 
@@ -229,7 +230,24 @@ export default function AccessMatrixClient({
                       <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "2px" }}>
                         {u.email}
                         {u.jobTitle && ` • ${u.jobTitle}`}
-                        {u.outletId && ` • ${u.outletId === "all" ? "All Outlets" : u.outletId === "bakery" ? "Bakery" : "Oreta World"}`}
+                        {u.outletId && ` • ${
+                          !u.outletId || u.outletId === "all"
+                            ? "All Outlets"
+                            : u.outletId
+                                .split(",")
+                                .map((o) =>
+                                  o === "bakery"
+                                    ? "Bakery"
+                                    : o === "oreta-world"
+                                    ? "Oreta"
+                                    : o === "rns-world"
+                                    ? "RNS"
+                                    : o === "symphony-world"
+                                    ? "Symphony"
+                                    : o
+                                )
+                                .join(", ")
+                        }`}
                       </div>
                     </td>
                     {visibleSheets.map((s) => {

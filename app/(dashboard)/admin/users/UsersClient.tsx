@@ -2,6 +2,24 @@
 import { useState } from "react";
 import Link from "next/link";
 
+export const ALL_OUTLET_OPTIONS = [
+  { id: "bakery", label: "Bakery", icon: "🥐" },
+  { id: "oreta-world", label: "Oreta World", icon: "🌐" },
+  { id: "rns-world", label: "RNS World", icon: "🏢" },
+  { id: "symphony-world", label: "Symphony World", icon: "🎼" },
+];
+
+export function parseOutlets(outletId?: string | null): string[] {
+  if (!outletId || outletId === "all") return ALL_OUTLET_OPTIONS.map((o) => o.id);
+  const list = outletId.split(",").map((s) => s.trim()).filter(Boolean);
+  return list.length > 0 ? list : ALL_OUTLET_OPTIONS.map((o) => o.id);
+}
+
+export function encodeOutlets(selected: string[]): string {
+  if (selected.length === 0 || selected.length === ALL_OUTLET_OPTIONS.length) return "all";
+  return selected.join(",");
+}
+
 interface UserType {
   id: string;
   name: string;
@@ -24,7 +42,7 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
     email: "",
     password: "",
     role: "EMPLOYEE",
-    outletId: "all",
+    selectedOutlets: ALL_OUTLET_OPTIONS.map((o) => o.id),
     jobTitle: "",
   });
 
@@ -40,7 +58,7 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
       email: "",
       password: "",
       role: "EMPLOYEE",
-      outletId: "all",
+      selectedOutlets: ALL_OUTLET_OPTIONS.map((o) => o.id),
       jobTitle: "",
     });
     setShowModal(true);
@@ -55,17 +73,42 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
       email: u.email,
       password: "",
       role: u.role,
-      outletId: u.outletId || "all",
+      selectedOutlets: parseOutlets(u.outletId),
       jobTitle: u.jobTitle || "",
     });
     setShowModal(true);
     setAlert(null);
   }
 
+  function toggleOutlet(id: string) {
+    setForm((prev) => {
+      const exists = prev.selectedOutlets.includes(id);
+      const updated = exists
+        ? prev.selectedOutlets.filter((x) => x !== id)
+        : [...prev.selectedOutlets, id];
+      return { ...prev, selectedOutlets: updated };
+    });
+  }
+
+  function selectAllOutlets() {
+    setForm((prev) => ({ ...prev, selectedOutlets: ALL_OUTLET_OPTIONS.map((o) => o.id) }));
+  }
+
+  function clearAllOutlets() {
+    setForm((prev) => ({ ...prev, selectedOutlets: [] }));
+  }
+
   async function handleSaveUser(e: React.FormEvent) {
     e.preventDefault();
+    if (form.selectedOutlets.length === 0) {
+      setAlert({ type: "error", msg: "Please select at least one outlet for this user." });
+      return;
+    }
+
     setSaving(true);
     setAlert(null);
+
+    const encodedOutletId = encodeOutlets(form.selectedOutlets);
 
     if (isEditing && editId) {
       // Update existing user
@@ -76,7 +119,7 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
           id: editId,
           name: form.name,
           role: form.role,
-          outletId: form.outletId,
+          outletId: encodedOutletId,
           jobTitle: form.jobTitle,
           password: form.password || undefined,
         }),
@@ -94,7 +137,14 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
       const res = await fetch("/api/admin/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          password: form.password,
+          role: form.role,
+          outletId: encodedOutletId,
+          jobTitle: form.jobTitle,
+        }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -121,11 +171,9 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
 
   const filteredUsers = users.filter((u) => {
     if (outletFilter === "all") return true;
-    if (outletFilter === "bakery") return u.outletId === "bakery" || u.outletId === "all" || !u.outletId;
-    if (outletFilter === "oreta-world") return u.outletId === "oreta-world" || u.outletId === "all" || !u.outletId;
-    if (outletFilter === "rns-world") return u.outletId === "rns-world" || u.outletId === "all" || !u.outletId;
-    if (outletFilter === "symphony-world") return u.outletId === "symphony-world" || u.outletId === "all" || !u.outletId;
-    return true;
+    if (!u.outletId || u.outletId === "all") return true;
+    const userOutlets = parseOutlets(u.outletId);
+    return userOutlets.includes(outletFilter);
   });
 
   return (
@@ -133,7 +181,7 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
       <div className="page-header">
         <div className="page-header-text">
           <h1>👥 Employee & User Management</h1>
-          <p>Dynamically manage employees, assign outlets & configure roles</p>
+          <p>Dynamically manage employees, assign multiple outlets & configure roles</p>
         </div>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <Link href="/admin/access" className="btn btn-secondary">
@@ -198,112 +246,131 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
                 <th>Name / Details</th>
                 <th>Email</th>
                 <th>Role</th>
-                <th>Assigned Outlet</th>
+                <th>Assigned Outlets</th>
                 <th>Status</th>
                 <th>Joined</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((u) => (
-                <tr key={u.id}>
-                  <td style={{ fontWeight: 600 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                      <div
+              {filteredUsers.map((u) => {
+                const assigned = parseOutlets(u.outletId);
+                const isAll = !u.outletId || u.outletId === "all" || assigned.length === ALL_OUTLET_OPTIONS.length;
+
+                return (
+                  <tr key={u.id}>
+                    <td style={{ fontWeight: 600 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                        <div
+                          style={{
+                            width: 34,
+                            height: 34,
+                            borderRadius: "50%",
+                            background:
+                              u.role === "ADMIN"
+                                ? "linear-gradient(135deg,#ef4444,#dc2626)"
+                                : u.role === "SUPERVISOR"
+                                ? "linear-gradient(135deg,#f59e0b,#d97706)"
+                                : "linear-gradient(135deg,#3b82f6,#8b5cf6)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontWeight: 700,
+                            fontSize: "0.78rem",
+                            color: "white",
+                          }}
+                        >
+                          {(u.name || u.email || "U")
+                            .split(" ")
+                            .filter(Boolean)
+                            .map((n) => n[0])
+                            .join("")
+                            .slice(0, 2)
+                            .toUpperCase() || "U"}
+                        </div>
+                        <div>
+                          <div>{u.name}</div>
+                          {u.jobTitle && (
+                            <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 400 }}>
+                              {u.jobTitle}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>{u.email}</td>
+                    <td>
+                      <span
+                        className="badge"
                         style={{
-                          width: 34,
-                          height: 34,
-                          borderRadius: "50%",
                           background:
                             u.role === "ADMIN"
-                              ? "linear-gradient(135deg,#ef4444,#dc2626)"
+                              ? "rgba(239,68,68,0.15)"
                               : u.role === "SUPERVISOR"
-                              ? "linear-gradient(135deg,#f59e0b,#d97706)"
-                              : "linear-gradient(135deg,#3b82f6,#8b5cf6)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontWeight: 700,
-                          fontSize: "0.78rem",
-                          color: "white",
+                              ? "rgba(245,158,11,0.15)"
+                              : "rgba(59,130,246,0.15)",
+                          color:
+                            u.role === "ADMIN"
+                              ? "#ef4444"
+                              : u.role === "SUPERVISOR"
+                              ? "#f59e0b"
+                              : "#3b82f6",
                         }}
                       >
-                        {(u.name || u.email || "U")
-                          .split(" ")
-                          .filter(Boolean)
-                          .map((n) => n[0])
-                          .join("")
-                          .slice(0, 2)
-                          .toUpperCase() || "U"}
-                      </div>
-                      <div>
-                        <div>{u.name}</div>
-                        {u.jobTitle && (
-                          <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 400 }}>
-                            {u.jobTitle}
-                          </div>
+                        {u.role}
+                      </span>
+                    </td>
+                    <td>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem", maxWidth: "240px" }}>
+                        {isAll ? (
+                          <span className="badge badge-submitted" style={{ fontWeight: 600 }}>
+                            🌐 All Outlets (4)
+                          </span>
+                        ) : (
+                          assigned.map((oid) => {
+                            const opt = ALL_OUTLET_OPTIONS.find((o) => o.id === oid);
+                            return (
+                              <span
+                                key={oid}
+                                className="badge"
+                                style={{
+                                  background: "rgba(255,255,255,0.06)",
+                                  border: "1px solid var(--border)",
+                                  fontSize: "0.72rem",
+                                  padding: "2px 6px",
+                                }}
+                              >
+                                {opt ? `${opt.icon} ${opt.label}` : oid}
+                              </span>
+                            );
+                          })
                         )}
                       </div>
-                    </div>
-                  </td>
-                  <td style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>{u.email}</td>
-                  <td>
-                    <span
-                      className="badge"
-                      style={{
-                        background:
-                          u.role === "ADMIN"
-                            ? "rgba(239,68,68,0.15)"
-                            : u.role === "SUPERVISOR"
-                            ? "rgba(245,158,11,0.15)"
-                            : "rgba(59,130,246,0.15)",
-                        color:
-                          u.role === "ADMIN"
-                            ? "#ef4444"
-                            : u.role === "SUPERVISOR"
-                            ? "#f59e0b"
-                            : "#3b82f6",
-                      }}
-                    >
-                      {u.role}
-                    </span>
-                  </td>
-                  <td>
-                    <span className="badge badge-submitted">
-                      {u.outletId === "bakery"
-                        ? "🥐 Bakery"
-                        : u.outletId === "oreta-world"
-                        ? "🌐 Oreta World"
-                        : u.outletId === "rns-world"
-                        ? "🏢 RNS World"
-                        : u.outletId === "symphony-world"
-                        ? "🎼 Symphony World"
-                        : "🌐 All Outlets"}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`badge badge-${u.isActive ? "active" : "inactive"}`}>
-                      {u.isActive ? "Active" : "Inactive"}
-                    </span>
-                  </td>
-                  <td style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>
-                    {u.createdAt ? String(u.createdAt).slice(0, 10) : "—"}
-                  </td>
-                  <td>
-                    <div style={{ display: "flex", gap: "0.4rem" }}>
-                      <button className="btn btn-secondary btn-sm" onClick={() => openEditModal(u)}>
-                        ✏️ Edit
-                      </button>
-                      <button
-                        className={`btn btn-sm ${u.isActive ? "btn-danger" : "btn-success"}`}
-                        onClick={() => toggleActive(u.id, u.isActive)}
-                      >
-                        {u.isActive ? "Deactivate" : "Activate"}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td>
+                      <span className={`badge badge-${u.isActive ? "active" : "inactive"}`}>
+                        {u.isActive ? "Active" : "Inactive"}
+                      </span>
+                    </td>
+                    <td style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>
+                      {u.createdAt ? String(u.createdAt).slice(0, 10) : "—"}
+                    </td>
+                    <td>
+                      <div style={{ display: "flex", gap: "0.4rem" }}>
+                        <button className="btn btn-secondary btn-sm" onClick={() => openEditModal(u)}>
+                          ✏️ Edit
+                        </button>
+                        <button
+                          className={`btn btn-sm ${u.isActive ? "btn-danger" : "btn-success"}`}
+                          onClick={() => toggleActive(u.id, u.isActive)}
+                        >
+                          {u.isActive ? "Deactivate" : "Activate"}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -312,7 +379,7 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
       {/* Add / Edit Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowModal(false)}>
-          <div className="modal" style={{ maxWidth: "480px" }}>
+          <div className="modal" style={{ maxWidth: "520px" }}>
             <div className="modal-header">
               <div className="modal-title">
                 {isEditing ? `✏️ Edit Employee: ${form.name}` : "➕ Add New Employee"}
@@ -367,25 +434,96 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
                   </div>
 
                   <div className="form-group">
-                    <label>Assigned Outlet</label>
-                    <select value={form.outletId} onChange={(e) => setForm({ ...form, outletId: e.target.value })}>
-                      <option value="all">🌐 All Outlets</option>
-                      <option value="bakery">🥐 Bakery</option>
-                      <option value="oreta-world">🌐 Oreta World</option>
-                      <option value="rns-world">🏢 RNS World</option>
-                      <option value="symphony-world">🎼 Symphony World</option>
-                    </select>
+                    <label>Job Title / Designation</label>
+                    <input
+                      type="text"
+                      value={form.jobTitle}
+                      onChange={(e) => setForm({ ...form, jobTitle: e.target.value })}
+                      placeholder="e.g. Area Supervisor, Cake Chef"
+                    />
                   </div>
                 </div>
 
-                <div className="form-group">
-                  <label>Job Title / Designation (Optional)</label>
-                  <input
-                    type="text"
-                    value={form.jobTitle}
-                    onChange={(e) => setForm({ ...form, jobTitle: e.target.value })}
-                    placeholder="e.g. Kitchen Staff, Cleaner, Barista, Cake Chef"
-                  />
+                {/* Multi-Outlet Checkbox Selector */}
+                <div className="form-group" style={{ marginTop: "0.25rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                    <label style={{ margin: 0, fontWeight: 600 }}>
+                      Assigned Outlets <span style={{ color: "var(--accent)", fontSize: "0.75rem", fontWeight: 400 }}>(Check 1 or more outlets)</span>
+                    </label>
+                    <div style={{ display: "flex", gap: "0.4rem" }}>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-secondary"
+                        style={{ fontSize: "0.7rem", padding: "1px 6px" }}
+                        onClick={selectAllOutlets}
+                      >
+                        Select All
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-secondary"
+                        style={{ fontSize: "0.7rem", padding: "1px 6px" }}
+                        onClick={clearAllOutlets}
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      gap: "0.5rem",
+                      background: "var(--surface)",
+                      padding: "0.75rem",
+                      borderRadius: "8px",
+                      border: "1px solid var(--border)",
+                    }}
+                  >
+                    {ALL_OUTLET_OPTIONS.map((opt) => {
+                      const isChecked = form.selectedOutlets.includes(opt.id);
+                      return (
+                        <label
+                          key={opt.id}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                            cursor: "pointer",
+                            padding: "0.5rem 0.65rem",
+                            borderRadius: "6px",
+                            border: isChecked ? "1px solid var(--accent)" : "1px solid transparent",
+                            background: isChecked ? "rgba(224, 86, 36, 0.08)" : "transparent",
+                            transition: "all 0.15s ease",
+                            userSelect: "none",
+                            fontSize: "0.85rem",
+                            fontWeight: isChecked ? 600 : 400,
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => toggleOutlet(opt.id)}
+                            style={{ width: "16px", height: "16px", accentColor: "var(--accent)", cursor: "pointer" }}
+                          />
+                          <span>{opt.icon} {opt.label}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "0.35rem" }}>
+                    {form.selectedOutlets.length === 0 ? (
+                      <span style={{ color: "#ef4444" }}>⚠️ Please select at least 1 outlet.</span>
+                    ) : form.selectedOutlets.length === ALL_OUTLET_OPTIONS.length ? (
+                      <span>🌐 Assigned to <strong>all 4 outlets</strong></span>
+                    ) : (
+                      <span>
+                        Assigned to <strong>{form.selectedOutlets.length} outlet{form.selectedOutlets.length > 1 ? "s" : ""}</strong> (
+                        {form.selectedOutlets.map((id) => ALL_OUTLET_OPTIONS.find((o) => o.id === id)?.label).join(", ")})
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 
