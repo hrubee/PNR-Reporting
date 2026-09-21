@@ -1,9 +1,18 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import { SUPERVISORS, ALL_STAFF, SHEET_STAFF, SheetId } from "@/lib/permissions";
 
+export interface EquipmentItemDef {
+  id?: number;
+  name: string;
+  category?: string;
+  defaultWorker?: string;
+}
+
 interface EquipmentCheck {
+  id?: number;
   equipment: string;
+  category?: string;
   yesNo: string;
   time: string;
   name: string;
@@ -26,7 +35,7 @@ interface Props {
   icon: string;
   sheet: string;
   sheetKey: SheetId;
-  equipment: string[];
+  equipment: (string | EquipmentItemDef)[];
   today: string;
   todayLabel: string;
   todayEntries: EntryType[];
@@ -62,8 +71,19 @@ export default function GenericChecklistForm({
   const defaultWorker = teamMembers[0] || "";
   const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
 
-  const init: EquipmentCheck[] = equipment.map((e) => ({
-    equipment: e,
+  const normalizedEquipment: { id: number; name: string; category: string }[] = equipment.map((item, idx) => {
+    if (typeof item === "string") {
+      return { id: idx + 1, name: item, category: "General Equipment" };
+    }
+    return { id: item.id || idx + 1, name: item.name, category: item.category || "General Equipment" };
+  });
+
+  const categories = Array.from(new Set(normalizedEquipment.map((e) => e.category)));
+
+  const init: EquipmentCheck[] = normalizedEquipment.map((e) => ({
+    id: e.id,
+    equipment: e.name,
+    category: e.category,
     yesNo: "",
     time: "",
     name: defaultWorker,
@@ -80,6 +100,7 @@ export default function GenericChecklistForm({
   const [workerName, setWorkerName] = useState(defaultWorker);
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string>("all");
   const [saving, setSaving] = useState(false);
   const [alert, setAlert] = useState<{ type: "success" | "error"; msg: string } | null>(null);
   const [selectedDate, setSelectedDate] = useState(today);
@@ -97,7 +118,31 @@ export default function GenericChecklistForm({
 
   function startEditSubmission(entry: EntryType) {
     setEditingId(entry.id);
-    setChecks(JSON.parse(entry.equipmentChecks));
+    try {
+      const parsed = JSON.parse(entry.equipmentChecks);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const normalized = normalizedEquipment.map((itemDef) => {
+          const matched = parsed.find(
+            (p: any) =>
+              (p.equipment && p.equipment.trim().toLowerCase() === itemDef.name.trim().toLowerCase()) ||
+              (p.name && p.name.trim().toLowerCase() === itemDef.name.trim().toLowerCase())
+          );
+          return {
+            id: itemDef.id,
+            equipment: itemDef.name,
+            category: itemDef.category,
+            yesNo: matched ? (matched.yesNo || matched.status || "") : "",
+            time: matched ? (matched.time || "") : "",
+            name: matched ? (matched.name || matched.cleanedBy || defaultWorker) : defaultWorker,
+          };
+        });
+        setChecks(normalized);
+      } else {
+        setChecks(init);
+      }
+    } catch {
+      setChecks(init);
+    }
     setSupervisorName(entry.supervisorName || SUPERVISORS[0] || "Aboli Wagh");
     setWorkerName(entry.workerName || defaultWorker);
     setComments(entry.comments || "");
@@ -116,24 +161,43 @@ export default function GenericChecklistForm({
   function markAllYes() {
     const timeNow = getCurrentTimeString();
     setChecks((prev) =>
-      prev.map((c) => ({
-        ...c,
-        yesNo: "YES",
-        time: c.time || timeNow,
-        name: c.name || workerName || defaultWorker,
-      }))
+      prev.map((c) => {
+        if (activeCategory === "all" || c.category === activeCategory) {
+          return {
+            ...c,
+            yesNo: "YES",
+            time: c.time || timeNow,
+            name: c.name || workerName || defaultWorker,
+          };
+        }
+        return c;
+      })
     );
   }
 
   function setAllCurrentTime() {
     const timeNow = getCurrentTimeString();
-    setChecks((prev) => prev.map((c) => ({ ...c, time: timeNow })));
+    setChecks((prev) =>
+      prev.map((c) => {
+        if (activeCategory === "all" || c.category === activeCategory) {
+          return { ...c, time: timeNow };
+        }
+        return c;
+      })
+    );
   }
 
   function assignAllTo(name: string) {
     if (!name) return;
     setWorkerName(name);
-    setChecks((prev) => prev.map((c) => ({ ...c, name })));
+    setChecks((prev) =>
+      prev.map((c) => {
+        if (activeCategory === "all" || c.category === activeCategory) {
+          return { ...c, name };
+        }
+        return c;
+      })
+    );
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -188,7 +252,7 @@ export default function GenericChecklistForm({
       <div className="page-header">
         <div className="page-header-text">
           <h1>{icon} {title}</h1>
-          <p>Equipment Hygiene Check — {todayLabel}</p>
+          <p>Equipment Hygiene & Sanitation Check ({checks.length} Items) — {todayLabel}</p>
         </div>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
           {!isEditing && (
@@ -258,6 +322,29 @@ export default function GenericChecklistForm({
               </div>
             </div>
 
+            {/* Category Filter Pills (Identical to Oreta World) */}
+            {categories.length > 1 && (
+              <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", marginBottom: "1rem" }}>
+                <button
+                  type="button"
+                  className={`btn btn-sm ${activeCategory === "all" ? "btn-primary" : "btn-secondary"}`}
+                  onClick={() => setActiveCategory("all")}
+                >
+                  📋 All Items ({checks.length})
+                </button>
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    className={`btn btn-sm ${activeCategory === cat ? "btn-primary" : "btn-secondary"}`}
+                    onClick={() => setActiveCategory(cat)}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {/* 1-Tap Quick Action Bar */}
             <div className="quick-action-bar">
               <span>⚡ 1-Tap Quick Actions:</span>
@@ -266,17 +353,17 @@ export default function GenericChecklistForm({
                 className="btn btn-sm btn-secondary"
                 onClick={markAllYes}
               >
-                ✅ Mark All YES
+                ✅ Mark {activeCategory === "all" ? "All" : activeCategory} YES
               </button>
               <button
                 type="button"
                 className="btn btn-sm btn-secondary"
                 onClick={setAllCurrentTime}
               >
-                🕒 Set All Current Time
+                🕒 Set Current Time
               </button>
               <div style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
-                <span style={{ fontSize: "0.72rem" }}>👤 Assign All:</span>
+                <span style={{ fontSize: "0.72rem" }}>👤 Assign:</span>
                 <select
                   value=""
                   onChange={(e) => assignAllTo(e.target.value)}
@@ -301,80 +388,111 @@ export default function GenericChecklistForm({
               <table className="checklist-table">
                 <thead>
                   <tr>
-                    <th style={{ width: "35%" }}>Equipment</th>
+                    <th style={{ width: "35%" }}>Equipment / Item</th>
                     <th style={{ width: "170px" }}>Status</th>
                     <th style={{ width: "130px" }}>Time</th>
-                    <th>Checked By</th>
+                    <th>Cleaned By</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {checks.map((row, idx) => (
-                    <tr key={idx}>
-                      <td style={{ fontWeight: 600 }}>
-                        <span>{row.equipment}</span>
-                        {row.yesNo && (
-                          <span style={{ fontSize: "0.75rem", padding: "2px 8px", borderRadius: "99px", fontWeight: 700, background: row.yesNo === "YES" ? "rgba(16,185,129,0.15)" : row.yesNo === "NO" ? "rgba(239,68,68,0.15)" : "rgba(148,163,184,0.15)", color: row.yesNo === "YES" ? "var(--success)" : row.yesNo === "NO" ? "var(--danger)" : "var(--text-muted)" }}>
-                            {row.yesNo}
-                          </span>
-                        )}
-                      </td>
-                      <td>
-                        <div className="touch-btn-toggle">
-                          <button
-                            type="button"
-                            className={`touch-btn-option ${row.yesNo === "YES" ? "active-yes" : ""}`}
-                            onClick={() => update(idx, "yesNo", "YES")}
+                  {checks.map((row, idx) => {
+                    if (activeCategory !== "all" && row.category !== activeCategory) {
+                      return null;
+                    }
+
+                    return (
+                      <tr key={idx}>
+                        <td style={{ fontWeight: 600 }}>
+                          <div>
+                            <span>{row.equipment}</span>
+                            {row.category && (
+                              <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginLeft: "0.5rem" }}>
+                                ({row.category})
+                              </span>
+                            )}
+                          </div>
+                          {row.yesNo && (
+                            <span
+                              style={{
+                                fontSize: "0.75rem",
+                                padding: "2px 8px",
+                                borderRadius: "99px",
+                                fontWeight: 700,
+                                background:
+                                  row.yesNo === "YES"
+                                    ? "rgba(16,185,129,0.15)"
+                                    : row.yesNo === "NO"
+                                    ? "rgba(239,68,68,0.15)"
+                                    : "rgba(148,163,184,0.15)",
+                                color:
+                                  row.yesNo === "YES"
+                                    ? "var(--success)"
+                                    : row.yesNo === "NO"
+                                    ? "var(--danger)"
+                                    : "var(--text-muted)",
+                              }}
+                            >
+                              {row.yesNo}
+                            </span>
+                          )}
+                        </td>
+                        <td>
+                          <div className="touch-btn-toggle">
+                            <button
+                              type="button"
+                              className={`touch-btn-option ${row.yesNo === "YES" ? "active-yes" : ""}`}
+                              onClick={() => update(idx, "yesNo", "YES")}
+                            >
+                              ✅ YES
+                            </button>
+                            <button
+                              type="button"
+                              className={`touch-btn-option ${row.yesNo === "NO" ? "active-no" : ""}`}
+                              onClick={() => update(idx, "yesNo", "NO")}
+                            >
+                              ❌ NO
+                            </button>
+                            <button
+                              type="button"
+                              className={`touch-btn-option ${row.yesNo === "N/A" ? "active-na" : ""}`}
+                              onClick={() => update(idx, "yesNo", "N/A")}
+                            >
+                              ⚪ N/A
+                            </button>
+                          </div>
+                        </td>
+                        <td>
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", width: "100%" }}>
+                            <input
+                              type="time"
+                              value={row.time}
+                              onChange={(e) => update(idx, "time", e.target.value)}
+                              style={{ flex: 1 }}
+                            />
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-secondary"
+                              style={{ padding: "0.45rem 0.5rem", fontSize: "0.75rem", minHeight: "44px" }}
+                              onClick={() => update(idx, "time", getCurrentTimeString())}
+                              title="Set current time"
+                            >
+                              Now
+                            </button>
+                          </div>
+                        </td>
+                        <td>
+                          <select
+                            value={row.name}
+                            onChange={(e) => update(idx, "name", e.target.value)}
                           >
-                            ✅ YES
-                          </button>
-                          <button
-                            type="button"
-                            className={`touch-btn-option ${row.yesNo === "NO" ? "active-no" : ""}`}
-                            onClick={() => update(idx, "yesNo", "NO")}
-                          >
-                            ❌ NO
-                          </button>
-                          <button
-                            type="button"
-                            className={`touch-btn-option ${row.yesNo === "N/A" ? "active-na" : ""}`}
-                            onClick={() => update(idx, "yesNo", "N/A")}
-                          >
-                            ⚪ N/A
-                          </button>
-                        </div>
-                      </td>
-                      <td>
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", width: "100%" }}>
-                          <input
-                            type="time"
-                            value={row.time}
-                            onChange={(e) => update(idx, "time", e.target.value)}
-                            style={{ flex: 1 }}
-                          />
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-secondary"
-                            style={{ padding: "0.45rem 0.5rem", fontSize: "0.75rem", minHeight: "44px" }}
-                            onClick={() => update(idx, "time", getCurrentTimeString())}
-                            title="Set current time"
-                          >
-                            Now
-                          </button>
-                        </div>
-                      </td>
-                      <td>
-                        <select
-                          value={row.name}
-                          onChange={(e) => update(idx, "name", e.target.value)}
-                        >
-                          <option value="">— Select Staff —</option>
-                          {teamMembers.map((m) => (
-                            <option key={m} value={m}>{m}</option>
-                          ))}
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
+                            {teamMembers.map((m) => (
+                              <option key={m} value={m}>{m}</option>
+                            ))}
+                          </select>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -470,31 +588,43 @@ export default function GenericChecklistForm({
                       border: "1px solid var(--border)",
                     }}
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: "0.75rem",
-                      }}
-                    >
-                      <div style={{ fontWeight: 600, fontSize: "0.9rem" }}>
-                        Submission #{selectedDateEntries.length - idx} by{" "}
-                        <strong style={{ color: "var(--text-primary)" }}>{entry.submittedBy?.name}</strong>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", flexWrap: "wrap", gap: "0.5rem" }}>
+                      <div>
+                        <strong>Submission #{selectedDateEntries.length - idx}</strong> — Submitted by{" "}
+                        <strong>{entry.submittedBy?.name || "Staff"}</strong> at{" "}
+                        {new Date(entry.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                        {entry.supervisorName && ` • Verified by: ${entry.supervisorName}`}
+                        {entry.workerName && ` • Worker: ${entry.workerName}`}
                       </div>
-                      <span className="badge badge-submitted">
-                        ⏰ {new Date(entry.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
-                      </span>
                     </div>
                     <div style={{ overflowX: "auto" }}>
-                      <table className="checklist-table">
-                        <thead><tr><th>Equipment</th><th>Yes/No</th><th>Time</th><th>Name</th></tr></thead>
+                      <table className="checklist-table" style={{ fontSize: "0.82rem" }}>
+                        <thead>
+                          <tr>
+                            <th>Equipment / Item</th>
+                            <th>Status</th>
+                            <th>Time</th>
+                            <th>Checked By</th>
+                          </tr>
+                        </thead>
                         <tbody>
-                          {eqChecks.map((r, i) => (
+                          {eqChecks.map((c, i) => (
                             <tr key={i}>
-                              <td>{r.equipment}</td>
-                              <td><span style={{ color: r.yesNo === "YES" ? "var(--success)" : r.yesNo === "NO" ? "var(--danger)" : "var(--text-muted)", fontWeight: 600 }}>{r.yesNo || "—"}</span></td>
-                              <td>{r.time || "—"}</td><td>{r.name || "—"}</td>
+                              <td style={{ fontWeight: 500 }}>
+                                <span>{c.equipment}</span>
+                                {c.category && (
+                                  <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginLeft: "0.4rem" }}>
+                                    ({c.category})
+                                  </span>
+                                )}
+                              </td>
+                              <td>
+                                <span className={`badge ${c.yesNo === "YES" ? "badge-active" : c.yesNo === "NO" ? "badge-inactive" : ""}`}>
+                                  {c.yesNo || "—"}
+                                </span>
+                              </td>
+                              <td>{c.time || "—"}</td>
+                              <td>{c.name || "—"}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -504,30 +634,41 @@ export default function GenericChecklistForm({
                 );
               })}
             </div>
-          ) : (
+          ) : history.length > 0 ? (
             <div style={{ overflowX: "auto" }}>
               <table className="data-table">
-                <thead><tr><th>Date</th><th>Time</th><th>Submitted By</th><th>Supervisor</th><th>Worker</th><th>Status</th></tr></thead>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Submitted By</th>
+                    <th>Supervisor</th>
+                    <th>Items Checked</th>
+                    <th>Comments</th>
+                  </tr>
+                </thead>
                 <tbody>
-                  {history.length === 0 ? (
-                    <tr><td colSpan={6} style={{ textAlign: "center", padding: "2rem", color: "var(--text-muted)" }}>No entries yet.</td></tr>
-                  ) : (
-                    history.map((h) => (
-                      <tr key={h.id} style={{ cursor: "pointer" }} onClick={() => setSelectedDate(h.date)}>
-                        <td>{h.date}</td>
-                        <td style={{ color: "var(--text-muted)", fontSize: "0.82rem" }}>
-                          {new Date(h.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
-                        </td>
+                  {history.slice(0, 15).map((h) => {
+                    let count = 0;
+                    try {
+                      count = JSON.parse(h.equipmentChecks).length;
+                    } catch {}
+                    return (
+                      <tr key={h.id}>
+                        <td style={{ fontWeight: 600 }}>{h.date}</td>
+                        <td>{new Date(h.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</td>
                         <td>{h.submittedBy?.name || "—"}</td>
                         <td>{h.supervisorName || "—"}</td>
-                        <td>{h.workerName || "—"}</td>
-                        <td><span className="badge badge-submitted">Recorded</span></td>
+                        <td><span className="badge badge-submitted">{count} items</span></td>
+                        <td style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>{h.comments || "—"}</td>
                       </tr>
-                    ))
-                  )}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
+          ) : (
+            <p className="text-muted text-sm">No historical records available.</p>
           )}
         </div>
       </div>

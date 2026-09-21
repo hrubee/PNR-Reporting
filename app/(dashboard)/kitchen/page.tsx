@@ -2,18 +2,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { hasSheetAccess, getTodayString, formatDate } from "@/lib/permissions";
+import { BAKERY_KITCHEN_ITEMS } from "@/lib/outlets";
 import GenericChecklistForm from "@/components/GenericChecklistForm";
-
-const EQUIPMENT = [
-  "OVEN 1", "OVEN 2", "OVEN 3",
-  "ELECTRIC GAS RANGE 1", "ELECTRIC GAS RANGE 2",
-  "GAS BURNER 3 BURNER", "GAS BURNER SINGLE",
-  "WORKING TABLE 1", "WORKING TABLE 2", "WORKING TABLE 3",
-  "WORKING TABLE 4", "WORKING TABLE 5", "WORKING TABLE 6",
-  "WET - DRY DUSTBIN",
-  "MIXER GRINDER", "MASALA GRINDER", "KHEEMA MACHINE",
-  "PROOFER", "TANDOOR", "SINK 1", "CHILLER BLASTER",
-];
 
 export default async function KitchenPage() {
   const session = await auth();
@@ -46,7 +36,7 @@ export default async function KitchenPage() {
       icon="🍳"
       sheet="kitchen"
       sheetKey="KITCHEN"
-      equipment={EQUIPMENT}
+      equipment={BAKERY_KITCHEN_ITEMS}
       today={today}
       todayLabel={formatDate(today)}
       todayEntries={JSON.parse(JSON.stringify(todayEntries))}

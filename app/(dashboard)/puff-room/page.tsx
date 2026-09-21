@@ -2,16 +2,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { hasSheetAccess, getTodayString, formatDate } from "@/lib/permissions";
+import { BAKERY_PUFF_ROOM_ITEMS } from "@/lib/outlets";
 import GenericChecklistForm from "@/components/GenericChecklistForm";
-
-const EQUIPMENT = [
-  "DOUGH SHEETER",
-  "TABLE 1", "TABLE 2", "TABLE 3", "TABLE 4",
-  "WASH SINK 1", "OFFICE DESK", "CHAIR",
-  "WET - DRY DUSTBIN",
-  "STORE ROOM 1", "LIFT", "CUPBOARD 1", "CUPBOARD 2",
-  "STORE ROOM 2", "RACKS",
-];
 
 export default async function PuffRoomPage() {
   const session = await auth();
@@ -44,7 +36,7 @@ export default async function PuffRoomPage() {
       icon="🥐"
       sheet="puff-room"
       sheetKey="PUFF_ROOM"
-      equipment={EQUIPMENT}
+      equipment={BAKERY_PUFF_ROOM_ITEMS}
       today={today}
       todayLabel={formatDate(today)}
       todayEntries={JSON.parse(JSON.stringify(todayEntries))}

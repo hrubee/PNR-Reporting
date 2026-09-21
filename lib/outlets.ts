@@ -440,4 +440,103 @@ export const SYMPHONY_STAFF = [
   "New Staff",
 ];
 
+// ─── 9. Bakery Facility Categorized Equipment Items ───────────────────────────
+export interface BakeryEquipmentItem {
+  id: number;
+  name: string;
+  category: string;
+}
+
+export const BAKERY_KITCHEN_ITEMS: BakeryEquipmentItem[] = [
+  { id: 1, name: "OVEN 1", category: "Cooking & Ovens" },
+  { id: 2, name: "OVEN 2", category: "Cooking & Ovens" },
+  { id: 3, name: "OVEN 3", category: "Cooking & Ovens" },
+  { id: 4, name: "ELECTRIC GAS RANGE 1", category: "Cooking & Ovens" },
+  { id: 5, name: "ELECTRIC GAS RANGE 2", category: "Cooking & Ovens" },
+  { id: 6, name: "GAS BURNER 3 BURNER", category: "Cooking & Ovens" },
+  { id: 7, name: "GAS BURNER SINGLE", category: "Cooking & Ovens" },
+  { id: 8, name: "TANDOOR", category: "Cooking & Ovens" },
+  { id: 9, name: "WORKING TABLE 1", category: "Preparation Tables" },
+  { id: 10, name: "WORKING TABLE 2", category: "Preparation Tables" },
+  { id: 11, name: "WORKING TABLE 3", category: "Preparation Tables" },
+  { id: 12, name: "WORKING TABLE 4", category: "Preparation Tables" },
+  { id: 13, name: "WORKING TABLE 5", category: "Preparation Tables" },
+  { id: 14, name: "WORKING TABLE 6", category: "Preparation Tables" },
+  { id: 15, name: "MIXER GRINDER", category: "Grinders & Machinery" },
+  { id: 16, name: "MASALA GRINDER", category: "Grinders & Machinery" },
+  { id: 17, name: "KHEEMA MACHINE", category: "Grinders & Machinery" },
+  { id: 18, name: "PROOFER", category: "Grinders & Machinery" },
+  { id: 19, name: "CHILLER BLASTER", category: "Grinders & Machinery" },
+  { id: 20, name: "SINK 1", category: "Sanitation & Waste" },
+  { id: 21, name: "WET - DRY DUSTBIN", category: "Sanitation & Waste" },
+];
+
+export const BAKERY_PRODUCTION_ITEMS: BakeryEquipmentItem[] = [
+  { id: 1, name: "WORKING TABLE 1", category: "Working Tables" },
+  { id: 2, name: "WORKING TABLE 2", category: "Working Tables" },
+  { id: 3, name: "WORKING TABLE 3", category: "Working Tables" },
+  { id: 4, name: "WORKING TABLE 4", category: "Working Tables" },
+  { id: 5, name: "WORKING TABLE 5", category: "Working Tables" },
+  { id: 6, name: "WORKING TABLE 6", category: "Working Tables" },
+  { id: 7, name: "WORKING TABLE 7", category: "Working Tables" },
+  { id: 8, name: "DOUGH KNEADER", category: "Mixers & Dough Processing" },
+  { id: 9, name: "SPIRAL MIXER", category: "Mixers & Dough Processing" },
+  { id: 10, name: "PLANETARY MIXER 1", category: "Mixers & Dough Processing" },
+  { id: 11, name: "PLANETARY MIXER 2", category: "Mixers & Dough Processing" },
+  { id: 12, name: "PLANETARY MIXER 3", category: "Mixers & Dough Processing" },
+  { id: 13, name: "PLANETARY MIXER 4", category: "Mixers & Dough Processing" },
+  { id: 14, name: "PLANETARY MIXER 5", category: "Mixers & Dough Processing" },
+  { id: 15, name: "PLANETARY MIXER 6", category: "Mixers & Dough Processing" },
+  { id: 16, name: "BREAD SLICER 1 / TABLE", category: "Slicing & Packaging" },
+  { id: 17, name: "BREAD SLICER 2 / TABLE", category: "Slicing & Packaging" },
+  { id: 18, name: "BREAD BUN DIVIDER", category: "Slicing & Packaging" },
+  { id: 19, name: "WEIGHING SCALE 1 / TABLE", category: "Slicing & Packaging" },
+  { id: 20, name: "WEIGHING SCALE 2 / TABLE", category: "Slicing & Packaging" },
+  { id: 21, name: "SEALING MACHINE 1", category: "Slicing & Packaging" },
+  { id: 22, name: "SEALING MACHINE 2", category: "Slicing & Packaging" },
+  { id: 23, name: "FLOUR BIN 1", category: "Storage & Washing" },
+  { id: 24, name: "FLOUR BIN 2", category: "Storage & Washing" },
+  { id: 25, name: "FLOUR BIN 3", category: "Storage & Washing" },
+  { id: 26, name: "WASH SINK 1", category: "Storage & Washing" },
+  { id: 27, name: "WASH SINK 2", category: "Storage & Washing" },
+  { id: 28, name: "WET - DRY DUSTBIN", category: "Storage & Washing" },
+];
+
+export const BAKERY_PUFF_ROOM_ITEMS: BakeryEquipmentItem[] = [
+  { id: 1, name: "DOUGH SHEETER", category: "Machinery & Tables" },
+  { id: 2, name: "TABLE 1", category: "Machinery & Tables" },
+  { id: 3, name: "TABLE 2", category: "Machinery & Tables" },
+  { id: 4, name: "TABLE 3", category: "Machinery & Tables" },
+  { id: 5, name: "TABLE 4", category: "Machinery & Tables" },
+  { id: 6, name: "STORE ROOM 1", category: "Storage & Racks" },
+  { id: 7, name: "STORE ROOM 2", category: "Storage & Racks" },
+  { id: 8, name: "RACKS", category: "Storage & Racks" },
+  { id: 9, name: "CUPBOARD 1", category: "Storage & Racks" },
+  { id: 10, name: "CUPBOARD 2", category: "Storage & Racks" },
+  { id: 11, name: "WASH SINK 1", category: "Facility & Wash" },
+  { id: 12, name: "WET - DRY DUSTBIN", category: "Facility & Wash" },
+  { id: 13, name: "LIFT", category: "Facility & Wash" },
+  { id: 14, name: "OFFICE DESK", category: "Facility & Wash" },
+  { id: 15, name: "CHAIR", category: "Facility & Wash" },
+];
+
+export const BAKERY_CAKE_ROOM_ITEMS: BakeryEquipmentItem[] = [
+  { id: 1, name: "PLANETARY MIXER 1", category: "Mixers & Tables" },
+  { id: 2, name: "PLANETARY MIXER 2", category: "Mixers & Tables" },
+  { id: 3, name: "TABLE 1", category: "Mixers & Tables" },
+  { id: 4, name: "TABLE 2", category: "Mixers & Tables" },
+  { id: 5, name: "TABLE 3", category: "Mixers & Tables" },
+  { id: 6, name: "TABLE 4", category: "Mixers & Tables" },
+  { id: 7, name: "TABLE 5", category: "Mixers & Tables" },
+  { id: 8, name: "MACHINE TABLE 6", category: "Mixers & Tables" },
+  { id: 9, name: "MICROWAVE 1", category: "Heating & Scales" },
+  { id: 10, name: "MICROWAVE 2", category: "Heating & Scales" },
+  { id: 11, name: "WEIGHING SCALE 1", category: "Heating & Scales" },
+  { id: 12, name: "WEIGHING SCALE 2", category: "Heating & Scales" },
+  { id: 13, name: "STORE CABINET", category: "Storage & Facility" },
+  { id: 14, name: "WET - DRY DUSTBIN", category: "Storage & Facility" },
+  { id: 15, name: "OFFICE DESK", category: "Storage & Facility" },
+  { id: 16, name: "STOOL / CHAIR", category: "Storage & Facility" },
+];
+
 

@@ -2,16 +2,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { hasSheetAccess, getTodayString, formatDate } from "@/lib/permissions";
+import { BAKERY_CAKE_ROOM_ITEMS } from "@/lib/outlets";
 import GenericChecklistForm from "@/components/GenericChecklistForm";
-
-const EQUIPMENT = [
-  "PLANETARY MIXER 1", "PLANETARY MIXER 2",
-  "TABLE 1", "TABLE 2", "TABLE 3", "TABLE 4", "TABLE 5", "MACHINE TABLE 6",
-  "WET - DRY DUSTBIN",
-  "STORE CABINET", "MICROWAVE 1", "WEIGHING SCALE 1",
-  "MICROWAVE 2", "WEIGHING SCALE 2",
-  "OFFICE DESK", "STOOL / CHAIR",
-];
 
 export default async function CakeRoomPage() {
   const session = await auth();
@@ -44,7 +36,7 @@ export default async function CakeRoomPage() {
       icon="🎂"
       sheet="cake-room"
       sheetKey="CAKE_ROOM"
-      equipment={EQUIPMENT}
+      equipment={BAKERY_CAKE_ROOM_ITEMS}
       today={today}
       todayLabel={formatDate(today)}
       todayEntries={JSON.parse(JSON.stringify(todayEntries))}
