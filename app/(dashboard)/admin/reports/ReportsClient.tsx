@@ -356,10 +356,17 @@ export default function ReportsClient({ data }: Props) {
                 {filtered.map((row) => {
                   const rowId = `${row.sheetKey}-${row.id}`;
                   const isExpanded = expandedRow === rowId;
-                  const dayLabel = new Date(row.date + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short" });
-                  const timeLabel = new Date(row.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
+                  let dayLabel = "—";
+                  try {
+                    if (row.date && row.date.length === 10) {
+                      const d = new Date(row.date + "T00:00:00");
+                      dayLabel = !isNaN(d.getTime()) ? d.toLocaleDateString("en-IN", { weekday: "short" }) : "—";
+                    }
+                  } catch {}
+                  const timeLabel = row.createdAt ? String(row.createdAt).slice(11, 16) : "—";
                   const supervisor = row.supervisorName || row.supervisedBy || row.workerName || "—";
                   const outletName = row.outlet === "oreta-world" ? "🌐 Oreta World" : "🥐 Bakery";
+                  const submitterName = row.submittedBy?.name || "Staff";
 
                   return (
                     <tr
@@ -381,7 +388,7 @@ export default function ReportsClient({ data }: Props) {
                           {row.sheetIcon} {row.sheetLabel}
                         </span>
                       </td>
-                      <td style={{ fontWeight: 500 }}>{row.submittedBy.name}</td>
+                      <td style={{ fontWeight: 500 }}>{submitterName}</td>
                       <td style={{ color: "var(--text-muted)" }}>{supervisor}</td>
                       <td style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>{timeLabel}</td>
                       <td style={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: isExpanded ? "normal" : "nowrap", color: "var(--text-muted)", fontSize: "0.8rem" }}>

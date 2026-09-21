@@ -263,7 +263,7 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
                     </span>
                   </td>
                   <td style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>
-                    {new Date(u.createdAt).toLocaleDateString("en-IN")}
+                    {u.createdAt ? String(u.createdAt).slice(0, 10) : "—"}
                   </td>
                   <td>
                     <div style={{ display: "flex", gap: "0.4rem" }}>

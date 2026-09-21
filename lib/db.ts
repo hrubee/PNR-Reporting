@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: any;
@@ -7,12 +8,13 @@ const globalForPrisma = globalThis as unknown as {
 
 function getSanitizedDbUrl(): string {
   const candidates = [
+    process.env.DATABASE_URL,
+    process.env.POSTGRES_PRISMA_URL,
+    process.env.POSTGRES_URL,
+    process.env.POSTGRES_URL_NON_POOLING,
     process.env.database_DATABASE_URL,
     process.env.database_POSTGRES_URL,
     process.env.database_PRISMA_DATABASE_URL,
-    process.env.POSTGRES_PRISMA_URL,
-    process.env.POSTGRES_URL,
-    process.env.DATABASE_URL,
   ];
 
   for (const c of candidates) {
@@ -48,7 +50,7 @@ function createPrismaClient() {
   return new PrismaClient({
     datasources: {
       db: {
-        url: rawUrl,
+        url: rawUrl || undefined,
       },
     },
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
@@ -59,15 +61,43 @@ export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
-// Auto-create any missing tables silently without throwing
+// Auto-create any missing tables and columns silently without throwing
 export async function ensureDbSchema() {
   if (globalForPrisma.schemaInitialized) return;
   try {
+    // 1. Ensure User table exists
     await prisma.$executeRawUnsafe(`
-      ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "outletId" TEXT;
-      ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "jobTitle" TEXT;
+      CREATE TABLE IF NOT EXISTS "User" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "name" TEXT NOT NULL,
+        "email" TEXT NOT NULL UNIQUE,
+        "passwordHash" TEXT NOT NULL,
+        "role" TEXT NOT NULL DEFAULT 'EMPLOYEE',
+        "outletId" TEXT,
+        "jobTitle" TEXT,
+        "isActive" BOOLEAN NOT NULL DEFAULT true,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+      );
     `).catch(() => {});
 
+    // 2. Add columns to User if missing
+    await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "outletId" TEXT;`).catch(() => {});
+    await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "jobTitle" TEXT;`).catch(() => {});
+    await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "isActive" BOOLEAN NOT NULL DEFAULT true;`).catch(() => {});
+
+    // 3. Ensure SheetAccess table exists
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "SheetAccess" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "userId" TEXT NOT NULL REFERENCES "User"("id") ON DELETE CASCADE,
+        "sheet" TEXT NOT NULL,
+        "grantedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT "SheetAccess_userId_sheet_key" UNIQUE ("userId", "sheet")
+      );
+    `).catch(() => {});
+
+    // 4. Ensure all Entry tables exist
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "OretaHygieneEntry" (
         "id" TEXT NOT NULL PRIMARY KEY,
@@ -81,7 +111,7 @@ export async function ensureDbSchema() {
         "comments" TEXT NOT NULL DEFAULT '',
         "correctiveAction" TEXT NOT NULL DEFAULT ''
       );
-    `);
+    `).catch(() => {});
 
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "OretaEquipmentEntry" (
@@ -95,7 +125,7 @@ export async function ensureDbSchema() {
         "comments" TEXT NOT NULL DEFAULT '',
         "correctiveAction" TEXT NOT NULL DEFAULT ''
       );
-    `);
+    `).catch(() => {});
 
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "OretaFridgeEntry" (
@@ -110,7 +140,7 @@ export async function ensureDbSchema() {
         "comments" TEXT NOT NULL DEFAULT '',
         "correctiveAction" TEXT NOT NULL DEFAULT ''
       );
-    `);
+    `).catch(() => {});
 
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "OretaGlassEntry" (
@@ -124,7 +154,7 @@ export async function ensureDbSchema() {
         "comments" TEXT NOT NULL DEFAULT '',
         "correctiveAction" TEXT NOT NULL DEFAULT ''
       );
-    `);
+    `).catch(() => {});
 
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "OretaMonthlyEntry" (
@@ -139,7 +169,7 @@ export async function ensureDbSchema() {
         "comments" TEXT NOT NULL DEFAULT '',
         "correctiveAction" TEXT NOT NULL DEFAULT ''
       );
-    `);
+    `).catch(() => {});
 
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "OretaFoodEntry" (
@@ -156,7 +186,26 @@ export async function ensureDbSchema() {
         "comments" TEXT NOT NULL DEFAULT '',
         "correctiveAction" TEXT NOT NULL DEFAULT ''
       );
-    `);
+    `).catch(() => {});
+
+    // Ensure default admin user exists
+    const adminCount = await prisma.user.count({ where: { role: "ADMIN" } }).catch(() => 0);
+    if (adminCount === 0) {
+      const passwordHash = await bcrypt.hash("Admin@123", 12);
+      await prisma.user.upsert({
+        where: { email: "admin@pnr.com" },
+        update: { role: "ADMIN", isActive: true },
+        create: {
+          name: "System Admin",
+          email: "admin@pnr.com",
+          passwordHash,
+          role: "ADMIN",
+          outletId: "all",
+          jobTitle: "Administrator",
+          isActive: true,
+        },
+      }).catch(() => {});
+    }
 
     globalForPrisma.schemaInitialized = true;
   } catch (err) {
