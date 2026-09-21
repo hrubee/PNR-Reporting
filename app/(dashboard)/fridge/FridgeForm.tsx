@@ -34,6 +34,8 @@ interface Props {
   todayEntries: FridgeEntryType[];
   history: FridgeEntryType[];
   userName: string;
+  staffList?: string[];
+  supervisorsList?: string[];
 }
 
 const CHILLER_TEMPS = ["N/A", "+3.0°C", "+3.5°C", "+4.0°C", "+4.5°C", "+5.0°C", "+5.5°C", "+6.0°C", "+6.5°C", "+7.0°C", "+8.0°C"];
@@ -46,7 +48,12 @@ export default function FridgeForm({
   todayEntries: initialTodayEntries,
   history: initialHistory,
   userName,
+  staffList = [],
+  supervisorsList = [],
 }: Props) {
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : SUPERVISORS;
+  const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
+
   const init: FridgeCheck[] = items.map((i) => ({
     ...i,
     actualTempMorning: "",
@@ -61,7 +68,7 @@ export default function FridgeForm({
   const [isEditing, setIsEditing] = useState(initialTodayEntries.length === 0);
 
   const [checks, setChecks] = useState<FridgeCheck[]>(init);
-  const [supervisedBy, setSupervisedBy] = useState("Aboli Wagh");
+  const [supervisedBy, setSupervisedBy] = useState(defaultSupervisor);
   const [hygiene, setHygiene] = useState("Good");
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
@@ -72,7 +79,7 @@ export default function FridgeForm({
   function startNewSubmission() {
     setEditingId(null);
     setChecks(init);
-    setSupervisedBy("Aboli Wagh");
+    setSupervisedBy(defaultSupervisor);
     setHygiene("Good");
     setComments("");
     setCorrectiveAction("");
@@ -260,7 +267,7 @@ export default function FridgeForm({
                   onChange={(e) => setSupervisedBy(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
-                  {SUPERVISORS.map((sup) => (
+                  {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}
                 </select>

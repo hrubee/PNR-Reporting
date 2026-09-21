@@ -34,6 +34,10 @@ export default async function PuffRoomPage() {
     include: { submittedBy: true },
   });
 
+  const { getDynamicStaffForSheet, getDynamicSupervisors } = await import("@/lib/staff");
+  const staffList = await getDynamicStaffForSheet("PUFF_ROOM", "bakery");
+  const supervisorsList = await getDynamicSupervisors("bakery");
+
   return (
     <GenericChecklistForm
       title="Puff Room Hygiene Report"
@@ -46,6 +50,8 @@ export default async function PuffRoomPage() {
       todayEntries={JSON.parse(JSON.stringify(todayEntries))}
       history={JSON.parse(JSON.stringify(history))}
       userName={user.name}
+      staffList={staffList}
+      supervisorsList={supervisorsList}
     />
   );
 }

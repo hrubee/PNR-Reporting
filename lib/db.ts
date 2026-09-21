@@ -41,11 +41,16 @@ if (rawUrl.startsWith("prisma+postgres://")) {
 
 if (rawUrl) {
   process.env.DATABASE_URL = rawUrl;
+  process.env.database_DATABASE_URL = rawUrl;
 }
 
 function createPrismaClient() {
   return new PrismaClient({
-    ...(rawUrl ? { datasourceUrl: rawUrl } : {}),
+    datasources: {
+      db: {
+        url: rawUrl,
+      },
+    },
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
 }
@@ -58,6 +63,11 @@ if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 export async function ensureDbSchema() {
   if (globalForPrisma.schemaInitialized) return;
   try {
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "outletId" TEXT;
+      ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "jobTitle" TEXT;
+    `).catch(() => {});
+
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "OretaHygieneEntry" (
         "id" TEXT NOT NULL PRIMARY KEY,
@@ -126,6 +136,23 @@ export async function ensureDbSchema() {
         "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
         "taskChecks" TEXT NOT NULL,
         "supervisorName" TEXT NOT NULL DEFAULT '',
+        "comments" TEXT NOT NULL DEFAULT '',
+        "correctiveAction" TEXT NOT NULL DEFAULT ''
+      );
+    `);
+
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "OretaFoodEntry" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "date" TEXT NOT NULL,
+        "day" TEXT NOT NULL DEFAULT '',
+        "supervisorName" TEXT NOT NULL DEFAULT '',
+        "submittedById" TEXT NOT NULL REFERENCES "User"("id"),
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "tempChecks" TEXT NOT NULL DEFAULT '[]',
+        "vegChecks" TEXT NOT NULL DEFAULT '[]',
+        "nonVegChecks" TEXT NOT NULL DEFAULT '[]',
         "comments" TEXT NOT NULL DEFAULT '',
         "correctiveAction" TEXT NOT NULL DEFAULT ''
       );

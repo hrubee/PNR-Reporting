@@ -32,6 +32,8 @@ interface Props {
   todayEntries: FridgeEntryType[];
   history: FridgeEntryType[];
   userName: string;
+  staffList?: string[];
+  supervisorsList?: string[];
 }
 
 const CHILLER_TEMPS = ["N/A", "+3.0°C", "+3.5°C", "+4.0°C", "+4.5°C", "+5.0°C", "+5.5°C", "+6.0°C", "+6.5°C", "+7.0°C", "+8.0°C"];
@@ -44,7 +46,12 @@ export default function OretaFridgeForm({
   todayEntries: initialTodayEntries,
   history: initialHistory,
   userName,
+  staffList = [],
+  supervisorsList = [],
 }: Props) {
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : SUPERVISORS;
+  const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
+
   const init: FridgeCheck[] = ORETA_FRIDGE_ITEMS.map((item) => ({
     id: item.id,
     section: item.section,
@@ -63,7 +70,7 @@ export default function OretaFridgeForm({
   const [isEditing, setIsEditing] = useState(initialTodayEntries.length === 0);
 
   const [checks, setChecks] = useState<FridgeCheck[]>(init);
-  const [supervisorName, setSupervisorName] = useState(SUPERVISORS[0] || "Aboli Wagh");
+  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
   const [hygiene, setHygiene] = useState("Good");
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
@@ -74,7 +81,7 @@ export default function OretaFridgeForm({
   function startNewSubmission() {
     setEditingId(null);
     setChecks(init);
-    setSupervisorName(SUPERVISORS[0] || "Aboli Wagh");
+    setSupervisorName(defaultSupervisor);
     setHygiene("Good");
     setComments("");
     setCorrectiveAction("");
@@ -399,7 +406,7 @@ export default function OretaFridgeForm({
                   onChange={(e) => setSupervisorName(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
-                  {SUPERVISORS.map((sup) => (
+                  {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}
                 </select>

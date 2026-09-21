@@ -44,6 +44,10 @@ export default async function HygienePage() {
     include: { submittedBy: true },
   });
 
+  const { getDynamicStaffForSheet, getDynamicSupervisors } = await import("@/lib/staff");
+  const staffList = await getDynamicStaffForSheet("HYGIENE_REPORT", "bakery");
+  const supervisorsList = await getDynamicSupervisors("bakery");
+
   return (
     <HygieneForm
       areas={AREAS}
@@ -55,6 +59,8 @@ export default async function HygienePage() {
       userId={user.id}
       userName={user.name}
       isAdmin={user.role === "ADMIN"}
+      staffList={staffList}
+      supervisorsList={supervisorsList}
     />
   );
 }

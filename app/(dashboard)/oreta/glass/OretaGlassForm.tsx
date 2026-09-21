@@ -29,6 +29,8 @@ interface Props {
   todayEntries: GlassEntryType[];
   history: GlassEntryType[];
   userName: string;
+  staffList?: string[];
+  supervisorsList?: string[];
 }
 
 function getCurrentTimeString(): string {
@@ -44,14 +46,20 @@ export default function OretaGlassForm({
   todayEntries: initialTodayEntries,
   history: initialHistory,
   userName,
+  staffList = [],
+  supervisorsList = [],
 }: Props) {
+  const availableStaff = staffList.length > 0 ? staffList : ORETA_STAFF;
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : SUPERVISORS;
+  const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
+
   const init: GlassCheck[] = ORETA_GLASS_ITEMS.map((item) => ({
     id: item.id,
     floor: item.floor,
     location: item.location,
     yesNo: "",
     time: "",
-    cleanedBy: item.defaultCleanedBy,
+    cleanedBy: availableStaff.includes(item.defaultCleanedBy) ? item.defaultCleanedBy : availableStaff[0] || item.defaultCleanedBy,
   }));
 
   const [todayEntries, setTodayEntries] = useState<GlassEntryType[]>(initialTodayEntries);
@@ -61,7 +69,7 @@ export default function OretaGlassForm({
   const [isEditing, setIsEditing] = useState(initialTodayEntries.length === 0);
 
   const [checks, setChecks] = useState<GlassCheck[]>(init);
-  const [supervisorName, setSupervisorName] = useState(SUPERVISORS[0] || "Aboli Wagh");
+  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
   const [saving, setSaving] = useState(false);
@@ -71,7 +79,7 @@ export default function OretaGlassForm({
   function startNewSubmission() {
     setEditingId(null);
     setChecks(init);
-    setSupervisorName(SUPERVISORS[0] || "Aboli Wagh");
+    setSupervisorName(defaultSupervisor);
     setComments("");
     setCorrectiveAction("");
     setIsEditing(true);
@@ -384,7 +392,7 @@ export default function OretaGlassForm({
                                   onChange={(e) => update(idx, "cleanedBy", e.target.value)}
                                 >
                                   <option value="">— Select Staff —</option>
-                                  {ORETA_STAFF.map((s) => (
+                                  {availableStaff.map((s) => (
                                     <option key={s} value={s}>{s}</option>
                                   ))}
                                 </select>
@@ -407,7 +415,7 @@ export default function OretaGlassForm({
                   onChange={(e) => setSupervisorName(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
-                  {SUPERVISORS.map((sup) => (
+                  {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}
                 </select>

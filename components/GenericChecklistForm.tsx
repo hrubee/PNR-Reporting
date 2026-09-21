@@ -32,6 +32,8 @@ interface Props {
   todayEntries: EntryType[];
   history: EntryType[];
   userName: string;
+  staffList?: string[];
+  supervisorsList?: string[];
 }
 
 function getCurrentTimeString(): string {
@@ -52,9 +54,13 @@ export default function GenericChecklistForm({
   todayEntries: initialTodayEntries,
   history: initialHistory,
   userName,
+  staffList = [],
+  supervisorsList = [],
 }: Props) {
-  const teamMembers = SHEET_STAFF[sheetKey] || ALL_STAFF;
+  const teamMembers = staffList.length > 0 ? staffList : (SHEET_STAFF[sheetKey] || ALL_STAFF);
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : SUPERVISORS;
   const defaultWorker = teamMembers[0] || "";
+  const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
 
   const init: EquipmentCheck[] = equipment.map((e) => ({
     equipment: e,
@@ -70,7 +76,7 @@ export default function GenericChecklistForm({
   const [isEditing, setIsEditing] = useState(initialTodayEntries.length === 0);
 
   const [checks, setChecks] = useState<EquipmentCheck[]>(init);
-  const [supervisorName, setSupervisorName] = useState(SUPERVISORS[0] || "Aboli Wagh");
+  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
   const [workerName, setWorkerName] = useState(defaultWorker);
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
@@ -81,7 +87,7 @@ export default function GenericChecklistForm({
   function startNewSubmission() {
     setEditingId(null);
     setChecks(init);
-    setSupervisorName(SUPERVISORS[0] || "Aboli Wagh");
+    setSupervisorName(defaultSupervisor);
     setWorkerName(defaultWorker);
     setComments("");
     setCorrectiveAction("");
@@ -287,9 +293,6 @@ export default function GenericChecklistForm({
                   {teamMembers.map((m) => (
                     <option key={m} value={m}>{m}</option>
                   ))}
-                  {ALL_STAFF.filter((a) => !teamMembers.includes(a)).map((m) => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
                 </select>
               </div>
             </div>
@@ -365,16 +368,9 @@ export default function GenericChecklistForm({
                           onChange={(e) => update(idx, "name", e.target.value)}
                         >
                           <option value="">— Select Staff —</option>
-                          <optgroup label="Assigned Area Staff">
-                            {teamMembers.map((m) => (
-                              <option key={m} value={m}>{m}</option>
-                            ))}
-                          </optgroup>
-                          <optgroup label="All Staff">
-                            {ALL_STAFF.filter((a) => !teamMembers.includes(a)).map((m) => (
-                              <option key={m} value={m}>{m}</option>
-                            ))}
-                          </optgroup>
+                          {teamMembers.map((m) => (
+                            <option key={m} value={m}>{m}</option>
+                          ))}
                         </select>
                       </td>
                     </tr>
@@ -391,7 +387,7 @@ export default function GenericChecklistForm({
                   onChange={(e) => setSupervisorName(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
-                  {SUPERVISORS.map((sup) => (
+                  {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}
                 </select>
@@ -402,16 +398,9 @@ export default function GenericChecklistForm({
                   value={workerName}
                   onChange={(e) => setWorkerName(e.target.value)}
                 >
-                  <optgroup label="Assigned Area Staff">
-                    {teamMembers.map((m) => (
-                      <option key={m} value={m}>{m}</option>
-                    ))}
-                  </optgroup>
-                  <optgroup label="All Staff">
-                    {ALL_STAFF.filter((a) => !teamMembers.includes(a)).map((m) => (
-                      <option key={m} value={m}>{m}</option>
-                    ))}
-                  </optgroup>
+                  {teamMembers.map((m) => (
+                    <option key={m} value={m}>{m}</option>
+                  ))}
                 </select>
               </div>
               <div className="form-group">

@@ -71,6 +71,13 @@ export const OUTLETS: OutletConfig[] = [
         route: "/oreta/monthly",
         description: "Shutters, AC & Generator Deep Cleaning",
       },
+      {
+        id: "ORETA_FOOD",
+        label: "Food",
+        icon: "🍲",
+        route: "/oreta/food",
+        description: "Temp Control, Veg & Non-Veg Filling Logs",
+      },
     ],
   },
 ];
@@ -205,3 +212,100 @@ export const ORETA_STAFF = [
   "New Staff",
   "Admin",
 ];
+
+// ─── 6. Oreta Food Safety & Product Logs ───────────────────────────────────────
+export interface FoodGuideline {
+  condition: string;
+  requirement: string;
+  notes: string;
+}
+
+export const FOOD_GUIDELINES: FoodGuideline[] = [
+  { condition: "Freezer Storage", requirement: "-15°C to -18°C", notes: "Store in Freezer" },
+  { condition: "Fridge Storage (Opened)", requirement: "+1°C to +5°C", notes: "Once opened, store in fridge" },
+  { condition: "Warming Rule", requirement: "Do not re-use once warmed", notes: "Single-use after warming" },
+  { condition: "Thawing Requirement", requirement: "Refrigerate it & thaw", notes: "If you need to thaw, must go via fridge" },
+  { condition: "Prohibited Thawing", requirement: "DO NOT thaw in room temperature", notes: "Strictly prohibited" },
+  { condition: "Shelf Life (Opened)", requirement: "Use within 2 days (48 hrs)", notes: "Once open use within 2 days - 48 hrs" },
+];
+
+export const ORETA_TEMP_CONTROL_ITEMS = [
+  { id: 1, name: "Boiled chicken", defaultCookingTemp: "77", defaultHoldingTemp: "55", defaultUseBy: "48 hrs / OK" },
+  { id: 2, name: "Spinach", defaultCookingTemp: "77", defaultHoldingTemp: "55", defaultUseBy: "48 hrs / OK" },
+  { id: 3, name: "Boiled Potato", defaultCookingTemp: "77", defaultHoldingTemp: "55", defaultUseBy: "48 hrs / OK" },
+];
+
+export const ORETA_VEG_FILLING_ITEMS = [
+  { id: 1, name: "Paneer Tikka", hasOpenDate: true },
+  { id: 2, name: "Paneer Chilly", hasOpenDate: true },
+  { id: 3, name: "Veg Mexican", hasOpenDate: false },
+  { id: 4, name: "Schezwan Sauce", hasOpenDate: false },
+  { id: 5, name: "Tikka Sauce", hasOpenDate: false },
+  { id: 6, name: "Chutney", hasOpenDate: false },
+];
+
+export const ORETA_NON_VEG_FILLING_ITEMS = [
+  { id: 1, name: "Chicken Tikka" },
+  { id: 2, name: "Chicken Mexican" },
+  { id: 3, name: "Chicken Chilly" },
+];
+
+// Dropdown Pre-set Options for Food Safety Inputs
+export const COOKING_TEMP_OPTIONS = [
+  "70°C", "72°C", "75°C", "77°C", "80°C", "82°C", "85°C", "88°C", "90°C", ">90°C"
+];
+
+export const HOLDING_TEMP_OPTIONS = [
+  "+1°C", "+2°C", "+3°C", "+4°C", "+5°C", "45°C", "50°C", "52°C", "55°C", "58°C", "<60°C"
+];
+
+export const FRIDGE_TEMP_OPTIONS = [
+  "+1°C", "+2°C", "+3°C", "+4°C", "+5°C", "+6°C", "+7°C", "+8°C"
+];
+
+export const USE_BY_OPTIONS = [
+  "12 hrs",
+  "24 hrs",
+  "48 hrs",
+  "OK",
+  "48 hrs / OK",
+  "Use within 2 days",
+  "Use Today",
+  "Discard",
+];
+
+export const WASTAGE_OPTIONS = [
+  "0 / None",
+  "25g",
+  "50g",
+  "100g",
+  "150g",
+  "200g",
+  "250g",
+  "300g",
+  "500g",
+  "1 kg",
+  "1.5 kg",
+  "2 kg+",
+];
+
+export const TIME_PRESET_OPTIONS = [
+  "08:00 AM",
+  "09:00 AM",
+  "09:30 AM",
+  "10:00 AM",
+  "10:30 AM",
+  "11:00 AM",
+  "11:30 AM",
+  "12:00 PM",
+  "01:00 PM",
+  "02:00 PM",
+  "03:00 PM",
+  "04:00 PM",
+  "05:00 PM",
+  "06:30 PM",
+  "08:00 PM",
+  "09:30 PM",
+  "10:00 PM",
+];
+

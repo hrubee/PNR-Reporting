@@ -11,7 +11,7 @@ export default async function UsersPage() {
 
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "asc" },
-    select: { id: true, name: true, email: true, role: true, isActive: true, createdAt: true },
+    select: { id: true, name: true, email: true, role: true, outletId: true, jobTitle: true, isActive: true, createdAt: true },
   });
 
   return <UsersClient initialUsers={JSON.parse(JSON.stringify(users))} />;

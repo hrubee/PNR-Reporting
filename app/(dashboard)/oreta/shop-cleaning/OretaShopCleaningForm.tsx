@@ -39,6 +39,8 @@ interface Props {
   todayEntries: EntryType[];
   history: EntryType[];
   userName: string;
+  staffList?: string[];
+  supervisorsList?: string[];
 }
 
 const SHIFT_KEYS: ShiftKey[] = ["morning", "afternoon", "evening", "night"];
@@ -72,28 +74,34 @@ export default function OretaShopCleaningForm({
   todayEntries: initialTodayEntries,
   history: initialHistory,
   userName,
+  staffList = [],
+  supervisorsList = [],
 }: Props) {
+  const availableStaff = staffList.length > 0 ? staffList : ORETA_STAFF;
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : SUPERVISORS;
+  const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
+
   const init: AreaRow[] = ORETA_HYGIENE_AREAS.map((item) => ({
     id: item.id,
     area: item.area,
     morning: {
       status: item.morningDisabled ? "N/A" : "",
-      staff: item.morningDisabled ? "—" : item.defaultStaff,
+      staff: item.morningDisabled ? "—" : (availableStaff.includes(item.defaultStaff) ? item.defaultStaff : availableStaff[0] || item.defaultStaff),
       time: "",
     },
     afternoon: {
       status: "",
-      staff: item.defaultStaff,
+      staff: availableStaff.includes(item.defaultStaff) ? item.defaultStaff : availableStaff[0] || item.defaultStaff,
       time: "",
     },
     evening: {
       status: "",
-      staff: item.defaultStaff,
+      staff: availableStaff.includes(item.defaultStaff) ? item.defaultStaff : availableStaff[0] || item.defaultStaff,
       time: "",
     },
     night: {
       status: "",
-      staff: item.defaultStaff,
+      staff: availableStaff.includes(item.defaultStaff) ? item.defaultStaff : availableStaff[0] || item.defaultStaff,
       time: "",
     },
   }));
@@ -106,7 +114,7 @@ export default function OretaShopCleaningForm({
 
   const [rows, setRows] = useState<AreaRow[]>(init);
   const [activeShift, setActiveShift] = useState<ShiftKey | "all">(getCurrentShift());
-  const [supervisorName, setSupervisorName] = useState(SUPERVISORS[0] || "Aboli Wagh");
+  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
   const [saving, setSaving] = useState(false);
@@ -116,7 +124,7 @@ export default function OretaShopCleaningForm({
   function startNewSubmission() {
     setEditingId(null);
     setRows(init);
-    setSupervisorName(SUPERVISORS[0] || "Aboli Wagh");
+    setSupervisorName(defaultSupervisor);
     setComments("");
     setCorrectiveAction("");
     setIsEditing(true);
@@ -496,7 +504,7 @@ export default function OretaShopCleaningForm({
                                       ))}
                                     </optgroup>
                                     <optgroup label="Other Staff">
-                                      {ORETA_STAFF.filter((st) => !assigned.includes(st)).map((st) => (
+                                      {availableStaff.filter((st) => !assigned.includes(st)).map((st) => (
                                         <option key={st} value={st}>{st}</option>
                                       ))}
                                     </optgroup>
@@ -521,7 +529,7 @@ export default function OretaShopCleaningForm({
                   onChange={(e) => setSupervisorName(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
-                  {SUPERVISORS.map((sup) => (
+                  {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}
                 </select>

@@ -35,6 +35,10 @@ export default async function GlassPage() {
     include: { submittedBy: true },
   });
 
+  const { getDynamicStaffForSheet, getDynamicSupervisors } = await import("@/lib/staff");
+  const staffList = await getDynamicStaffForSheet("GLASS_REPORT", "bakery");
+  const supervisorsList = await getDynamicSupervisors("bakery");
+
   return (
     <GlassForm
       locations={LOCATIONS}
@@ -43,6 +47,8 @@ export default async function GlassPage() {
       todayEntries={JSON.parse(JSON.stringify(todayEntries))}
       history={JSON.parse(JSON.stringify(history))}
       userName={user.name}
+      staffList={staffList}
+      supervisorsList={supervisorsList}
     />
   );
 }

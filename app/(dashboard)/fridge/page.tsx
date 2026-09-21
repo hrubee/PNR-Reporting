@@ -43,6 +43,10 @@ export default async function FridgePage() {
     include: { submittedBy: true },
   });
 
+  const { getDynamicStaffForSheet, getDynamicSupervisors } = await import("@/lib/staff");
+  const staffList = await getDynamicStaffForSheet("FRIDGE_REPORT", "bakery");
+  const supervisorsList = await getDynamicSupervisors("bakery");
+
   return (
     <FridgeForm
       items={FRIDGE_ITEMS}
@@ -51,6 +55,8 @@ export default async function FridgePage() {
       todayEntries={JSON.parse(JSON.stringify(todayEntries))}
       history={JSON.parse(JSON.stringify(history))}
       userName={user.name}
+      staffList={staffList}
+      supervisorsList={supervisorsList}
     />
   );
 }

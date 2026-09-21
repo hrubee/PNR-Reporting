@@ -36,6 +36,10 @@ export default async function KitchenPage() {
     include: { submittedBy: true },
   });
 
+  const { getDynamicStaffForSheet, getDynamicSupervisors } = await import("@/lib/staff");
+  const staffList = await getDynamicStaffForSheet("KITCHEN", "bakery");
+  const supervisorsList = await getDynamicSupervisors("bakery");
+
   return (
     <GenericChecklistForm
       title="Kitchen Hygiene Report"
@@ -48,6 +52,8 @@ export default async function KitchenPage() {
       todayEntries={JSON.parse(JSON.stringify(todayEntries))}
       history={JSON.parse(JSON.stringify(history))}
       userName={user.name}
+      staffList={staffList}
+      supervisorsList={supervisorsList}
     />
   );
 }

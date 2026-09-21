@@ -20,6 +20,7 @@ const SHEET_ICONS: Record<SheetId, string> = {
   ORETA_FRIDGE: "🧊",
   ORETA_GLASS: "🪟",
   ORETA_MONTHLY: "🗓️",
+  ORETA_FOOD: "🍲",
 };
 
 async function getTodayStatus(today: string) {
@@ -38,6 +39,7 @@ async function getTodayStatus(today: string) {
     oretaFridge,
     oretaGlass,
     oretaMonthly,
+    oretaFood,
   ] = await Promise.all([
     prisma.hygieneEntry.findMany({ where: { date: today }, orderBy: { createdAt: "desc" }, include: { submittedBy: true } }).catch(() => []),
     prisma.glassEntry.findMany({ where: { date: today }, orderBy: { createdAt: "desc" }, include: { submittedBy: true } }).catch(() => []),
@@ -51,6 +53,7 @@ async function getTodayStatus(today: string) {
     prisma.oretaFridgeEntry.findMany({ where: { date: today }, orderBy: { createdAt: "desc" }, include: { submittedBy: true } }).catch(() => []),
     prisma.oretaGlassEntry.findMany({ where: { date: today }, orderBy: { createdAt: "desc" }, include: { submittedBy: true } }).catch(() => []),
     prisma.oretaMonthlyEntry.findMany({ where: { month: currentMonth }, orderBy: { createdAt: "desc" }, include: { submittedBy: true } }).catch(() => []),
+    prisma.oretaFoodEntry.findMany({ where: { date: today }, orderBy: { createdAt: "desc" }, include: { submittedBy: true } }).catch(() => []),
   ]);
 
   return {
@@ -66,6 +69,7 @@ async function getTodayStatus(today: string) {
     oretaFridge,
     oretaGlass,
     oretaMonthly,
+    oretaFood,
   };
 }
 
@@ -101,6 +105,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
     ORETA_FRIDGE: statuses.oretaFridge,
     ORETA_GLASS: statuses.oretaGlass,
     ORETA_MONTHLY: statuses.oretaMonthly,
+    ORETA_FOOD: statuses.oretaFood,
   };
 
   // Filter sheets to only the active outlet's sheets

@@ -30,6 +30,8 @@ interface Props {
   userId: string;
   userName: string;
   isAdmin: boolean;
+  staffList?: string[];
+  supervisorsList?: string[];
 }
 
 function getCurrentTimeString(): string {
@@ -47,9 +49,13 @@ export default function HygieneForm({
   todayEntries: initialTodayEntries,
   history: initialHistory,
   userName,
+  staffList = [],
+  supervisorsList = [],
 }: Props) {
-  const teamMembers = SHEET_STAFF.HYGIENE_REPORT || ALL_STAFF;
+  const teamMembers = staffList.length > 0 ? staffList : (SHEET_STAFF.HYGIENE_REPORT || ALL_STAFF);
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : SUPERVISORS;
   const defaultWorker = teamMembers[0] || "Shridhar Jadhav";
+  const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
 
   const initChecks: AreaCheck[] = areas.map((area) => ({
     area,
@@ -64,7 +70,7 @@ export default function HygieneForm({
   const [isEditing, setIsEditing] = useState(initialTodayEntries.length === 0);
 
   const [areaChecks, setAreaChecks] = useState<AreaCheck[]>(initChecks);
-  const [supervisorName, setSupervisorName] = useState(SUPERVISORS[0] || "Aboli Wagh");
+  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
   const [saving, setSaving] = useState(false);
@@ -74,7 +80,7 @@ export default function HygieneForm({
   function startNewSubmission() {
     setEditingId(null);
     setAreaChecks(initChecks);
-    setSupervisorName(SUPERVISORS[0] || "Aboli Wagh");
+    setSupervisorName(defaultSupervisor);
     setComments("");
     setCorrectiveAction("");
     setIsEditing(true);
@@ -274,9 +280,6 @@ export default function HygieneForm({
                   {teamMembers.map((m) => (
                     <option key={m} value={m}>{m}</option>
                   ))}
-                  {ALL_STAFF.filter((a) => !teamMembers.includes(a)).map((m) => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
                 </select>
               </div>
             </div>
@@ -301,16 +304,9 @@ export default function HygieneForm({
                             value={row.checkedBy}
                             onChange={(e) => updateCheck(idx, "checkedBy", e.target.value)}
                           >
-                            <optgroup label="Hygiene Staff">
-                              {teamMembers.map((m) => (
-                                <option key={m} value={m}>{m}</option>
-                              ))}
-                            </optgroup>
-                            <optgroup label="All Staff">
-                              {ALL_STAFF.filter((a) => !teamMembers.includes(a)).map((m) => (
-                                <option key={m} value={m}>{m}</option>
-                              ))}
-                            </optgroup>
+                            {teamMembers.map((m) => (
+                              <option key={m} value={m}>{m}</option>
+                            ))}
                           </select>
                         </td>
                         <td>
@@ -347,7 +343,7 @@ export default function HygieneForm({
                   onChange={(e) => setSupervisorName(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
-                  {SUPERVISORS.map((sup) => (
+                  {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}
                 </select>

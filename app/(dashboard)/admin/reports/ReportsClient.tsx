@@ -16,6 +16,7 @@ const SHEETS = [
   { key: "oretaFridge", label: "Fridge & Display Temp", icon: "🧊", route: "/oreta/fridge", outlet: "oreta-world" },
   { key: "oretaGlass", label: "Glass Report", icon: "🪟", route: "/oreta/glass", outlet: "oreta-world" },
   { key: "oretaMonthly", label: "Monthly Maintenance", icon: "🗓️", route: "/oreta/monthly", outlet: "oreta-world" },
+  { key: "oretaFood", label: "Food", icon: "🍲", route: "/oreta/food", outlet: "oreta-world" },
 ];
 
 type SheetEntry = {

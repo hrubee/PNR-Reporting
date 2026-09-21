@@ -29,6 +29,8 @@ interface Props {
   todayEntries: EntryType[];
   history: EntryType[];
   userName: string;
+  staffList?: string[];
+  supervisorsList?: string[];
 }
 
 function getCurrentTimeString(): string {
@@ -44,14 +46,20 @@ export default function OretaEquipmentForm({
   todayEntries: initialTodayEntries,
   history: initialHistory,
   userName,
+  staffList = [],
+  supervisorsList = [],
 }: Props) {
+  const availableStaff = staffList.length > 0 ? staffList : ORETA_STAFF;
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : SUPERVISORS;
+  const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
+
   const init: EquipmentCheck[] = ORETA_EQUIPMENT_ITEMS.map((item) => ({
     id: item.id,
     equipment: item.name,
     category: item.category,
     yesNo: "",
     time: "",
-    name: item.defaultCleanedBy,
+    name: availableStaff.includes(item.defaultCleanedBy) ? item.defaultCleanedBy : availableStaff[0] || item.defaultCleanedBy,
   }));
 
   const [todayEntries, setTodayEntries] = useState<EntryType[]>(initialTodayEntries);
@@ -61,7 +69,7 @@ export default function OretaEquipmentForm({
   const [isEditing, setIsEditing] = useState(initialTodayEntries.length === 0);
 
   const [checks, setChecks] = useState<EquipmentCheck[]>(init);
-  const [supervisorName, setSupervisorName] = useState(SUPERVISORS[0] || "Aboli Wagh");
+  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("all");
@@ -74,7 +82,7 @@ export default function OretaEquipmentForm({
   function startNewSubmission() {
     setEditingId(null);
     setChecks(init);
-    setSupervisorName(SUPERVISORS[0] || "Aboli Wagh");
+    setSupervisorName(defaultSupervisor);
     setComments("");
     setCorrectiveAction("");
     setIsEditing(true);
@@ -432,7 +440,7 @@ export default function OretaEquipmentForm({
                             onChange={(e) => update(idx, "name", e.target.value)}
                           >
                             <option value="">— Select Staff —</option>
-                            {ORETA_STAFF.map((s) => (
+                            {availableStaff.map((s) => (
                               <option key={s} value={s}>{s}</option>
                             ))}
                           </select>
@@ -452,7 +460,7 @@ export default function OretaEquipmentForm({
                   onChange={(e) => setSupervisorName(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
-                  {SUPERVISORS.map((sup) => (
+                  {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}
                 </select>

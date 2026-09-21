@@ -25,6 +25,8 @@ interface Props {
   todayEntries: GlassEntryType[];
   history: GlassEntryType[];
   userName: string;
+  staffList?: string[];
+  supervisorsList?: string[];
 }
 
 export default function GlassForm({
@@ -34,9 +36,13 @@ export default function GlassForm({
   todayEntries: initialTodayEntries,
   history: initialHistory,
   userName,
+  staffList = [],
+  supervisorsList = [],
 }: Props) {
-  const teamMembers = SHEET_STAFF.GLASS_REPORT || ALL_STAFF;
+  const teamMembers = staffList.length > 0 ? staffList : (SHEET_STAFF.GLASS_REPORT || ALL_STAFF);
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : SUPERVISORS;
   const defaultWorker = teamMembers[0] || "Sanjay Jadhav";
+  const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
 
   const init: LocationCheck[] = locations.map((l) => ({
     location: l,
@@ -50,7 +56,7 @@ export default function GlassForm({
   const [isEditing, setIsEditing] = useState(initialTodayEntries.length === 0);
 
   const [checks, setChecks] = useState<LocationCheck[]>(init);
-  const [supervisorName, setSupervisorName] = useState(SUPERVISORS[0] || "Aboli Wagh");
+  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
   const [saving, setSaving] = useState(false);
@@ -60,7 +66,7 @@ export default function GlassForm({
   function startNewSubmission() {
     setEditingId(null);
     setChecks(init);
-    setSupervisorName(SUPERVISORS[0] || "Aboli Wagh");
+    setSupervisorName(defaultSupervisor);
     setComments("");
     setCorrectiveAction("");
     setIsEditing(true);
@@ -229,9 +235,6 @@ export default function GlassForm({
                   {teamMembers.map((m) => (
                     <option key={m} value={m}>{m}</option>
                   ))}
-                  {ALL_STAFF.filter((a) => !teamMembers.includes(a)).map((m) => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
                 </select>
               </div>
             </div>
@@ -255,16 +258,9 @@ export default function GlassForm({
                             value={row.name}
                             onChange={(e) => updateCheck(idx, e.target.value)}
                           >
-                            <optgroup label="Glass Cleaning Staff">
-                              {teamMembers.map((m) => (
-                                <option key={m} value={m}>{m}</option>
-                              ))}
-                            </optgroup>
-                            <optgroup label="All Staff">
-                              {ALL_STAFF.filter((a) => !teamMembers.includes(a)).map((m) => (
-                                <option key={m} value={m}>{m}</option>
-                              ))}
-                            </optgroup>
+                            {teamMembers.map((m) => (
+                              <option key={m} value={m}>{m}</option>
+                            ))}
                           </select>
                         </td>
                       </tr>
@@ -282,7 +278,7 @@ export default function GlassForm({
                   onChange={(e) => setSupervisorName(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
-                  {SUPERVISORS.map((sup) => (
+                  {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}
                 </select>

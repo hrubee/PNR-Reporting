@@ -42,6 +42,10 @@ export default async function OretaGlassPage() {
     console.error("Error fetching oreta glass entries:", err);
   }
 
+  const { getDynamicStaffForSheet, getDynamicSupervisors } = await import("@/lib/staff");
+  const staffList = await getDynamicStaffForSheet("ORETA_GLASS", "oreta-world");
+  const supervisorsList = await getDynamicSupervisors("oreta-world");
+
   return (
     <OretaGlassForm
       today={today}
@@ -49,6 +53,8 @@ export default async function OretaGlassPage() {
       todayEntries={JSON.parse(JSON.stringify(todayEntries))}
       history={JSON.parse(JSON.stringify(history))}
       userName={user.name}
+      staffList={staffList}
+      supervisorsList={supervisorsList}
     />
   );
 }

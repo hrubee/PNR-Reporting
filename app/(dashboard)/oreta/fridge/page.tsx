@@ -42,6 +42,10 @@ export default async function OretaFridgePage() {
     console.error("Error fetching oreta fridge entries:", err);
   }
 
+  const { getDynamicStaffForSheet, getDynamicSupervisors } = await import("@/lib/staff");
+  const staffList = await getDynamicStaffForSheet("ORETA_FRIDGE", "oreta-world");
+  const supervisorsList = await getDynamicSupervisors("oreta-world");
+
   return (
     <OretaFridgeForm
       today={today}
@@ -49,6 +53,8 @@ export default async function OretaFridgePage() {
       todayEntries={JSON.parse(JSON.stringify(todayEntries))}
       history={JSON.parse(JSON.stringify(history))}
       userName={user.name}
+      staffList={staffList}
+      supervisorsList={supervisorsList}
     />
   );
 }

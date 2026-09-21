@@ -29,22 +29,30 @@ interface Props {
   todayEntries: MonthlyEntryType[];
   history: MonthlyEntryType[];
   userName: string;
+  staffList?: string[];
+  supervisorsList?: string[];
 }
-
-const SERVICE_STAFF = [
-  ...ORETA_STAFF,
-  "Technician / Rameshwar",
-  "AC Technician",
-  "Chiller Technician",
-  "Pest Control Agency",
-];
 
 export default function OretaMonthlyForm({
   currentMonth,
   todayEntries: initialTodayEntries,
   history: initialHistory,
   userName,
+  staffList = [],
+  supervisorsList = [],
 }: Props) {
+  const availableStaff = staffList.length > 0 ? staffList : ORETA_STAFF;
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : SUPERVISORS;
+  const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
+
+  const serviceStaffList = [
+    ...availableStaff,
+    "Technician / Rameshwar",
+    "AC Technician",
+    "Chiller Technician",
+    "Pest Control Agency",
+  ];
+
   const init: MonthlyCheck[] = ORETA_MONTHLY_ITEMS.map((item) => ({
     id: item.id,
     task: item.task,
@@ -62,7 +70,7 @@ export default function OretaMonthlyForm({
   const [isEditing, setIsEditing] = useState(initialTodayEntries.length === 0);
 
   const [checks, setChecks] = useState<MonthlyCheck[]>(init);
-  const [supervisorName, setSupervisorName] = useState(SUPERVISORS[0] || "Aboli Wagh");
+  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
   const [month, setMonth] = useState(currentMonth);
@@ -73,7 +81,7 @@ export default function OretaMonthlyForm({
   function startNewSubmission() {
     setEditingId(null);
     setChecks(init);
-    setSupervisorName(SUPERVISORS[0] || "Aboli Wagh");
+    setSupervisorName(defaultSupervisor);
     setComments("");
     setCorrectiveAction("");
     setIsEditing(true);
@@ -277,7 +285,7 @@ export default function OretaMonthlyForm({
                   }}
                 >
                   <option value="" disabled>Select Staff / Agency</option>
-                  {SERVICE_STAFF.map((s) => (
+                  {serviceStaffList.map((s) => (
                     <option key={s} value={s}>{s}</option>
                   ))}
                 </select>
@@ -343,7 +351,7 @@ export default function OretaMonthlyForm({
                           value={row.assignedStaff}
                           onChange={(e) => update(idx, "assignedStaff", e.target.value)}
                         >
-                          {SERVICE_STAFF.map((s) => (
+                          {serviceStaffList.map((s) => (
                             <option key={s} value={s}>{s}</option>
                           ))}
                         </select>
@@ -362,7 +370,7 @@ export default function OretaMonthlyForm({
                   onChange={(e) => setSupervisorName(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
-                  {SUPERVISORS.map((sup) => (
+                  {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}
                 </select>

@@ -43,6 +43,10 @@ export default async function OretaShopCleaningPage() {
     console.error("Error fetching oreta shop cleaning entries:", err);
   }
 
+  const { getDynamicStaffForSheet, getDynamicSupervisors } = await import("@/lib/staff");
+  const staffList = await getDynamicStaffForSheet("ORETA_SHOP_CLEANING", "oreta-world");
+  const supervisorsList = await getDynamicSupervisors("oreta-world");
+
   return (
     <OretaShopCleaningForm
       today={today}
@@ -51,6 +55,8 @@ export default async function OretaShopCleaningPage() {
       todayEntries={JSON.parse(JSON.stringify(todayEntries))}
       history={JSON.parse(JSON.stringify(history))}
       userName={user.name}
+      staffList={staffList}
+      supervisorsList={supervisorsList}
     />
   );
 }

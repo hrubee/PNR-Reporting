@@ -40,6 +40,10 @@ export default async function ProductionPage() {
     include: { submittedBy: true },
   });
 
+  const { getDynamicStaffForSheet, getDynamicSupervisors } = await import("@/lib/staff");
+  const staffList = await getDynamicStaffForSheet("PRODUCTION", "bakery");
+  const supervisorsList = await getDynamicSupervisors("bakery");
+
   return (
     <GenericChecklistForm
       title="Production Hygiene Report"
@@ -52,6 +56,8 @@ export default async function ProductionPage() {
       todayEntries={JSON.parse(JSON.stringify(todayEntries))}
       history={JSON.parse(JSON.stringify(history))}
       userName={user.name}
+      staffList={staffList}
+      supervisorsList={supervisorsList}
     />
   );
 }

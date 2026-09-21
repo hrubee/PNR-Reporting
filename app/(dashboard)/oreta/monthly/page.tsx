@@ -42,12 +42,18 @@ export default async function OretaMonthlyPage() {
     console.error("Error fetching oreta monthly entries:", err);
   }
 
+  const { getDynamicStaffForSheet, getDynamicSupervisors } = await import("@/lib/staff");
+  const staffList = await getDynamicStaffForSheet("ORETA_MONTHLY", "oreta-world");
+  const supervisorsList = await getDynamicSupervisors("oreta-world");
+
   return (
     <OretaMonthlyForm
       currentMonth={currentMonth}
       todayEntries={JSON.parse(JSON.stringify(todayEntries))}
       history={JSON.parse(JSON.stringify(history))}
       userName={user.name}
+      staffList={staffList}
+      supervisorsList={supervisorsList}
     />
   );
 }

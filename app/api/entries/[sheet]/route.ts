@@ -17,6 +17,7 @@ const SHEET_MAP: Record<string, SheetId> = {
   "oreta-fridge": "ORETA_FRIDGE",
   "oreta-glass": "ORETA_GLASS",
   "oreta-monthly": "ORETA_MONTHLY",
+  "oreta-food": "ORETA_FOOD",
 };
 
 export async function POST(
@@ -202,6 +203,21 @@ export async function POST(
         }
         return NextResponse.json(await prisma.oretaMonthlyEntry.create({ data: { ...data, date: entryDate, submittedById: user.id } }));
       }
+      case "oreta-food": {
+        const data = {
+          day: body.day || "",
+          supervisorName: body.supervisorName || "",
+          tempChecks: typeof body.tempChecks === "string" ? body.tempChecks : JSON.stringify(body.tempChecks || []),
+          vegChecks: typeof body.vegChecks === "string" ? body.vegChecks : JSON.stringify(body.vegChecks || []),
+          nonVegChecks: typeof body.nonVegChecks === "string" ? body.nonVegChecks : JSON.stringify(body.nonVegChecks || []),
+          comments: body.comments || "",
+          correctiveAction: body.correctiveAction || "",
+        };
+        if (id) {
+          return NextResponse.json(await prisma.oretaFoodEntry.update({ where: { id }, data }));
+        }
+        return NextResponse.json(await prisma.oretaFoodEntry.create({ data: { ...data, date, submittedById: user.id } }));
+      }
       default:
         return NextResponse.json({ error: "Unknown sheet" }, { status: 400 });
     }
@@ -253,6 +269,8 @@ export async function GET(
         return NextResponse.json(await prisma.oretaGlassEntry.findMany({ where, orderBy: { createdAt: "desc" }, take: 60, include: { submittedBy: true } }));
       case "oreta-monthly":
         return NextResponse.json(await prisma.oretaMonthlyEntry.findMany({ where: month ? { month } : where, orderBy: { createdAt: "desc" }, take: 60, include: { submittedBy: true } }));
+      case "oreta-food":
+        return NextResponse.json(await prisma.oretaFoodEntry.findMany({ where, orderBy: { createdAt: "desc" }, take: 60, include: { submittedBy: true } }));
       default:
         return NextResponse.json({ error: "Unknown sheet" }, { status: 400 });
     }

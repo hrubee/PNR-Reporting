@@ -34,6 +34,10 @@ export default async function CakeRoomPage() {
     include: { submittedBy: true },
   });
 
+  const { getDynamicStaffForSheet, getDynamicSupervisors } = await import("@/lib/staff");
+  const staffList = await getDynamicStaffForSheet("CAKE_ROOM", "bakery");
+  const supervisorsList = await getDynamicSupervisors("bakery");
+
   return (
     <GenericChecklistForm
       title="Cake Room Hygiene Report"
@@ -46,6 +50,8 @@ export default async function CakeRoomPage() {
       todayEntries={JSON.parse(JSON.stringify(todayEntries))}
       history={JSON.parse(JSON.stringify(history))}
       userName={user.name}
+      staffList={staffList}
+      supervisorsList={supervisorsList}
     />
   );
 }

@@ -15,6 +15,7 @@ export type SheetId =
   | "ORETA_FRIDGE"
   | "ORETA_GLASS"
   | "ORETA_MONTHLY"
+  | "ORETA_FOOD"
   | "ORETA_HYGIENE";
 
 export const SHEET_LABELS: Record<SheetId, string> = {
@@ -30,6 +31,7 @@ export const SHEET_LABELS: Record<SheetId, string> = {
   ORETA_FRIDGE: "Fridge & Display Temp",
   ORETA_GLASS: "Glass Report",
   ORETA_MONTHLY: "Monthly Maintenance",
+  ORETA_FOOD: "Food",
   ORETA_HYGIENE: "House Keeping",
 };
 
@@ -46,6 +48,7 @@ export const SHEET_ROUTES: Record<SheetId, string> = {
   ORETA_FRIDGE: "/oreta/fridge",
   ORETA_GLASS: "/oreta/glass",
   ORETA_MONTHLY: "/oreta/monthly",
+  ORETA_FOOD: "/oreta/food",
   ORETA_HYGIENE: "/oreta/shop-cleaning",
 };
 
@@ -69,6 +72,7 @@ export const SHEET_STAFF: Record<SheetId, string[]> = {
   ORETA_FRIDGE: ["Rameshwar", "Bharti", "Mangla", "Arzaaan", "Admin"],
   ORETA_GLASS: ["Mangla", "Bharti", "Rameshwar", "Admin"],
   ORETA_MONTHLY: ["Mangla", "Rameshwar", "Bharti", "Arzaaan", "Admin"],
+  ORETA_FOOD: ["Rameshwar", "Bharti", "Mangla", "Arzaaan", "New Staff", "Admin"],
   ORETA_HYGIENE: ["Rameshwar", "Bharti", "Mangla", "Arzaaan", "New Staff", "Admin"],
 };
 

@@ -1,55 +1,57 @@
 import { auth } from "@/lib/auth";
 import { prisma, ensureDbSchema } from "@/lib/db";
 import { redirect } from "next/navigation";
-import { getTodayString, formatDate, hasSheetAccess } from "@/lib/permissions";
-import OretaEquipmentForm from "./OretaEquipmentForm";
+import { getTodayString, getDayName, formatDate, hasSheetAccess } from "@/lib/permissions";
+import OretaFoodForm from "./OretaFoodForm";
 
-export default async function OretaEquipmentPage() {
+export default async function OretaFoodPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
   await ensureDbSchema();
 
   const user = session.user as { id: string; name: string; email: string; role: string };
-  const canAccess = await hasSheetAccess(user.id, "ORETA_EQUIPMENT", user.role);
+  const canAccess = await hasSheetAccess(user.id, "ORETA_FOOD", user.role);
   if (!canAccess) {
     return (
       <div className="page-container">
         <div className="error-banner">
-          ⛔ You do not have access to the Oreta World Equipment Cleaning sheet. Please contact an administrator.
+          ⛔ You do not have access to the Oreta World Food Safety & Product Logs sheet. Please contact an administrator.
         </div>
       </div>
     );
   }
 
   const today = getTodayString();
+  const dayName = getDayName(today);
 
   let todayEntries: any[] = [];
   let history: any[] = [];
   try {
-    todayEntries = await prisma.oretaEquipmentEntry.findMany({
+    todayEntries = await prisma.oretaFoodEntry.findMany({
       where: { date: today },
       orderBy: { createdAt: "desc" },
       include: { submittedBy: { select: { name: true } } },
     });
 
-    history = await prisma.oretaEquipmentEntry.findMany({
+    history = await prisma.oretaFoodEntry.findMany({
       orderBy: { createdAt: "desc" },
       take: 50,
       include: { submittedBy: { select: { name: true } } },
     });
   } catch (err) {
-    console.error("Error fetching oreta equipment entries:", err);
+    console.error("Error fetching oreta food safety entries:", err);
   }
 
   const { getDynamicStaffForSheet, getDynamicSupervisors } = await import("@/lib/staff");
-  const staffList = await getDynamicStaffForSheet("ORETA_EQUIPMENT", "oreta-world");
+  const staffList = await getDynamicStaffForSheet("ORETA_FOOD", "oreta-world");
   const supervisorsList = await getDynamicSupervisors("oreta-world");
 
   return (
-    <OretaEquipmentForm
+    <OretaFoodForm
       today={today}
       todayLabel={formatDate(today)}
+      dayName={dayName}
       todayEntries={JSON.parse(JSON.stringify(todayEntries))}
       history={JSON.parse(JSON.stringify(history))}
       userName={user.name}

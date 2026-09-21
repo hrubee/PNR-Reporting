@@ -10,9 +10,9 @@ export default async function AccessPage() {
   if (user.role !== "ADMIN") redirect("/");
 
   const users = await prisma.user.findMany({
-    where: { role: "EMPLOYEE", isActive: true },
+    where: { isActive: true, role: { not: "ADMIN" } },
     orderBy: { name: "asc" },
-    select: { id: true, name: true, email: true },
+    select: { id: true, name: true, email: true, role: true, outletId: true, jobTitle: true },
   });
 
   const access = await prisma.sheetAccess.findMany({ select: { userId: true, sheet: true } });
