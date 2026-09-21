@@ -683,9 +683,9 @@ export default function OretaFoodForm({
                       </div>
 
                       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "0.75rem" }}>
-                        {/* Received Date */}
+                        {/* Manufacturing Date */}
                         <div className="form-group" style={{ margin: 0 }}>
-                          <label style={{ fontSize: "0.8rem" }}>Received Date</label>
+                          <label style={{ fontSize: "0.8rem" }}>Manufacturing Date</label>
                           <input
                             type="date"
                             value={item.receivedDate}
