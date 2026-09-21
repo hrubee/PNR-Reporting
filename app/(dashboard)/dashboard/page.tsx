@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { SHEET_LABELS, SHEET_ROUTES, getTodayString, formatDate, SheetId } from "@/lib/permissions";
 import { OUTLETS, getOutletById } from "@/lib/outlets";
+import DashboardOutletTabs from "@/components/DashboardOutletTabs";
 
 const SHEET_ICONS: Record<SheetId, string> = {
   HYGIENE_REPORT: "🧹",
@@ -162,21 +163,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
         </div>
 
         {/* Outlet Switcher Pills */}
-        <div style={{ display: "flex", gap: "0.5rem", background: "#ffffff", padding: "0.35rem", borderRadius: "10px", border: "1px solid var(--border)" }}>
-          {OUTLETS.map((out) => {
-            const isActive = out.id === activeOutlet.id;
-            return (
-              <Link
-                key={out.id}
-                href={`/dashboard?outlet=${out.id}`}
-                className={`btn btn-sm ${isActive ? "btn-primary" : "btn-secondary"}`}
-                style={{ padding: "0.4rem 0.85rem", fontSize: "0.85rem" }}
-              >
-                {out.icon} {out.name}
-              </Link>
-            );
-          })}
-        </div>
+        <DashboardOutletTabs />
       </div>
 
       {/* Stats */}

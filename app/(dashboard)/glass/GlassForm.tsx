@@ -272,7 +272,7 @@ export default function GlassForm({
 
             <div className="form-grid" style={{ marginTop: "1.25rem" }}>
               <div className="form-group">
-                <label>Bakery Supervisor</label>
+                <label>Supervisor / Verified By</label>
                 <select
                   value={supervisorName}
                   onChange={(e) => setSupervisorName(e.target.value)}

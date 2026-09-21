@@ -32,6 +32,10 @@ export function OutletProvider({
   useEffect(() => {
     if (pathname.startsWith("/oreta")) {
       setActiveOutletId("oreta-world");
+    } else if (pathname.startsWith("/rns")) {
+      setActiveOutletId("rns-world");
+    } else if (pathname.startsWith("/symphony")) {
+      setActiveOutletId("symphony-world");
     } else if (
       pathname.startsWith("/hygiene") ||
       pathname.startsWith("/glass") ||
@@ -48,14 +52,20 @@ export function OutletProvider({
   const setOutlet = (outletId: string) => {
     setActiveOutletId(outletId);
     document.cookie = `pnr_outlet=${outletId}; path=/; max-age=31536000; SameSite=Lax`;
-    
-    // If we are on a specific sheet page of another outlet, switch gracefully
-    if (outletId === "oreta-world" && !pathname.startsWith("/oreta") && !pathname.startsWith("/admin")) {
-      router.push("/oreta/hygiene");
-    } else if (outletId === "bakery" && pathname.startsWith("/oreta")) {
-      router.push("/dashboard");
-    } else {
+
+    // When on dashboard, refresh with new query param
+    if (pathname === "/dashboard" || pathname === "/") {
+      router.push(`/dashboard?outlet=${outletId}`);
+    } else if (pathname.startsWith("/admin")) {
       router.refresh();
+    } else {
+      // If we are currently on an outlet-specific sheet and changing to a different outlet, navigate to dashboard
+      const targetOutlet = getOutletById(outletId);
+      if (targetOutlet && targetOutlet.sheets.length > 0) {
+        router.push(targetOutlet.sheets[0].route);
+      } else {
+        router.push(`/dashboard?outlet=${outletId}`);
+      }
     }
   };
 
