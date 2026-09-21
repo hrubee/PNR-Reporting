@@ -53,36 +53,85 @@ export default function AccessMatrixClient({
     setToggling(key);
     setAlert(null);
 
-    const res = await fetch("/api/admin/access", {
-      method: granting ? "POST" : "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, sheet }),
-    });
-
-    if (res.ok) {
-      setAccess((prev) => {
-        const next = new Set(prev);
-        granting ? next.add(key) : next.delete(key);
-        return next;
+    try {
+      const res = await fetch("/api/admin/access", {
+        method: granting ? "POST" : "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, sheet }),
       });
-    } else {
-      setAlert({ type: "error", msg: "Failed to update access. Please try again." });
+
+      if (res.ok) {
+        setAccess((prev) => {
+          const next = new Set(prev);
+          granting ? next.add(key) : next.delete(key);
+          return next;
+        });
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        setAlert({ type: "error", msg: errData.error || "Failed to update access. Please try again." });
+      }
+    } catch {
+      setAlert({ type: "error", msg: "Network error while updating access permissions." });
     }
     setToggling(null);
   }
 
-  function grantAll(userId: string, targetOutlet?: string) {
+  async function grantAll(userId: string, targetOutlet?: string) {
     const list = targetOutlet ? SHEETS.filter((s) => s.outletId === targetOutlet) : SHEETS;
-    list.forEach(({ key }) => {
-      if (!hasAccess(userId, key)) toggle(userId, key);
-    });
+    const keysToGrant = list.map((s) => s.key).filter((k) => !hasAccess(userId, k));
+    if (keysToGrant.length === 0) return;
+
+    setAlert(null);
+    try {
+      const res = await fetch("/api/admin/access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, sheets: keysToGrant }),
+      });
+
+      if (res.ok) {
+        setAccess((prev) => {
+          const next = new Set(prev);
+          keysToGrant.forEach((k) => next.add(`${userId}:${k}`));
+          return next;
+        });
+        setAlert({ type: "success", msg: `✅ Granted access to ${keysToGrant.length} sheet(s)!` });
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        setAlert({ type: "error", msg: errData.error || "Failed to grant access." });
+      }
+    } catch {
+      setAlert({ type: "error", msg: "Network error while granting permissions." });
+    }
   }
 
-  function revokeAll(userId: string, targetOutlet?: string) {
+  async function revokeAll(userId: string, targetOutlet?: string) {
     const list = targetOutlet ? SHEETS.filter((s) => s.outletId === targetOutlet) : SHEETS;
-    list.forEach(({ key }) => {
-      if (hasAccess(userId, key)) toggle(userId, key);
-    });
+    const keysToRevoke = list.map((s) => s.key).filter((k) => hasAccess(userId, k));
+    if (keysToRevoke.length === 0) return;
+
+    setAlert(null);
+    try {
+      const res = await fetch("/api/admin/access", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, sheets: keysToRevoke }),
+      });
+
+      if (res.ok) {
+        setAccess((prev) => {
+          const next = new Set(prev);
+          keysToRevoke.forEach((k) => next.delete(`${userId}:${k}`));
+          return next;
+        });
+        setAlert({ type: "success", msg: `✅ Revoked access to ${keysToRevoke.length} sheet(s).` });
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        setAlert({ type: "error", msg: errData.error || "Failed to revoke access." });
+      }
+    } catch {
+      setAlert({ type: "error", msg: "Network error while revoking permissions." });
+    }
   }
 
   const visibleSheets = outletFilter === "all" ? SHEETS : SHEETS.filter((s) => s.outletId === outletFilter);
