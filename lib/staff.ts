@@ -59,11 +59,11 @@ export async function getDynamicStaffForSheet(sheetKey: SheetId, outletId?: stri
     const outletConds = getOutletFilterConditions(targetOutlet);
     if (!outletConds) return [];
 
-    // Query active employees assigned to this sheet's outlet
+    // Query active employees and supervisors assigned to this sheet's outlet
     const users = await prisma.user.findMany({
       where: {
         isActive: true,
-        role: "EMPLOYEE",
+        role: { in: ["EMPLOYEE", "SUPERVISOR"] },
         OR: outletConds,
       },
       select: { name: true },

@@ -172,7 +172,7 @@ export default function AccessMatrixClient({
             <a href="/admin/users" style={{ color: "var(--accent)", textDecoration: "underline", fontWeight: 600 }}>
               Users Management
             </a>{" "}
-            section. Any employee assigned to an outlet automatically appears in all dropdowns for that outlet. Employees not assigned to an outlet will not appear in any dropdowns.
+            section. Any employee or supervisor assigned to an outlet automatically appears in all dropdowns for that outlet. Users not assigned to an outlet will not appear in any dropdowns.
           </p>
         </div>
       </div>
