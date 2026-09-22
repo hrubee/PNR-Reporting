@@ -134,8 +134,9 @@ export async function hasSheetAccess(
   sheet: SheetId,
   role: string
 ): Promise<boolean> {
-  if (role === "ADMIN") return true;
-  // Handle alias
+  // Admins and Supervisors have full access to all sheets — no explicit grants needed
+  if (role === "ADMIN" || role === "SUPERVISOR") return true;
+  // Employees: check explicit sheet access granted via Access Matrix
   const normalizedSheet = sheet === "ORETA_HYGIENE" ? "ORETA_SHOP_CLEANING" : sheet;
   const access = await prisma.sheetAccess.findFirst({
     where: {

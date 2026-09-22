@@ -128,9 +128,9 @@ export default async function DashboardPage({ searchParams }: PageProps) {
     route: s.route,
   }));
 
-  // Access list for employee
+  // Access list — Admins and Supervisors see all sheets, Employees see only their granted sheets
   let accessibleSheets: Set<string> = new Set();
-  if (user.role === "ADMIN") {
+  if (user.role === "ADMIN" || user.role === "SUPERVISOR") {
     accessibleSheets = new Set(Object.keys(SHEET_LABELS));
   } else {
     try {
@@ -191,7 +191,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
             <div className="stat-label">Pending {activeOutlet.name} Sheets</div>
           </div>
         </div>
-        {user.role === "ADMIN" && (
+        {(user.role === "ADMIN" || user.role === "SUPERVISOR") && (
           <div className="stat-card">
             <div className="stat-icon blue">👥</div>
             <div>
@@ -227,7 +227,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
         <div className="status-grid">
           {outletSheets.map(({ key, list, label, icon, route }) => {
-            const hasAccess = user.role === "ADMIN" || accessibleSheets.has(key);
+            const hasAccess = user.role === "ADMIN" || user.role === "SUPERVISOR" || accessibleSheets.has(key);
             const isDone = list.length > 0;
             const latest = list[0];
             const latestTime = latest
