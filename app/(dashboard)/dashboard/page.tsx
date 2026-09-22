@@ -128,21 +128,11 @@ export default async function DashboardPage({ searchParams }: PageProps) {
     route: s.route,
   }));
 
-  // Access list — Admins and Supervisors see all sheets, Employees see only their granted sheets
-  let accessibleSheets: Set<string> = new Set();
-  if (user.role === "ADMIN" || user.role === "SUPERVISOR") {
-    accessibleSheets = new Set(Object.keys(SHEET_LABELS));
-  } else {
-    try {
-      const access = await prisma.sheetAccess.findMany({
-        where: { userId: user.id },
-        select: { sheet: true },
-      });
-      accessibleSheets = new Set(access.map((a: { sheet: string }) => a.sheet));
-    } catch {
-      accessibleSheets = new Set();
-    }
-  }
+  // Only ADMIN and SUPERVISOR can access sheets — employees only appear in dropdowns
+  const canSubmit = user.role === "ADMIN" || user.role === "SUPERVISOR";
+  const accessibleSheets: Set<string> = canSubmit
+    ? new Set(Object.keys(SHEET_LABELS))
+    : new Set();
 
   const totalSheetsInOutlet = outletSheets.length;
   const completedSheetsCount = outletSheets.filter((s) => s.list.length > 0).length;
@@ -227,7 +217,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
         <div className="status-grid">
           {outletSheets.map(({ key, list, label, icon, route }) => {
-            const hasAccess = user.role === "ADMIN" || user.role === "SUPERVISOR" || accessibleSheets.has(key);
+            const hasAccess = canSubmit;
             const isDone = list.length > 0;
             const latest = list[0];
             const latestTime = latest
