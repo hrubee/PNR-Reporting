@@ -52,7 +52,7 @@ export default function OretaGlassForm({
   const availableStaff = staffList;
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || []);
   const defaultSupervisor = availableSupervisors[0] || "";
-  const defaultStaff = availableStaff[0] || "";
+  const defaultStaff = "";
 
   const init: GlassCheck[] = ORETA_GLASS_ITEMS.map((item) => ({
     id: item.id,
@@ -60,7 +60,7 @@ export default function OretaGlassForm({
     location: item.location,
     yesNo: "",
     time: "",
-    cleanedBy: availableStaff.includes(item.defaultCleanedBy) ? item.defaultCleanedBy : defaultStaff,
+    cleanedBy: "",
   }));
 
   const [todayEntries, setTodayEntries] = useState<GlassEntryType[]>(initialTodayEntries);
@@ -94,14 +94,14 @@ export default function OretaGlassForm({
       if (Array.isArray(parsed) && parsed.length > 0) {
         setChecks(
           parsed.map((g: any, idx: number) => {
-            const def = ORETA_GLASS_ITEMS[idx] || { id: idx + 1, floor: "Ground Floor", location: `Glass ${idx + 1}`, defaultCleanedBy: "Mangla" };
+            const def = ORETA_GLASS_ITEMS[idx] || { id: idx + 1, floor: "Ground Floor", location: `Glass ${idx + 1}` };
             return {
               id: g.id || def.id,
               floor: g.floor || def.floor,
               location: g.location || def.location,
               yesNo: g.yesNo || g.status || "",
               time: g.time || "",
-              cleanedBy: g.cleanedBy || (availableStaff.includes(def.defaultCleanedBy) ? def.defaultCleanedBy : defaultStaff),
+              cleanedBy: g.cleanedBy || "",
             };
           })
         );

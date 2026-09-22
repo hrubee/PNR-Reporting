@@ -41,12 +41,12 @@ export default function GlassForm({
 }: Props) {
   const teamMembers = staffList;
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || []);
-  const defaultWorker = teamMembers[0] || "";
+  const defaultWorker = "";
   const defaultSupervisor = availableSupervisors[0] || "";
 
   const init: LocationCheck[] = locations.map((l) => ({
     location: l,
-    name: defaultWorker,
+    name: "",
   }));
 
   const [todayEntries, setTodayEntries] = useState<GlassEntryType[]>(initialTodayEntries);
@@ -258,6 +258,7 @@ export default function GlassForm({
                             value={row.name}
                             onChange={(e) => updateCheck(idx, e.target.value)}
                           >
+                            <option value="">-- Select Staff --</option>
                             {teamMembers.map((m) => (
                               <option key={m} value={m}>{m}</option>
                             ))}

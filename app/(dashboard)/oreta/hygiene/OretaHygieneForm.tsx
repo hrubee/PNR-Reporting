@@ -63,7 +63,7 @@ export default function OretaHygieneForm({
   const availableStaff = staffList;
   const availableSupervisors = supervisorsList;
   const defaultSupervisor = availableSupervisors[0] || "";
-  const defaultStaff = availableStaff[0] || "";
+  const defaultStaff = "";
 
   const [date, setDate] = useState(initialDate);
   const [day, setDay] = useState(initialDay);
@@ -80,19 +80,19 @@ export default function OretaHygieneForm({
               ...r,
               morning: {
                 ...r.morning,
-                staff: r.morning?.staff || (areaDef?.morningDisabled ? "—" : defaultStaff),
+                staff: r.morning?.staff || (areaDef?.morningDisabled ? "—" : ""),
               },
               afternoon: {
                 ...r.afternoon,
-                staff: r.afternoon?.staff || defaultStaff,
+                staff: r.afternoon?.staff || "",
               },
               evening: {
                 ...r.evening,
-                staff: r.evening?.staff || defaultStaff,
+                staff: r.evening?.staff || "",
               },
               night: {
                 ...r.night,
-                staff: r.night?.staff || defaultStaff,
+                staff: r.night?.staff || "",
               },
             };
           });
@@ -107,22 +107,22 @@ export default function OretaHygieneForm({
       area: item.area,
       morning: {
         status: item.morningDisabled ? "N/A" : "YES",
-        staff: item.morningDisabled ? "—" : defaultStaff,
+        staff: item.morningDisabled ? "—" : "",
         time: "09:00",
       },
       afternoon: {
         status: "YES",
-        staff: defaultStaff,
+        staff: "",
         time: "14:00",
       },
       evening: {
         status: "YES",
-        staff: defaultStaff,
+        staff: "",
         time: "18:30",
       },
       night: {
         status: "YES",
-        staff: defaultStaff,
+        staff: "",
         time: "22:00",
       },
     }));
@@ -440,6 +440,7 @@ export default function OretaHygieneForm({
                                 background: "#ffffff",
                               }}
                             >
+                              <option value="">-- Select Staff --</option>
                               {isMorningDisabled && <option value="—">— Not Applicable</option>}
                               {availableStaff.map((emp) => (
                                 <option key={emp} value={emp}>

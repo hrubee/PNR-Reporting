@@ -54,12 +54,12 @@ export default function HygieneForm({
 }: Props) {
   const teamMembers = staffList;
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || []);
-  const defaultWorker = teamMembers[0] || "";
+  const defaultWorker = "";
   const defaultSupervisor = availableSupervisors[0] || "";
 
   const initChecks: AreaCheck[] = areas.map((area) => ({
     area,
-    checkedBy: defaultWorker,
+    checkedBy: "",
     time: "",
   }));
 
@@ -304,6 +304,7 @@ export default function HygieneForm({
                             value={row.checkedBy}
                             onChange={(e) => updateCheck(idx, "checkedBy", e.target.value)}
                           >
+                            <option value="">-- Select Staff --</option>
                             {teamMembers.map((m) => (
                               <option key={m} value={m}>{m}</option>
                             ))}

@@ -52,7 +52,7 @@ export default function RnsEquipmentForm({
   const availableStaff = staffList;
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["rns-world"] || []);
   const defaultSupervisor = availableSupervisors[0] || "";
-  const defaultStaff = availableStaff[0] || "";
+  const defaultStaff = "";
 
   const init: EquipmentCheck[] = RNS_EQUIPMENT_ITEMS.map((item) => ({
     id: item.id,
@@ -60,7 +60,7 @@ export default function RnsEquipmentForm({
     category: item.category,
     yesNo: "",
     time: "",
-    name: availableStaff.includes(item.defaultCleanedBy) ? item.defaultCleanedBy : defaultStaff,
+    name: "",
   }));
 
   const [todayEntries, setTodayEntries] = useState<EntryType[]>(initialTodayEntries);
@@ -107,7 +107,7 @@ export default function RnsEquipmentForm({
             category: itemDef.category,
             yesNo: matched ? (matched.yesNo || matched.status || "") : "",
             time: matched ? (matched.time || "") : "",
-            name: matched ? (matched.name || matched.cleanedBy || (availableStaff.includes(itemDef.defaultCleanedBy) ? itemDef.defaultCleanedBy : defaultStaff)) : (availableStaff.includes(itemDef.defaultCleanedBy) ? itemDef.defaultCleanedBy : defaultStaff),
+            name: matched ? (matched.name || matched.cleanedBy || "") : "",
           };
         });
         setChecks(normalized);
@@ -426,6 +426,7 @@ export default function RnsEquipmentForm({
                             onChange={(e) => update(originalIndex, "name", e.target.value)}
                             style={{ padding: "0.35rem 0.5rem", width: "100%", borderRadius: "6px", border: "1px solid var(--border)" }}
                           >
+                            <option value="">-- Select Staff --</option>
                             {availableStaff.map((staff) => (
                               <option key={staff} value={staff}>{staff}</option>
                             ))}

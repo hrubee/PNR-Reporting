@@ -68,7 +68,7 @@ export default function GenericChecklistForm({
 }: Props) {
   const teamMembers = staffList;
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || []);
-  const defaultWorker = teamMembers[0] || "";
+  const defaultWorker = "";
   const defaultSupervisor = availableSupervisors[0] || "";
 
   const normalizedEquipment: { id: number; name: string; category: string }[] = equipment.map((item, idx) => {
@@ -86,7 +86,7 @@ export default function GenericChecklistForm({
     category: e.category,
     yesNo: "",
     time: "",
-    name: defaultWorker,
+    name: "",
   }));
 
   const [todayEntries, setTodayEntries] = useState<EntryType[]>(initialTodayEntries);
@@ -97,7 +97,7 @@ export default function GenericChecklistForm({
 
   const [checks, setChecks] = useState<EquipmentCheck[]>(init);
   const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
-  const [workerName, setWorkerName] = useState(defaultWorker);
+  const [workerName, setWorkerName] = useState("");
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("all");
@@ -109,7 +109,7 @@ export default function GenericChecklistForm({
     setEditingId(null);
     setChecks(init);
     setSupervisorName(defaultSupervisor);
-    setWorkerName(defaultWorker);
+    setWorkerName("");
     setComments("");
     setCorrectiveAction("");
     setIsEditing(true);
@@ -485,6 +485,7 @@ export default function GenericChecklistForm({
                             value={row.name}
                             onChange={(e) => update(idx, "name", e.target.value)}
                           >
+                            <option value="">-- Select Staff --</option>
                             {teamMembers.map((m) => (
                               <option key={m} value={m}>{m}</option>
                             ))}

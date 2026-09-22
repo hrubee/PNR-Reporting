@@ -59,7 +59,7 @@ export default function OretaMonthlyForm({
     category: item.category,
     status: "",
     dateCompleted: "",
-    assignedStaff: availableStaff.includes(item.defaultCleanedBy) ? item.defaultCleanedBy : (availableStaff[0] || "Technician"),
+    assignedStaff: "",
     notes: "",
   }));
 
@@ -95,14 +95,14 @@ export default function OretaMonthlyForm({
       if (Array.isArray(parsed) && parsed.length > 0) {
         setChecks(
           parsed.map((m: any, idx: number) => {
-            const def = ORETA_MONTHLY_ITEMS[idx] || { id: idx + 1, task: m.task || `Task ${idx + 1}`, category: "General", defaultCleanedBy: "Mangla" };
+            const def = ORETA_MONTHLY_ITEMS[idx] || { id: idx + 1, task: m.task || `Task ${idx + 1}`, category: "General" };
             return {
               id: m.id || def.id,
               task: m.task || def.task,
               category: m.category || def.category,
               status: m.status || "",
               dateCompleted: m.dateCompleted || "",
-              assignedStaff: m.assignedStaff || (availableStaff.includes(def.defaultCleanedBy) ? def.defaultCleanedBy : (availableStaff[0] || "Technician")),
+              assignedStaff: m.assignedStaff || "",
               notes: m.notes || "",
             };
           })
@@ -351,6 +351,7 @@ export default function OretaMonthlyForm({
                           value={row.assignedStaff}
                           onChange={(e) => update(idx, "assignedStaff", e.target.value)}
                         >
+                          <option value="">-- Select Staff / Vendor --</option>
                           {serviceStaffList.map((s) => (
                             <option key={s} value={s}>{s}</option>
                           ))}

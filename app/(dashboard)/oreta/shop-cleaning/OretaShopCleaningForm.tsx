@@ -80,29 +80,29 @@ export default function OretaShopCleaningForm({
   const availableStaff = staffList;
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || []);
   const defaultSupervisor = availableSupervisors[0] || "";
-  const defaultStaff = availableStaff[0] || "";
+  const defaultStaff = "";
 
   const init: AreaRow[] = ORETA_HYGIENE_AREAS.map((item) => ({
     id: item.id,
     area: item.area,
     morning: {
       status: item.morningDisabled ? "N/A" : "",
-      staff: item.morningDisabled ? "—" : defaultStaff,
+      staff: item.morningDisabled ? "—" : "",
       time: "",
     },
     afternoon: {
       status: "",
-      staff: defaultStaff,
+      staff: "",
       time: "",
     },
     evening: {
       status: "",
-      staff: defaultStaff,
+      staff: "",
       time: "",
     },
     night: {
       status: "",
-      staff: defaultStaff,
+      staff: "",
       time: "",
     },
   }));
@@ -495,6 +495,7 @@ export default function OretaShopCleaningForm({
                                     onChange={(e) => updateCheck(row.id, s, "staff", e.target.value)}
                                     style={{ flex: 1, fontSize: "0.78rem", minHeight: "36px", fontWeight: 600 }}
                                   >
+                                    <option value="">-- Select Staff --</option>
                                     {availableStaff.map((st) => (
                                       <option key={st} value={st}>{st}</option>
                                     ))}

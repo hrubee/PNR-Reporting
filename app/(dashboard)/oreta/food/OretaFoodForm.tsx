@@ -95,7 +95,7 @@ export default function OretaFoodForm({
 }: Props) {
   const availableStaff = staffList;
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || []);
-  const defaultStaffMember = availableStaff[0] || "";
+  const defaultStaffMember = "";
   const defaultSupervisor = availableSupervisors[0] || "";
 
   const initTemp: TempCheck[] = ORETA_TEMP_CONTROL_ITEMS.map((item) => ({
@@ -116,7 +116,7 @@ export default function OretaFoodForm({
     openTime: "",
     useBy: "",
     wastage: "",
-    staffName: defaultStaffMember,
+    staffName: "",
     hasOpenDate: item.hasOpenDate,
   }));
 
@@ -127,7 +127,7 @@ export default function OretaFoodForm({
     openTime: "",
     useBy: "",
     wastage: "",
-    staffName: defaultStaffMember,
+    staffName: "",
   }));
 
   const [todayEntries, setTodayEntries] = useState<EntryType[]>(initialTodayEntries);
@@ -209,7 +209,7 @@ export default function OretaFoodForm({
               openTime: found?.openTime || "",
               useBy: found?.useBy || "",
               wastage: found?.wastage || "",
-              staffName: found?.staffName || defaultStaffMember,
+              staffName: found?.staffName || "",
               hasOpenDate: def.hasOpenDate,
             };
           })
@@ -238,7 +238,7 @@ export default function OretaFoodForm({
               openTime: found?.openTime || "",
               useBy: found?.useBy || "",
               wastage: found?.wastage || "",
-              staffName: found?.staffName || defaultStaffMember,
+              staffName: found?.staffName || "",
             };
           })
         );
@@ -760,6 +760,7 @@ export default function OretaFoodForm({
                             onChange={(e) => updateVeg(idx, "staffName", e.target.value)}
                             style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border)" }}
                           >
+                            <option value="">-- Select Staff --</option>
                             {availableStaff.map((s) => (
                               <option key={s} value={s}>{s}</option>
                             ))}
@@ -875,6 +876,7 @@ export default function OretaFoodForm({
                             onChange={(e) => updateNonVeg(idx, "staffName", e.target.value)}
                             style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border)" }}
                           >
+                            <option value="">-- Select Staff --</option>
                             {availableStaff.map((s) => (
                               <option key={s} value={s}>{s}</option>
                             ))}
