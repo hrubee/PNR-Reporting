@@ -11,38 +11,72 @@ export interface StaffMember {
   isActive: boolean;
 }
 
+export const SHEET_TO_OUTLET: Record<SheetId, string> = {
+  HYGIENE_REPORT: "bakery",
+  GLASS_REPORT: "bakery",
+  FRIDGE_REPORT: "bakery",
+  KITCHEN: "bakery",
+  PRODUCTION: "bakery",
+  PUFF_ROOM: "bakery",
+  CAKE_ROOM: "bakery",
+  ORETA_SHOP_CLEANING: "oreta-world",
+  ORETA_EQUIPMENT: "oreta-world",
+  ORETA_FRIDGE: "oreta-world",
+  ORETA_GLASS: "oreta-world",
+  ORETA_MONTHLY: "oreta-world",
+  ORETA_FOOD: "oreta-world",
+  ORETA_HYGIENE: "oreta-world",
+  RNS_EQUIPMENT: "rns-world",
+  SYMPHONY_EQUIPMENT: "symphony-world",
+};
+
+export const OUTLET_SUPERVISORS: Record<string, string[]> = {
+  bakery: ["Aboli Wagh", "Sandeep Gargate", "Admin"],
+  "oreta-world": ["Arzaaan", "Rukshin", "Navin", "Admin"],
+  "rns-world": ["Nisha", "Navin", "Admin"],
+  "symphony-world": ["Deva", "Gaurav", "Shagir", "Admin"],
+};
+
 /**
  * Helper to build Prisma OR condition for multi-outlet support.
- * Checks if outletId is null, empty, 'all', or contains the requested outletId.
+ * Checks if outletId contains or equals the requested outletId.
  */
-function getOutletFilterConditions(outletId?: string) {
+export function getOutletFilterConditions(outletId?: string) {
   if (!outletId || outletId === "all") return undefined;
   return [
-    { outletId: null },
-    { outletId: "" },
-    { outletId: "all" },
-    { outletId: { contains: "all" } },
+    { outletId: outletId },
     { outletId: { contains: outletId } },
   ];
 }
 
 /**
  * Returns dynamic staff names for a specific sheet.
- * Prioritizes users explicitly granted access to this sheet in SheetAccess
- * plus users assigned to the outlet, falling back gracefully.
+ * Strictly guarantees staff belong to the sheet's designated outlet.
  */
 export async function getDynamicStaffForSheet(sheetKey: SheetId, outletId?: string): Promise<string[]> {
   await ensureDbSchema();
   try {
-    const outletConds = getOutletFilterConditions(outletId);
+    const targetOutlet = outletId || SHEET_TO_OUTLET[sheetKey];
+    const sheetAliases = (sheetKey === "ORETA_SHOP_CLEANING" || sheetKey === "ORETA_HYGIENE")
+      ? ["ORETA_SHOP_CLEANING", "ORETA_HYGIENE"]
+      : [sheetKey];
+
+    const outletConds = getOutletFilterConditions(targetOutlet);
+    const defaultStaff = SHEET_STAFF[sheetKey] || [];
+    const isSingleSheet = targetOutlet === "rns-world" || targetOutlet === "symphony-world";
+
     const users = await prisma.user.findMany({
       where: {
         isActive: true,
-        OR: [
-          { sheetAccess: { some: { sheet: sheetKey } } },
-          { role: { in: ["ADMIN", "SUPERVISOR"] } },
-          ...(outletConds ? [{ OR: outletConds }] : []),
-        ],
+        ...(outletConds ? { AND: [{ OR: outletConds }] } : {}),
+        ...(isSingleSheet
+          ? {}
+          : {
+              OR: [
+                { sheetAccess: { some: { sheet: { in: sheetAliases } } } },
+                { name: { in: defaultStaff } },
+              ],
+            }),
       },
       select: { name: true },
       orderBy: { name: "asc" },
@@ -60,7 +94,7 @@ export async function getDynamicStaffForSheet(sheetKey: SheetId, outletId?: stri
 
 /**
  * Returns dynamic supervisor names (ADMIN & SUPERVISOR roles) for an outlet.
- * Supports supervisors assigned to multiple outlets via comma-separated IDs or 'all'.
+ * Supports supervisors assigned to multiple outlets via comma-separated IDs.
  */
 export async function getDynamicSupervisors(outletId?: string): Promise<string[]> {
   await ensureDbSchema();
@@ -70,7 +104,14 @@ export async function getDynamicSupervisors(outletId?: string): Promise<string[]
       where: {
         isActive: true,
         role: { in: ["ADMIN", "SUPERVISOR"] },
-        ...(outletConds ? { OR: outletConds } : {}),
+        ...(outletConds
+          ? {
+              OR: [
+                ...outletConds,
+                { role: "ADMIN" },
+              ],
+            }
+          : {}),
       },
       select: { name: true },
       orderBy: { name: "asc" },
@@ -83,7 +124,7 @@ export async function getDynamicSupervisors(outletId?: string): Promise<string[]
   } catch (err) {
     console.error("Error fetching dynamic supervisors:", err);
   }
-  return SUPERVISORS;
+  return (outletId && OUTLET_SUPERVISORS[outletId]) || SUPERVISORS;
 }
 
 /**

@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
       email,
       passwordHash,
       role: role || "EMPLOYEE",
-      outletId: outletId || "all",
+      outletId: outletId || "",
       jobTitle: jobTitle || "",
     },
     select: { id: true, name: true, email: true, role: true, outletId: true, jobTitle: true, isActive: true, createdAt: true },

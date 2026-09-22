@@ -10,13 +10,14 @@ export const ALL_OUTLET_OPTIONS = [
 ];
 
 export function parseOutlets(outletId?: string | null): string[] {
-  if (!outletId || outletId === "all") return ALL_OUTLET_OPTIONS.map((o) => o.id);
+  if (outletId === "all") return ALL_OUTLET_OPTIONS.map((o) => o.id);
+  if (!outletId) return [];
   const list = outletId.split(",").map((s) => s.trim()).filter(Boolean);
-  return list.length > 0 ? list : ALL_OUTLET_OPTIONS.map((o) => o.id);
+  return list;
 }
 
 export function encodeOutlets(selected: string[]): string {
-  if (selected.length === 0 || selected.length === ALL_OUTLET_OPTIONS.length) return "all";
+  if (selected.length === 0) return "";
   return selected.join(",");
 }
 

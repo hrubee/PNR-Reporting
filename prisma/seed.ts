@@ -105,35 +105,35 @@ async function main() {
   // 1. Administrators / Bakery Supervisors
   const admin = await prisma.user.upsert({
     where: { email: "admin@pnr.com" },
-    update: {},
-    create: { name: "Admin", email: "admin@pnr.com", passwordHash: adminPassword, role: "ADMIN" },
+    update: { outletId: "all" },
+    create: { name: "Admin", email: "admin@pnr.com", passwordHash: adminPassword, role: "ADMIN", outletId: "all" },
   });
 
   const aboli = await prisma.user.upsert({
     where: { email: "aboli@pnr.com" },
-    update: {},
-    create: { name: "Aboli Wagh", email: "aboli@pnr.com", passwordHash: defaultPassword, role: "ADMIN" },
+    update: { outletId: "bakery" },
+    create: { name: "Aboli Wagh", email: "aboli@pnr.com", passwordHash: defaultPassword, role: "SUPERVISOR", outletId: "bakery" },
   });
 
   const sandeep = await prisma.user.upsert({
     where: { email: "sandeep@pnr.com" },
-    update: {},
-    create: { name: "Sandeep Gargate", email: "sandeep@pnr.com", passwordHash: defaultPassword, role: "ADMIN" },
+    update: { outletId: "bakery" },
+    create: { name: "Sandeep Gargate", email: "sandeep@pnr.com", passwordHash: defaultPassword, role: "SUPERVISOR", outletId: "bakery" },
   });
 
   // 2. Employees / Staff across Outlets
   const staffList = [
     // Bakery Staff
-    { name: "Shridhar Jadhav", email: "shridhar@pnr.com", sheets: ["HYGIENE_REPORT"] },
-    { name: "Pravin Jadhav", email: "pravin@pnr.com", sheets: ["HYGIENE_REPORT", "PRODUCTION", "KITCHEN"] },
-    { name: "Mavshi", email: "mavshi@pnr.com", sheets: ["HYGIENE_REPORT", "PRODUCTION", "KITCHEN"] },
-    { name: "Sanjay Jadhav", email: "sanjay@pnr.com", sheets: ["GLASS_REPORT"] },
-    { name: "Suresh", email: "suresh@pnr.com", sheets: ["GLASS_REPORT", "KITCHEN"] },
-    { name: "Sagar Yadav", email: "sagar@pnr.com", sheets: ["PRODUCTION", "KITCHEN"] },
-    { name: "Dilip", email: "dilip@pnr.com", sheets: ["PUFF_ROOM"] },
-    { name: "Meraj Khan", email: "meraj@pnr.com", sheets: ["CAKE_ROOM"] },
-    { name: "Jaseen Siddique", email: "jaseen@pnr.com", sheets: ["CAKE_ROOM"] },
-    { name: "Nadeem Faruqi", email: "nadeem@pnr.com", sheets: ["CAKE_ROOM"] },
+    { name: "Shridhar Jadhav", email: "shridhar@pnr.com", outletId: "bakery", sheets: ["HYGIENE_REPORT"] },
+    { name: "Pravin Jadhav", email: "pravin@pnr.com", outletId: "bakery", sheets: ["HYGIENE_REPORT", "PRODUCTION", "KITCHEN"] },
+    { name: "Mavshi", email: "mavshi@pnr.com", outletId: "bakery,rns-world,symphony-world", sheets: ["HYGIENE_REPORT", "PRODUCTION", "KITCHEN", "RNS_EQUIPMENT", "SYMPHONY_EQUIPMENT"] },
+    { name: "Sanjay Jadhav", email: "sanjay@pnr.com", outletId: "bakery", sheets: ["GLASS_REPORT"] },
+    { name: "Suresh", email: "suresh@pnr.com", outletId: "bakery", sheets: ["GLASS_REPORT", "KITCHEN"] },
+    { name: "Sagar Yadav", email: "sagar@pnr.com", outletId: "bakery", sheets: ["PRODUCTION", "KITCHEN"] },
+    { name: "Dilip", email: "dilip@pnr.com", outletId: "bakery", sheets: ["PUFF_ROOM"] },
+    { name: "Meraj Khan", email: "meraj@pnr.com", outletId: "bakery", sheets: ["CAKE_ROOM"] },
+    { name: "Jaseen Siddique", email: "jaseen@pnr.com", outletId: "bakery", sheets: ["CAKE_ROOM"] },
+    { name: "Nadeem Faruqi", email: "nadeem@pnr.com", outletId: "bakery", sheets: ["CAKE_ROOM"] },
     // Oreta World Staff
     { name: "Rameshwar", email: "rameshwar@pnr.com", outletId: "oreta-world", sheets: ["ORETA_HYGIENE", "ORETA_EQUIPMENT", "ORETA_FRIDGE", "ORETA_GLASS", "ORETA_MONTHLY", "ORETA_FOOD"] },
     { name: "Bharti", email: "bharti@pnr.com", outletId: "oreta-world", sheets: ["ORETA_HYGIENE", "ORETA_EQUIPMENT", "ORETA_FRIDGE", "ORETA_GLASS", "ORETA_MONTHLY", "ORETA_FOOD"] },
@@ -161,8 +161,8 @@ async function main() {
   for (const s of staffList) {
     const user = await prisma.user.upsert({
       where: { email: s.email },
-      update: { name: s.name, outletId: s.outletId || "all" },
-      create: { name: s.name, email: s.email, passwordHash: defaultPassword, role: "EMPLOYEE", outletId: s.outletId || "all" },
+      update: { name: s.name, outletId: s.outletId || "bakery" },
+      create: { name: s.name, email: s.email, passwordHash: defaultPassword, role: "EMPLOYEE", outletId: s.outletId || "bakery" },
     });
     createdStaff[s.name] = user.id;
 

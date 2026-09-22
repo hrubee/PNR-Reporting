@@ -283,7 +283,7 @@ export default function OretaGlassForm({
                   }}
                 >
                   <option value="" disabled>Select Staff</option>
-                  {ORETA_STAFF.map((s) => (
+                  {availableStaff.map((s) => (
                     <option key={s} value={s}>{s}</option>
                   ))}
                 </select>
