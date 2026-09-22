@@ -52,7 +52,7 @@ export default function FridgeForm({
   supervisorsList = [],
 }: Props) {
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || []);
-  const defaultSupervisor = availableSupervisors[0] || "";
+  const defaultSupervisor = "";
 
   const init: FridgeCheck[] = items.map((i) => ({
     ...i,
@@ -68,7 +68,7 @@ export default function FridgeForm({
   const [isEditing, setIsEditing] = useState(initialTodayEntries.length === 0);
 
   const [checks, setChecks] = useState<FridgeCheck[]>(init);
-  const [supervisedBy, setSupervisedBy] = useState(defaultSupervisor);
+  const [supervisedBy, setSupervisedBy] = useState("");
   const [hygiene, setHygiene] = useState("Good");
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
@@ -79,7 +79,7 @@ export default function FridgeForm({
   function startNewSubmission() {
     setEditingId(null);
     setChecks(init);
-    setSupervisedBy(defaultSupervisor);
+    setSupervisedBy("");
     setHygiene("Good");
     setComments("");
     setCorrectiveAction("");
@@ -267,6 +267,7 @@ export default function FridgeForm({
                   onChange={(e) => setSupervisedBy(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
+                  <option value="">-- Select Supervisor --</option>
                   {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}

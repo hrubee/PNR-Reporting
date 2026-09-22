@@ -51,7 +51,7 @@ export default function OretaEquipmentForm({
 }: Props) {
   const availableStaff = staffList;
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || []);
-  const defaultSupervisor = availableSupervisors[0] || "";
+  const defaultSupervisor = "";
   const defaultStaff = "";
 
   const init: EquipmentCheck[] = ORETA_EQUIPMENT_ITEMS.map((item) => ({
@@ -70,7 +70,7 @@ export default function OretaEquipmentForm({
   const [isEditing, setIsEditing] = useState(initialTodayEntries.length === 0);
 
   const [checks, setChecks] = useState<EquipmentCheck[]>(init);
-  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
+  const [supervisorName, setSupervisorName] = useState("");
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("all");
@@ -83,7 +83,7 @@ export default function OretaEquipmentForm({
   function startNewSubmission() {
     setEditingId(null);
     setChecks(init);
-    setSupervisorName(defaultSupervisor);
+    setSupervisorName("");
     setComments("");
     setCorrectiveAction("");
     setIsEditing(true);
@@ -461,6 +461,7 @@ export default function OretaEquipmentForm({
                   onChange={(e) => setSupervisorName(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
+                  <option value="">-- Select Supervisor --</option>
                   {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}

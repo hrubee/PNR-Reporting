@@ -79,7 +79,7 @@ export default function OretaShopCleaningForm({
 }: Props) {
   const availableStaff = staffList;
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || []);
-  const defaultSupervisor = availableSupervisors[0] || "";
+  const defaultSupervisor = "";
   const defaultStaff = "";
 
   const init: AreaRow[] = ORETA_HYGIENE_AREAS.map((item) => ({
@@ -115,7 +115,7 @@ export default function OretaShopCleaningForm({
 
   const [rows, setRows] = useState<AreaRow[]>(init);
   const [activeShift, setActiveShift] = useState<ShiftKey | "all">(getCurrentShift());
-  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
+  const [supervisorName, setSupervisorName] = useState("");
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
   const [saving, setSaving] = useState(false);
@@ -125,7 +125,7 @@ export default function OretaShopCleaningForm({
   function startNewSubmission() {
     setEditingId(null);
     setRows(init);
-    setSupervisorName(defaultSupervisor);
+    setSupervisorName("");
     setComments("");
     setCorrectiveAction("");
     setIsEditing(true);
@@ -521,6 +521,7 @@ export default function OretaShopCleaningForm({
                   onChange={(e) => setSupervisorName(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
+                  <option value="">-- Select Supervisor --</option>
                   {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}

@@ -62,7 +62,7 @@ export default function OretaHygieneForm({
 
   const availableStaff = staffList;
   const availableSupervisors = supervisorsList;
-  const defaultSupervisor = availableSupervisors[0] || "";
+  const defaultSupervisor = "";
   const defaultStaff = "";
 
   const [date, setDate] = useState(initialDate);
@@ -471,6 +471,7 @@ export default function OretaHygieneForm({
               onChange={(e) => setSupervisorName(e.target.value)}
               className="form-control"
             >
+              <option value="">-- Select Supervisor --</option>
               {availableSupervisors.map((s) => (
                 <option key={s} value={s}>
                   {s}

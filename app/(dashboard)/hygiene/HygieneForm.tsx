@@ -55,7 +55,7 @@ export default function HygieneForm({
   const teamMembers = staffList;
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || []);
   const defaultWorker = "";
-  const defaultSupervisor = availableSupervisors[0] || "";
+  const defaultSupervisor = "";
 
   const initChecks: AreaCheck[] = areas.map((area) => ({
     area,
@@ -70,7 +70,7 @@ export default function HygieneForm({
   const [isEditing, setIsEditing] = useState(initialTodayEntries.length === 0);
 
   const [areaChecks, setAreaChecks] = useState<AreaCheck[]>(initChecks);
-  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
+  const [supervisorName, setSupervisorName] = useState("");
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
   const [saving, setSaving] = useState(false);
@@ -80,7 +80,7 @@ export default function HygieneForm({
   function startNewSubmission() {
     setEditingId(null);
     setAreaChecks(initChecks);
-    setSupervisorName(defaultSupervisor);
+    setSupervisorName("");
     setComments("");
     setCorrectiveAction("");
     setIsEditing(true);
@@ -344,6 +344,7 @@ export default function HygieneForm({
                   onChange={(e) => setSupervisorName(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
+                  <option value="">-- Select Supervisor --</option>
                   {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}

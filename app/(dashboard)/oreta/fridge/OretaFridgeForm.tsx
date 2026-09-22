@@ -50,7 +50,7 @@ export default function OretaFridgeForm({
   supervisorsList = [],
 }: Props) {
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || []);
-  const defaultSupervisor = availableSupervisors[0] || "";
+  const defaultSupervisor = "";
 
   const init: FridgeCheck[] = ORETA_FRIDGE_ITEMS.map((item) => ({
     id: item.id,
@@ -70,7 +70,7 @@ export default function OretaFridgeForm({
   const [isEditing, setIsEditing] = useState(initialTodayEntries.length === 0);
 
   const [checks, setChecks] = useState<FridgeCheck[]>(init);
-  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
+  const [supervisorName, setSupervisorName] = useState("");
   const [hygiene, setHygiene] = useState("Good");
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
@@ -81,7 +81,7 @@ export default function OretaFridgeForm({
   function startNewSubmission() {
     setEditingId(null);
     setChecks(init);
-    setSupervisorName(defaultSupervisor);
+    setSupervisorName("");
     setHygiene("Good");
     setComments("");
     setCorrectiveAction("");
@@ -406,6 +406,7 @@ export default function OretaFridgeForm({
                   onChange={(e) => setSupervisorName(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
+                  <option value="">-- Select Supervisor --</option>
                   {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}

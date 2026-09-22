@@ -69,7 +69,7 @@ export default function GenericChecklistForm({
   const teamMembers = staffList;
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || []);
   const defaultWorker = "";
-  const defaultSupervisor = availableSupervisors[0] || "";
+  const defaultSupervisor = "";
 
   const normalizedEquipment: { id: number; name: string; category: string }[] = equipment.map((item, idx) => {
     if (typeof item === "string") {
@@ -96,7 +96,7 @@ export default function GenericChecklistForm({
   const [isEditing, setIsEditing] = useState(initialTodayEntries.length === 0);
 
   const [checks, setChecks] = useState<EquipmentCheck[]>(init);
-  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
+  const [supervisorName, setSupervisorName] = useState("");
   const [workerName, setWorkerName] = useState("");
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
@@ -108,7 +108,7 @@ export default function GenericChecklistForm({
   function startNewSubmission() {
     setEditingId(null);
     setChecks(init);
-    setSupervisorName(defaultSupervisor);
+    setSupervisorName("");
     setWorkerName("");
     setComments("");
     setCorrectiveAction("");
@@ -506,6 +506,7 @@ export default function GenericChecklistForm({
                   onChange={(e) => setSupervisorName(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
+                  <option value="">-- Select Supervisor --</option>
                   {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}
@@ -517,6 +518,7 @@ export default function GenericChecklistForm({
                   value={workerName}
                   onChange={(e) => setWorkerName(e.target.value)}
                 >
+                  <option value="">-- Select Staff --</option>
                   {teamMembers.map((m) => (
                     <option key={m} value={m}>{m}</option>
                   ))}

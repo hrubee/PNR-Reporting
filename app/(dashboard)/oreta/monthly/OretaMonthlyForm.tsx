@@ -43,7 +43,7 @@ export default function OretaMonthlyForm({
 }: Props) {
   const availableStaff = staffList;
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || []);
-  const defaultSupervisor = availableSupervisors[0] || "";
+  const defaultSupervisor = "";
 
   const serviceStaffList = [
     ...availableStaff,
@@ -70,7 +70,7 @@ export default function OretaMonthlyForm({
   const [isEditing, setIsEditing] = useState(initialTodayEntries.length === 0);
 
   const [checks, setChecks] = useState<MonthlyCheck[]>(init);
-  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
+  const [supervisorName, setSupervisorName] = useState("");
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
   const [month, setMonth] = useState(currentMonth);
@@ -81,7 +81,7 @@ export default function OretaMonthlyForm({
   function startNewSubmission() {
     setEditingId(null);
     setChecks(init);
-    setSupervisorName(defaultSupervisor);
+    setSupervisorName("");
     setComments("");
     setCorrectiveAction("");
     setIsEditing(true);
@@ -371,6 +371,7 @@ export default function OretaMonthlyForm({
                   onChange={(e) => setSupervisorName(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
+                  <option value="">-- Select Supervisor --</option>
                   {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}

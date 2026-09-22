@@ -51,7 +51,7 @@ export default function OretaGlassForm({
 }: Props) {
   const availableStaff = staffList;
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || []);
-  const defaultSupervisor = availableSupervisors[0] || "";
+  const defaultSupervisor = "";
   const defaultStaff = "";
 
   const init: GlassCheck[] = ORETA_GLASS_ITEMS.map((item) => ({
@@ -70,7 +70,7 @@ export default function OretaGlassForm({
   const [isEditing, setIsEditing] = useState(initialTodayEntries.length === 0);
 
   const [checks, setChecks] = useState<GlassCheck[]>(init);
-  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
+  const [supervisorName, setSupervisorName] = useState("");
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
   const [saving, setSaving] = useState(false);
@@ -80,7 +80,7 @@ export default function OretaGlassForm({
   function startNewSubmission() {
     setEditingId(null);
     setChecks(init);
-    setSupervisorName(defaultSupervisor);
+    setSupervisorName("");
     setComments("");
     setCorrectiveAction("");
     setIsEditing(true);
@@ -416,6 +416,7 @@ export default function OretaGlassForm({
                   onChange={(e) => setSupervisorName(e.target.value)}
                   style={{ fontWeight: 600, color: "var(--accent)" }}
                 >
+                  <option value="">-- Select Supervisor --</option>
                   {availableSupervisors.map((sup) => (
                     <option key={sup} value={sup}>{sup}</option>
                   ))}

@@ -51,7 +51,7 @@ export default function SymphonyEquipmentForm({
 }: Props) {
   const availableStaff = staffList;
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["symphony-world"] || []);
-  const defaultSupervisor = availableSupervisors[0] || "";
+  const defaultSupervisor = "";
   const defaultStaff = "";
 
   const init: EquipmentCheck[] = SYMPHONY_EQUIPMENT_ITEMS.map((item) => ({
@@ -70,7 +70,7 @@ export default function SymphonyEquipmentForm({
   const [isEditing, setIsEditing] = useState(initialTodayEntries.length === 0);
 
   const [checks, setChecks] = useState<EquipmentCheck[]>(init);
-  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
+  const [supervisorName, setSupervisorName] = useState("");
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("all");
@@ -83,7 +83,7 @@ export default function SymphonyEquipmentForm({
   function startNewSubmission() {
     setEditingId(null);
     setChecks(init);
-    setSupervisorName(defaultSupervisor);
+    setSupervisorName("");
     setComments("");
     setCorrectiveAction("");
     setIsEditing(true);
@@ -449,6 +449,7 @@ export default function SymphonyEquipmentForm({
                     onChange={(e) => setSupervisorName(e.target.value)}
                     style={{ width: "100%", padding: "0.55rem", borderRadius: "6px", border: "1px solid var(--border)" }}
                   >
+                    <option value="">-- Select Supervisor --</option>
                     {availableSupervisors.map((sup) => (
                       <option key={sup} value={sup}>{sup}</option>
                     ))}

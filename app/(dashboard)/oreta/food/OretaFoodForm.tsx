@@ -21,7 +21,8 @@ export interface TempCheck {
   cookingTemp: string;
   holdingTemp: string;
   time: string;
-  fridgeTemp: string;
+  staffName: string;
+  fridgeTemp?: string;
   useBy: string;
 }
 
@@ -96,7 +97,7 @@ export default function OretaFoodForm({
   const availableStaff = staffList;
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || []);
   const defaultStaffMember = "";
-  const defaultSupervisor = availableSupervisors[0] || "";
+  const defaultSupervisor = "";
 
   const initTemp: TempCheck[] = ORETA_TEMP_CONTROL_ITEMS.map((item) => ({
     id: item.id,
@@ -104,7 +105,7 @@ export default function OretaFoodForm({
     cookingTemp: "",
     holdingTemp: "",
     time: "",
-    fridgeTemp: "",
+    staffName: "",
     useBy: "",
   }));
 
@@ -140,7 +141,7 @@ export default function OretaFoodForm({
   const [vegChecks, setVegChecks] = useState<VegFillingCheck[]>(initVeg);
   const [nonVegChecks, setNonVegChecks] = useState<NonVegFillingCheck[]>(initNonVeg);
 
-  const [supervisorName, setSupervisorName] = useState(defaultSupervisor);
+  const [supervisorName, setSupervisorName] = useState("");
   const [comments, setComments] = useState("");
   const [correctiveAction, setCorrectiveAction] = useState("");
   const [activeTab, setActiveTab] = useState<"all" | "temp" | "veg" | "nonveg">("all");
@@ -154,7 +155,7 @@ export default function OretaFoodForm({
     setTempChecks(initTemp);
     setVegChecks(initVeg);
     setNonVegChecks(initNonVeg);
-    setSupervisorName(defaultSupervisor);
+    setSupervisorName("");
     setComments("");
     setCorrectiveAction("");
     setIsEditing(true);
@@ -179,7 +180,7 @@ export default function OretaFoodForm({
               cookingTemp: found?.cookingTemp || "",
               holdingTemp: found?.holdingTemp || "",
               time: found?.time || "",
-              fridgeTemp: found?.fridgeTemp || "",
+              staffName: found?.staffName || found?.name || "",
               useBy: found?.useBy || "",
             };
           })
@@ -542,7 +543,7 @@ export default function OretaFoodForm({
                 >
                   <strong style={{ color: "#3b82f6" }}>🌡️ Section 1: Temperature Control & Holding Log</strong>
                   <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>
-                    Rule: Cooking &gt; 70°C, Holding &lt; 60°C / Fridge +1 to +5°C
+                    Rule: Cooking &gt; 70°C, Holding &lt; 60°C
                   </span>
                 </div>
 
@@ -608,16 +609,16 @@ export default function OretaFoodForm({
                           </select>
                         </div>
 
-                        {/* Fridge Temp */}
+                        {/* Staff Name */}
                         <div className="form-group" style={{ margin: 0 }}>
-                          <label style={{ fontSize: "0.8rem" }}>Fridge Temp</label>
+                          <label style={{ fontSize: "0.8rem" }}>Staff Name</label>
                           <select
-                            value={item.fridgeTemp}
-                            onChange={(e) => updateTemp(idx, "fridgeTemp", e.target.value)}
+                            value={item.staffName}
+                            onChange={(e) => updateTemp(idx, "staffName", e.target.value)}
                             style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border)" }}
                           >
-                            <option value="">Select Fridge Temp...</option>
-                            {FRIDGE_TEMP_OPTIONS.map((opt) => (
+                            <option value="">-- Select Staff --</option>
+                            {availableStaff.map((opt) => (
                               <option key={opt} value={opt}>{opt}</option>
                             ))}
                           </select>
@@ -754,7 +755,7 @@ export default function OretaFoodForm({
 
                         {/* Staff Name */}
                         <div className="form-group" style={{ margin: 0 }}>
-                          <label style={{ fontSize: "0.8rem" }}>Staff / Prep By</label>
+                          <label style={{ fontSize: "0.8rem" }}>Staff name (opened by)</label>
                           <select
                             value={item.staffName}
                             onChange={(e) => updateVeg(idx, "staffName", e.target.value)}
@@ -870,7 +871,7 @@ export default function OretaFoodForm({
 
                         {/* Staff Name */}
                         <div className="form-group" style={{ margin: 0 }}>
-                          <label style={{ fontSize: "0.8rem" }}>Staff / Prep By</label>
+                          <label style={{ fontSize: "0.8rem" }}>Staff name (opened by)</label>
                           <select
                             value={item.staffName}
                             onChange={(e) => updateNonVeg(idx, "staffName", e.target.value)}
@@ -898,6 +899,7 @@ export default function OretaFoodForm({
                   onChange={(e) => setSupervisorName(e.target.value)}
                   style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border)" }}
                 >
+                  <option value="">-- Select Supervisor --</option>
                   {availableSupervisors.map((s) => (
                     <option key={s} value={s}>{s}</option>
                   ))}
