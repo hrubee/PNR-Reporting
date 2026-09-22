@@ -12,6 +12,8 @@ import {
   WASTAGE_OPTIONS,
   TIME_PRESET_OPTIONS,
   ORETA_STAFF,
+  getFoodShelfLifeHours,
+  calculateUseByTime,
 } from "@/lib/outlets";
 import { SUPERVISORS, OUTLET_SUPERVISORS } from "@/lib/permissions";
 
@@ -261,6 +263,10 @@ export default function OretaFoodForm({
     setTempChecks((prev) => {
       const copy = [...prev];
       copy[idx] = { ...copy[idx], [field]: val };
+      if (field === "time") {
+        const hrs = getFoodShelfLifeHours(copy[idx].product);
+        copy[idx].useBy = val ? calculateUseByTime(val, hrs, selectedDate) : "";
+      }
       return copy;
     });
   }
@@ -269,6 +275,12 @@ export default function OretaFoodForm({
     setVegChecks((prev) => {
       const copy = [...prev];
       copy[idx] = { ...copy[idx], [field]: val };
+      if (field === "openTime" || (field === "openDate" && copy[idx].openTime)) {
+        const timeToUse = field === "openTime" ? val : copy[idx].openTime;
+        const dateToUse = field === "openDate" ? val : (copy[idx].openDate || copy[idx].receivedDate || selectedDate);
+        const hrs = getFoodShelfLifeHours(copy[idx].product);
+        copy[idx].useBy = timeToUse ? calculateUseByTime(timeToUse, hrs, dateToUse) : "";
+      }
       return copy;
     });
   }
@@ -277,6 +289,12 @@ export default function OretaFoodForm({
     setNonVegChecks((prev) => {
       const copy = [...prev];
       copy[idx] = { ...copy[idx], [field]: val };
+      if (field === "openTime" || (field === "receivedDate" && copy[idx].openTime)) {
+        const timeToUse = field === "openTime" ? val : copy[idx].openTime;
+        const dateToUse = field === "receivedDate" ? val : (copy[idx].receivedDate || selectedDate);
+        const hrs = getFoodShelfLifeHours(copy[idx].product);
+        copy[idx].useBy = timeToUse ? calculateUseByTime(timeToUse, hrs, dateToUse) : "";
+      }
       return copy;
     });
   }
@@ -284,15 +302,80 @@ export default function OretaFoodForm({
   // Quick Preset Handlers
   function setAllCurrentTimes() {
     const timeNow = getCurrentTimeString();
-    setTempChecks((prev) => prev.map((t) => ({ ...t, time: t.time || timeNow })));
-    setVegChecks((prev) => prev.map((v) => ({ ...v, openTime: v.openTime || timeNow })));
-    setNonVegChecks((prev) => prev.map((nv) => ({ ...nv, openTime: nv.openTime || timeNow })));
+    setTempChecks((prev) =>
+      prev.map((t) => {
+        const timeVal = t.time || timeNow;
+        const hrs = getFoodShelfLifeHours(t.product);
+        return {
+          ...t,
+          time: timeVal,
+          useBy: calculateUseByTime(timeVal, hrs, selectedDate),
+        };
+      })
+    );
+    setVegChecks((prev) =>
+      prev.map((v) => {
+        const timeVal = v.openTime || timeNow;
+        const baseDate = v.openDate || v.receivedDate || selectedDate;
+        const hrs = getFoodShelfLifeHours(v.product);
+        return {
+          ...v,
+          openTime: timeVal,
+          useBy: calculateUseByTime(timeVal, hrs, baseDate),
+        };
+      })
+    );
+    setNonVegChecks((prev) =>
+      prev.map((nv) => {
+        const timeVal = nv.openTime || timeNow;
+        const baseDate = nv.receivedDate || selectedDate;
+        const hrs = getFoodShelfLifeHours(nv.product);
+        return {
+          ...nv,
+          openTime: timeVal,
+          useBy: calculateUseByTime(timeVal, hrs, baseDate),
+        };
+      })
+    );
   }
 
-  function setAllUseBy48Hrs() {
-    setTempChecks((prev) => prev.map((t) => ({ ...t, useBy: t.useBy || "48 hrs / OK" })));
-    setVegChecks((prev) => prev.map((v) => ({ ...v, useBy: v.useBy || "48 hrs / OK" })));
-    setNonVegChecks((prev) => prev.map((nv) => ({ ...nv, useBy: nv.useBy || "48 hrs / OK" })));
+  function setAllUseByCalculated() {
+    const timeNow = getCurrentTimeString();
+    setTempChecks((prev) =>
+      prev.map((t) => {
+        const timeVal = t.time || timeNow;
+        const hrs = getFoodShelfLifeHours(t.product);
+        return {
+          ...t,
+          time: timeVal,
+          useBy: calculateUseByTime(timeVal, hrs, selectedDate),
+        };
+      })
+    );
+    setVegChecks((prev) =>
+      prev.map((v) => {
+        const timeVal = v.openTime || timeNow;
+        const baseDate = v.openDate || v.receivedDate || selectedDate;
+        const hrs = getFoodShelfLifeHours(v.product);
+        return {
+          ...v,
+          openTime: timeVal,
+          useBy: calculateUseByTime(timeVal, hrs, baseDate),
+        };
+      })
+    );
+    setNonVegChecks((prev) =>
+      prev.map((nv) => {
+        const timeVal = nv.openTime || timeNow;
+        const baseDate = nv.receivedDate || selectedDate;
+        const hrs = getFoodShelfLifeHours(nv.product);
+        return {
+          ...nv,
+          openTime: timeVal,
+          useBy: calculateUseByTime(timeVal, hrs, baseDate),
+        };
+      })
+    );
   }
 
   function setAllZeroWastage() {
@@ -477,10 +560,10 @@ export default function OretaFoodForm({
                 <button
                   type="button"
                   className="btn btn-secondary btn-sm"
-                  onClick={setAllUseBy48Hrs}
-                  title="Sets '48 hrs / OK' into empty Use By fields"
+                  onClick={setAllUseByCalculated}
+                  title="Auto calculates Use By time based on each item's shelf life (12 hrs / 48 hrs)"
                 >
-                  ⚡ Use By 48 hrs
+                  ⚡ Auto Calc Use By
                 </button>
                 <button
                   type="button"
@@ -626,17 +709,29 @@ export default function OretaFoodForm({
 
                         {/* Use By */}
                         <div className="form-group" style={{ margin: 0 }}>
-                          <label style={{ fontSize: "0.8rem" }}>Use By</label>
-                          <select
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2px" }}>
+                            <label style={{ fontSize: "0.8rem", margin: 0 }}>Use By</label>
+                            <span style={{ fontSize: "0.68rem", color: "var(--accent)", fontWeight: 600 }}>
+                              {getFoodShelfLifeHours(item.product)}h rule
+                            </span>
+                          </div>
+                          <input
+                            type="text"
                             value={item.useBy}
                             onChange={(e) => updateTemp(idx, "useBy", e.target.value)}
-                            style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border)" }}
-                          >
-                            <option value="">Select Use By...</option>
-                            {USE_BY_OPTIONS.map((opt) => (
-                              <option key={opt} value={opt}>{opt}</option>
-                            ))}
-                          </select>
+                            placeholder="Auto-calc from Time..."
+                            list="useby-options"
+                            style={{
+                              width: "100%",
+                              padding: "0.5rem",
+                              borderRadius: "6px",
+                              border: "1px solid var(--border)",
+                              background: "var(--bg-input)",
+                              color: "var(--text-primary)",
+                              fontSize: "0.82rem",
+                              fontWeight: 500,
+                            }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -725,17 +820,29 @@ export default function OretaFoodForm({
 
                         {/* Use By */}
                         <div className="form-group" style={{ margin: 0 }}>
-                          <label style={{ fontSize: "0.8rem" }}>Use By</label>
-                          <select
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2px" }}>
+                            <label style={{ fontSize: "0.8rem", margin: 0 }}>Use By</label>
+                            <span style={{ fontSize: "0.68rem", color: "var(--accent)", fontWeight: 600 }}>
+                              {getFoodShelfLifeHours(item.product)}h rule
+                            </span>
+                          </div>
+                          <input
+                            type="text"
                             value={item.useBy}
                             onChange={(e) => updateVeg(idx, "useBy", e.target.value)}
-                            style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border)" }}
-                          >
-                            <option value="">Select Use By...</option>
-                            {USE_BY_OPTIONS.map((opt) => (
-                              <option key={opt} value={opt}>{opt}</option>
-                            ))}
-                          </select>
+                            placeholder="Auto-calc from Open Time..."
+                            list="useby-options"
+                            style={{
+                              width: "100%",
+                              padding: "0.5rem",
+                              borderRadius: "6px",
+                              border: "1px solid var(--border)",
+                              background: "var(--bg-input)",
+                              color: "var(--text-primary)",
+                              fontSize: "0.82rem",
+                              fontWeight: 500,
+                            }}
+                          />
                         </div>
 
                         {/* Wastage */}
@@ -841,17 +948,29 @@ export default function OretaFoodForm({
 
                         {/* Use By */}
                         <div className="form-group" style={{ margin: 0 }}>
-                          <label style={{ fontSize: "0.8rem" }}>Use By</label>
-                          <select
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2px" }}>
+                            <label style={{ fontSize: "0.8rem", margin: 0 }}>Use By</label>
+                            <span style={{ fontSize: "0.68rem", color: "var(--accent)", fontWeight: 600 }}>
+                              {getFoodShelfLifeHours(item.product)}h rule
+                            </span>
+                          </div>
+                          <input
+                            type="text"
                             value={item.useBy}
                             onChange={(e) => updateNonVeg(idx, "useBy", e.target.value)}
-                            style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border)" }}
-                          >
-                            <option value="">Select Use By...</option>
-                            {USE_BY_OPTIONS.map((opt) => (
-                              <option key={opt} value={opt}>{opt}</option>
-                            ))}
-                          </select>
+                            placeholder="Auto-calc from Open Time..."
+                            list="useby-options"
+                            style={{
+                              width: "100%",
+                              padding: "0.5rem",
+                              borderRadius: "6px",
+                              border: "1px solid var(--border)",
+                              background: "var(--bg-input)",
+                              color: "var(--text-primary)",
+                              fontSize: "0.82rem",
+                              fontWeight: 500,
+                            }}
+                          />
                         </div>
 
                         {/* Wastage */}
@@ -937,6 +1056,14 @@ export default function OretaFoodForm({
                 </button>
               )}
             </div>
+
+            <datalist id="useby-options">
+              <option value="12 hrs" />
+              <option value="48 hrs" />
+              <option value="48 hrs / OK" />
+              <option value="OK" />
+              <option value="Discard" />
+            </datalist>
           </div>
         </form>
       )}

@@ -261,25 +261,116 @@ export const FOOD_GUIDELINES: FoodGuideline[] = [
 ];
 
 export const ORETA_TEMP_CONTROL_ITEMS = [
-  { id: 1, name: "Boiled chicken", defaultCookingTemp: "77", defaultHoldingTemp: "55", defaultUseBy: "48 hrs / OK" },
-  { id: 2, name: "Spinach", defaultCookingTemp: "77", defaultHoldingTemp: "55", defaultUseBy: "48 hrs / OK" },
-  { id: 3, name: "Boiled Potato", defaultCookingTemp: "77", defaultHoldingTemp: "55", defaultUseBy: "48 hrs / OK" },
+  { id: 1, name: "Boiled chicken", shelfLifeHours: 48, defaultCookingTemp: "77", defaultHoldingTemp: "55" },
+  { id: 2, name: "Spinach", shelfLifeHours: 12, defaultCookingTemp: "77", defaultHoldingTemp: "55" },
+  { id: 3, name: "Boiled Potato", shelfLifeHours: 12, defaultCookingTemp: "77", defaultHoldingTemp: "55" },
 ];
 
 export const ORETA_VEG_FILLING_ITEMS = [
-  { id: 1, name: "Paneer Tikka", hasOpenDate: true },
-  { id: 2, name: "Paneer Chilly", hasOpenDate: true },
-  { id: 3, name: "Veg Mexican", hasOpenDate: false },
-  { id: 4, name: "Schezwan Sauce", hasOpenDate: false },
-  { id: 5, name: "Tikka Sauce", hasOpenDate: false },
-  { id: 6, name: "Chutney", hasOpenDate: false },
+  { id: 1, name: "Paneer Tikka", shelfLifeHours: 48, hasOpenDate: true },
+  { id: 2, name: "Paneer Chilly", shelfLifeHours: 48, hasOpenDate: true },
+  { id: 3, name: "Veg Mexican", shelfLifeHours: 48, hasOpenDate: false },
+  { id: 4, name: "Schezwan Sauce", shelfLifeHours: 48, hasOpenDate: false },
+  { id: 5, name: "Tikka Sauce", shelfLifeHours: 48, hasOpenDate: false },
+  { id: 6, name: "Chutney", shelfLifeHours: 48, hasOpenDate: false },
 ];
 
 export const ORETA_NON_VEG_FILLING_ITEMS = [
-  { id: 1, name: "Chicken Tikka" },
-  { id: 2, name: "Chicken Mexican" },
-  { id: 3, name: "Chicken Chilly" },
+  { id: 1, name: "Chicken Tikka", shelfLifeHours: 48 },
+  { id: 2, name: "Chicken Mexican", shelfLifeHours: 48 },
+  { id: 3, name: "Chicken Chilly", shelfLifeHours: 48 },
 ];
+
+export const FOOD_SHELF_LIFE_HOURS: Record<string, number> = {
+  // 12 hrs items
+  "spinach": 12,
+  "boiled potato": 12,
+
+  // 48 hrs items
+  "boiled chicken": 48,
+  "paneer tikka": 48,
+  "paneer chilly": 48,
+  "veg mexican": 48,
+  "schezwan sauce": 48,
+  "tikka sauce": 48,
+  "chutney": 48,
+  "chicken tikka": 48,
+  "chicken mexican": 48,
+  "chicken chilly": 48,
+};
+
+export function getFoodShelfLifeHours(productName: string): number {
+  const key = (productName || "").trim().toLowerCase();
+  if (key.includes("spinach") || key.includes("potato")) {
+    return 12;
+  }
+  return FOOD_SHELF_LIFE_HOURS[key] || 48;
+}
+
+export function calculateUseByTime(
+  timeStr: string,
+  hoursToAdd: number,
+  baseDateStr?: string
+): string {
+  if (!timeStr || !timeStr.trim()) return "";
+
+  const trimmed = timeStr.trim();
+  const match = trimmed.match(/^(\d{1,2}):(\d{2})(?:\s*([APap][Mm]))?/);
+  if (!match) return `${hoursToAdd} hrs`;
+
+  let hours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+  const modifier = match[3] ? match[3].toUpperCase() : null;
+
+  if (modifier === "PM" && hours < 12) hours += 12;
+  if (modifier === "AM" && hours === 12) hours = 0;
+  if (!modifier && hours >= 1 && hours <= 6) {
+    hours += 12;
+  }
+
+  let baseDate: Date;
+  if (baseDateStr && !isNaN(Date.parse(baseDateStr))) {
+    const parts = baseDateStr.split("-");
+    if (parts.length === 3) {
+      baseDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    } else {
+      baseDate = new Date(baseDateStr);
+    }
+  } else {
+    baseDate = new Date();
+  }
+
+  baseDate.setHours(hours, minutes, 0, 0);
+
+  const targetDate = new Date(baseDate.getTime() + hoursToAdd * 60 * 60 * 1000);
+
+  let targetHours = targetDate.getHours();
+  const targetMins = targetDate.getMinutes();
+  const targetAmpm = targetHours >= 12 ? "PM" : "AM";
+  targetHours = targetHours % 12 || 12;
+  const hh = String(targetHours).padStart(2, "0");
+  const mm = String(targetMins).padStart(2, "0");
+  const formattedTime = `${hh}:${mm} ${targetAmpm}`;
+
+  const sameDay =
+    baseDate.getFullYear() === targetDate.getFullYear() &&
+    baseDate.getMonth() === targetDate.getMonth() &&
+    baseDate.getDate() === targetDate.getDate();
+
+  if (sameDay) {
+    return `${formattedTime} (${hoursToAdd} hrs)`;
+  }
+
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const targetDateFormatted = `${targetDate.getDate()} ${monthNames[targetDate.getMonth()]}`;
+
+  const dayDiff = Math.round((targetDate.getTime() - baseDate.getTime()) / (24 * 60 * 60 * 1000));
+  if (dayDiff === 1) {
+    return `${formattedTime} (Tomorrow / ${hoursToAdd} hrs)`;
+  }
+
+  return `${formattedTime} (${targetDateFormatted} / ${hoursToAdd} hrs)`;
+}
 
 // Dropdown Pre-set Options for Food Safety Inputs
 export const COOKING_TEMP_OPTIONS = [
