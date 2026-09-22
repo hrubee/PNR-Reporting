@@ -46,33 +46,22 @@ export function getOutletFilterConditions(outletId?: string) {
 
 /**
  * Returns dynamic staff names for a specific sheet.
- * Strictly guarantees staff belong to the sheet's designated outlet.
+ * STRICTLY: only employees who have been granted access to that sheet
+ * in the Access Matrix will appear in the dropdown.
  */
 export async function getDynamicStaffForSheet(sheetKey: SheetId, outletId?: string): Promise<string[]> {
   await ensureDbSchema();
   try {
-    const targetOutlet = outletId || SHEET_TO_OUTLET[sheetKey];
     const sheetAliases = (sheetKey === "ORETA_SHOP_CLEANING" || sheetKey === "ORETA_HYGIENE")
       ? ["ORETA_SHOP_CLEANING", "ORETA_HYGIENE"]
       : [sheetKey];
 
-    const outletConds = getOutletFilterConditions(targetOutlet);
-    const defaultStaff = SHEET_STAFF[sheetKey] || [];
-    const isSingleSheet = targetOutlet === "rns-world" || targetOutlet === "symphony-world";
-
+    // STRICT: only active employees who have explicit sheet access granted
     const users = await prisma.user.findMany({
       where: {
         isActive: true,
-        role: "EMPLOYEE", // STRICTLY ONLY EMPLOYEES: supervisors and admins do not clean
-        ...(outletConds ? { AND: [{ OR: outletConds }] } : {}),
-        ...(isSingleSheet
-          ? {}
-          : {
-              OR: [
-                { sheetAccess: { some: { sheet: { in: sheetAliases } } } },
-                { name: { in: defaultStaff } },
-              ],
-            }),
+        role: "EMPLOYEE",
+        sheetAccess: { some: { sheet: { in: sheetAliases } } },
       },
       select: { name: true },
       orderBy: { name: "asc" },
@@ -85,6 +74,7 @@ export async function getDynamicStaffForSheet(sheetKey: SheetId, outletId?: stri
   } catch (err) {
     console.error("Error fetching dynamic staff for sheet:", err);
   }
+  // Fallback: use static list only if no employees have access yet (e.g. fresh DB)
   return SHEET_STAFF[sheetKey] || [];
 }
 
