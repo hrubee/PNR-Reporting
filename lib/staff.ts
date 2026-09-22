@@ -41,34 +41,30 @@ export function getOutletFilterConditions(outletId?: string) {
   return [
     { outletId: outletId },
     { outletId: { contains: outletId } },
+    { outletId: "all" },
   ];
 }
 
 /**
- * Returns dynamic staff names for a specific sheet.
- * STRICT DOUBLE GATE:
- *   1. Employee must belong to the sheet's outlet (outlet isolation)
- *   2. Employee must have explicit sheetAccess for that sheet (access matrix)
- * No employee from another outlet will ever appear here.
+ * Returns dynamic staff names for a specific sheet based on Outlet Assignment.
+ * ACCESS MATRIX DISABLED:
+ * Any active employee assigned to this sheet's outlet is visible in the dropdown.
+ * If a user is NOT assigned to this outlet (or unassigned), they will NOT be visible.
  */
 export async function getDynamicStaffForSheet(sheetKey: SheetId, outletId?: string): Promise<string[]> {
   await ensureDbSchema();
   try {
     const targetOutlet = outletId || SHEET_TO_OUTLET[sheetKey];
+    if (!targetOutlet) return [];
     const outletConds = getOutletFilterConditions(targetOutlet);
+    if (!outletConds) return [];
 
-    const sheetAliases = (sheetKey === "ORETA_SHOP_CLEANING" || sheetKey === "ORETA_HYGIENE")
-      ? ["ORETA_SHOP_CLEANING", "ORETA_HYGIENE"]
-      : [sheetKey];
-
-    // Gate 1: outlet scope — only employees belonging to this outlet
-    // Gate 2: sheet access — only employees explicitly granted this sheet
+    // Query active employees assigned to this sheet's outlet
     const users = await prisma.user.findMany({
       where: {
         isActive: true,
         role: "EMPLOYEE",
-        ...(outletConds ? { OR: outletConds } : {}),
-        sheetAccess: { some: { sheet: { in: sheetAliases } } },
+        OR: outletConds,
       },
       select: { name: true },
       orderBy: { name: "asc" },
@@ -81,8 +77,7 @@ export async function getDynamicStaffForSheet(sheetKey: SheetId, outletId?: stri
   } catch (err) {
     console.error("Error fetching dynamic staff for sheet:", err);
   }
-  // Fallback: only if no DB access records exist yet (fresh setup)
-  return SHEET_STAFF[sheetKey] || [];
+  return [];
 }
 
 /**
@@ -92,12 +87,15 @@ export async function getDynamicStaffForSheet(sheetKey: SheetId, outletId?: stri
 export async function getDynamicSupervisors(outletId?: string): Promise<string[]> {
   await ensureDbSchema();
   try {
+    if (!outletId) return [];
     const outletConds = getOutletFilterConditions(outletId);
+    if (!outletConds) return [];
+
     const supervisors = await prisma.user.findMany({
       where: {
         isActive: true,
         role: "SUPERVISOR",
-        ...(outletConds ? { OR: outletConds } : {}),
+        OR: outletConds,
       },
       select: { name: true },
       orderBy: { name: "asc" },
@@ -110,7 +108,7 @@ export async function getDynamicSupervisors(outletId?: string): Promise<string[]
   } catch (err) {
     console.error("Error fetching dynamic supervisors:", err);
   }
-  return (outletId && OUTLET_SUPERVISORS[outletId]) || SUPERVISORS;
+  return (outletId && OUTLET_SUPERVISORS[outletId]) || [];
 }
 
 /**

@@ -11,22 +11,17 @@ async function getSheetStatuses(userId: string, role: string, today: string) {
   const statuses: Record<string, boolean | null> = {};
   const sheetKeys = Object.keys(SHEET_ROUTES) as Array<keyof typeof SHEET_ROUTES>;
 
-  // Get user's sheet access
+  // Get user's sheet access: Admins and Supervisors have full access to all sheets
   let access: Array<keyof typeof SHEET_ROUTES> = sheetKeys;
-  if (role !== "ADMIN") {
-    try {
-      const userAccess = await prisma.sheetAccess.findMany({ where: { userId }, select: { sheet: true } });
-      access = userAccess.map((a: { sheet: string }) => a.sheet as keyof typeof SHEET_ROUTES);
-    } catch {
-      access = [];
-    }
+  if (role !== "ADMIN" && role !== "SUPERVISOR") {
+    access = []; // Employees do not submit sheets
   }
 
   const accessSet = new Set(access);
 
   for (const sheetKey of sheetKeys) {
     const route = SHEET_ROUTES[sheetKey];
-    if (!accessSet.has(sheetKey) && role !== "ADMIN") {
+    if (!accessSet.has(sheetKey) && role !== "ADMIN" && role !== "SUPERVISOR") {
       statuses[route] = null; // no access
       continue;
     }

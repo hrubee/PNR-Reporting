@@ -174,16 +174,6 @@ export default function Sidebar({ user, sheetStatuses = {} }: SidebarProps) {
                 <span className="nav-icon">👥</span>
                 <span className="nav-label">Users</span>
               </Link>
-              <Link
-                href="/admin/access"
-                className={`nav-item ${
-                  pathname.startsWith("/admin/access") ? "active" : ""
-                }`}
-                onClick={() => setMobileOpen(false)}
-              >
-                <span className="nav-icon">🔐</span>
-                <span className="nav-label">Access Matrix</span>
-              </Link>
             </>
           )}
         </div>

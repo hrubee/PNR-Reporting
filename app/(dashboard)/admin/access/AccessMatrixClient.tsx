@@ -150,6 +150,32 @@ export default function AccessMatrixClient({
           <p>Assign sheets and permissions to employees across Bakery, Oreta World, RNS World, and Symphony World. Only authorized staff appear on forms.</p>
         </div>
       </div>
+      <div
+        style={{
+          background: "rgba(245, 158, 11, 0.12)",
+          border: "1px solid #f59e0b",
+          borderRadius: "8px",
+          padding: "1rem 1.25rem",
+          marginBottom: "1.5rem",
+          display: "flex",
+          alignItems: "flex-start",
+          gap: "0.75rem",
+        }}
+      >
+        <span style={{ fontSize: "1.4rem" }}>ℹ️</span>
+        <div>
+          <div style={{ fontWeight: 700, color: "#d97706", fontSize: "0.95rem" }}>
+            Access Matrix is currently disabled
+          </div>
+          <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: 1.5 }}>
+            Staff dropdown visibility is now governed directly by <strong>Outlet Assignment</strong> in the{" "}
+            <a href="/admin/users" style={{ color: "var(--accent)", textDecoration: "underline", fontWeight: 600 }}>
+              Users Management
+            </a>{" "}
+            section. Any employee assigned to an outlet automatically appears in all dropdowns for that outlet. Employees not assigned to an outlet will not appear in any dropdowns.
+          </p>
+        </div>
+      </div>
 
       {alert && <div className={`alert alert-${alert.type}`} style={{ marginBottom: "1rem" }}>{alert.msg}</div>}
 
