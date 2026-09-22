@@ -11,17 +11,24 @@ async function getSheetStatuses(userId: string, role: string, today: string) {
   const statuses: Record<string, boolean | null> = {};
   const sheetKeys = Object.keys(SHEET_ROUTES) as Array<keyof typeof SHEET_ROUTES>;
 
-  // Get user's sheet access: Admins and Supervisors have full access to all sheets
+  // Get user's sheet access: Admins, Supervisors, and Sup Employees have full access to submit all sheets
+  const normalizedRole = (role || "").toUpperCase();
+  const canSubmit =
+    normalizedRole === "ADMIN" ||
+    normalizedRole === "SUPERVISOR" ||
+    normalizedRole === "SUP_EMPLOYEE" ||
+    normalizedRole === "SUP EMPLOYEE";
+
   let access: Array<keyof typeof SHEET_ROUTES> = sheetKeys;
-  if (role !== "ADMIN" && role !== "SUPERVISOR") {
-    access = []; // Employees do not submit sheets
+  if (!canSubmit) {
+    access = []; // Regular employees do not submit sheets
   }
 
   const accessSet = new Set(access);
 
   for (const sheetKey of sheetKeys) {
     const route = SHEET_ROUTES[sheetKey];
-    if (!accessSet.has(sheetKey) && role !== "ADMIN" && role !== "SUPERVISOR") {
+    if (!accessSet.has(sheetKey) && !canSubmit) {
       statuses[route] = null; // no access
       continue;
     }

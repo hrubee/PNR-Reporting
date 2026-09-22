@@ -128,8 +128,13 @@ export default async function DashboardPage({ searchParams }: PageProps) {
     route: s.route,
   }));
 
-  // Only ADMIN and SUPERVISOR can access sheets — employees only appear in dropdowns
-  const canSubmit = user.role === "ADMIN" || user.role === "SUPERVISOR";
+  // ADMIN, SUPERVISOR, and SUP_EMPLOYEE can access and submit sheets
+  const normalizedRole = (user.role || "").toUpperCase();
+  const canSubmit =
+    normalizedRole === "ADMIN" ||
+    normalizedRole === "SUPERVISOR" ||
+    normalizedRole === "SUP_EMPLOYEE" ||
+    normalizedRole === "SUP EMPLOYEE";
   const accessibleSheets: Set<string> = canSubmit
     ? new Set(Object.keys(SHEET_LABELS))
     : new Set();

@@ -309,16 +309,20 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
                               ? "rgba(239,68,68,0.15)"
                               : u.role === "SUPERVISOR"
                               ? "rgba(245,158,11,0.15)"
+                              : u.role === "SUP_EMPLOYEE" || u.role === "sup employee"
+                              ? "rgba(168,85,247,0.15)"
                               : "rgba(59,130,246,0.15)",
                           color:
                             u.role === "ADMIN"
                               ? "#ef4444"
                               : u.role === "SUPERVISOR"
                               ? "#f59e0b"
+                              : u.role === "SUP_EMPLOYEE" || u.role === "sup employee"
+                              ? "#a855f7"
                               : "#3b82f6",
                         }}
                       >
-                        {u.role}
+                        {u.role === "SUP_EMPLOYEE" || u.role === "sup employee" ? "SUP EMPLOYEE" : u.role}
                       </span>
                     </td>
                     <td>
@@ -428,9 +432,10 @@ export default function UsersClient({ initialUsers }: { initialUsers: UserType[]
                   <div className="form-group">
                     <label>Role</label>
                     <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
-                      <option value="EMPLOYEE">Staff / Employee</option>
-                      <option value="SUPERVISOR">Supervisor</option>
-                      <option value="ADMIN">Admin</option>
+                      <option value="EMPLOYEE">Staff / Employee (Dropdown only)</option>
+                      <option value="SUP_EMPLOYEE">Sup Employee (Dropdown + Submit Reports)</option>
+                      <option value="SUPERVISOR">Supervisor (Submit Reports Only)</option>
+                      <option value="ADMIN">Admin (Full Access)</option>
                     </select>
                   </div>
 

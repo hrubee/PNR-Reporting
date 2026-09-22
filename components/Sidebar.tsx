@@ -183,7 +183,9 @@ export default function Sidebar({ user, sheetStatuses = {} }: SidebarProps) {
             <div className="sidebar-avatar">{initials}</div>
             <div className="sidebar-user-info">
               <div className="sidebar-user-name">{userName}</div>
-              <div className="sidebar-user-role">{(user?.role || "staff").toLowerCase()}</div>
+              <div className="sidebar-user-role">
+                {user?.role === "SUP_EMPLOYEE" ? "Sup Employee" : (user?.role || "staff").toLowerCase()}
+              </div>
             </div>
             <button
               className="logout-btn"

@@ -59,11 +59,12 @@ export async function getDynamicStaffForSheet(sheetKey: SheetId, outletId?: stri
     const outletConds = getOutletFilterConditions(targetOutlet);
     if (!outletConds) return [];
 
-    // Query active employees and supervisors assigned to this sheet's outlet
+    // Query active employees and sup employees assigned to this sheet's outlet
+    // Supervisors will NOT have their names in the cleaning dropdown
     const users = await prisma.user.findMany({
       where: {
         isActive: true,
-        role: { in: ["EMPLOYEE", "SUPERVISOR"] },
+        role: { in: ["EMPLOYEE", "SUP_EMPLOYEE", "sup employee"] },
         OR: outletConds,
       },
       select: { name: true },
@@ -81,7 +82,7 @@ export async function getDynamicStaffForSheet(sheetKey: SheetId, outletId?: stri
 }
 
 /**
- * Returns dynamic supervisor names (role: SUPERVISOR only) for an outlet.
+ * Returns dynamic supervisor names (role: SUPERVISOR or SUP_EMPLOYEE) for an outlet.
  * Supports supervisors assigned to multiple outlets via comma-separated IDs.
  */
 export async function getDynamicSupervisors(outletId?: string): Promise<string[]> {
@@ -94,7 +95,7 @@ export async function getDynamicSupervisors(outletId?: string): Promise<string[]
     const supervisors = await prisma.user.findMany({
       where: {
         isActive: true,
-        role: "SUPERVISOR",
+        role: { in: ["SUPERVISOR", "SUP_EMPLOYEE", "sup employee"] },
         OR: outletConds,
       },
       select: { name: true },

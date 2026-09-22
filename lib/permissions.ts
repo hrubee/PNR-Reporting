@@ -114,20 +114,19 @@ export async function hasSheetAccess(
   sheet: SheetId,
   role: string
 ): Promise<boolean> {
-  // Employees CANNOT submit any sheet — they only appear in cleaning dropdowns.
-  // Access Matrix toggles control which sheet dropdown shows their name, not login access.
-  if (role === "EMPLOYEE") return false;
-  // Admins and Supervisors have full access to all sheets — no explicit grants needed
-  if (role === "ADMIN" || role === "SUPERVISOR") return true;
-  // Any other future role: check explicit sheet access
-  const normalizedSheet = sheet === "ORETA_HYGIENE" ? "ORETA_SHOP_CLEANING" : sheet;
-  const access = await prisma.sheetAccess.findFirst({
-    where: {
-      userId,
-      sheet: { in: [sheet, normalizedSheet, "ORETA_HYGIENE", "ORETA_SHOP_CLEANING"] },
-    },
-  });
-  return !!access;
+  const normalizedRole = (role || "").toUpperCase();
+  // Regular employees CANNOT submit any sheet — they only appear in cleaning dropdowns.
+  if (normalizedRole === "EMPLOYEE") return false;
+  // Admins, Supervisors, and Sup Employees have full access to submit all sheets
+  if (
+    normalizedRole === "ADMIN" ||
+    normalizedRole === "SUPERVISOR" ||
+    normalizedRole === "SUP_EMPLOYEE" ||
+    normalizedRole === "SUP EMPLOYEE"
+  ) {
+    return true;
+  }
+  return false;
 }
 
 export function getTodayString(): string {
