@@ -49,7 +49,7 @@ export default function OretaFridgeForm({
   staffList = [],
   supervisorsList = [],
 }: Props) {
-  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || SUPERVISORS);
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || []);
   const defaultSupervisor = availableSupervisors[0] || "";
 
   const init: FridgeCheck[] = ORETA_FRIDGE_ITEMS.map((item) => ({
@@ -114,7 +114,7 @@ export default function OretaFridgeForm({
     } catch {
       setChecks(init);
     }
-    setSupervisorName(entry.supervisorName || SUPERVISORS[0] || "Aboli Wagh");
+    setSupervisorName(entry.supervisorName || defaultSupervisor);
     setHygiene(entry.hygiene || "Good");
     setComments(entry.comments || "");
     setCorrectiveAction(entry.correctiveAction || "");
@@ -262,7 +262,7 @@ export default function OretaFridgeForm({
                 <div>
                   <div style={{ fontWeight: 600, fontSize: "0.9rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     <span className="badge badge-submitted">#{todayEntries.length - idx}</span>
-                    <span>Supervisor: <strong>{entry.supervisorName || "Aboli Wagh"}</strong></span>
+                    <span>Supervisor: <strong>{entry.supervisorName || "—"}</strong></span>
                   </div>
                   <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: "2px" }}>
                     ⏰ {new Date(entry.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}

@@ -227,12 +227,12 @@ export async function GET() {
     });
 
     const oretaSheets = [
-      "ORETA_HYGIENE",
       "ORETA_SHOP_CLEANING",
       "ORETA_EQUIPMENT",
       "ORETA_FRIDGE",
       "ORETA_GLASS",
       "ORETA_MONTHLY",
+      "ORETA_FOOD",
     ];
 
     const staffList = [

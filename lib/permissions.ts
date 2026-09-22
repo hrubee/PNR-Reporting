@@ -77,49 +77,29 @@ export const OUTLET_SUPERVISORS: Record<string, string[]> = {
   "symphony-world": ["Deva", "Gaurav", "Shagir"],
 };
 
+// All staff lists are now fully dynamic via the Access Matrix (sheetAccess DB table).
+// These arrays are intentionally empty — do NOT add hardcoded names here.
 export const SHEET_STAFF: Record<SheetId, string[]> = {
-  HYGIENE_REPORT: ["Shridhar Jadhav", "Pravin Jadhav", "Mavshi"],
-  GLASS_REPORT: ["Sanjay Jadhav", "Suresh"],
-  FRIDGE_REPORT: ["Shridhar Jadhav", "Pravin Jadhav", "Mavshi"],
-  KITCHEN: ["Sagar Yadav", "Pravin Jadhav", "Mavshi", "Suresh"],
-  PRODUCTION: ["Sagar Yadav", "Pravin Jadhav", "Mavshi"],
-  PUFF_ROOM: ["Dilip"],
-  CAKE_ROOM: ["Meraj Khan", "Jaseen Siddique", "Nadeem Faruqi"],
-  ORETA_SHOP_CLEANING: ["Rameshwar", "Bharti", "Mangla", "New Staff"],
-  ORETA_EQUIPMENT: ["Rameshwar", "Bharti", "Mangla", "New Staff"],
-  ORETA_FRIDGE: ["Rameshwar", "Bharti", "Mangla"],
-  ORETA_GLASS: ["Mangla", "Bharti", "Rameshwar"],
-  ORETA_MONTHLY: ["Mangla", "Rameshwar", "Bharti"],
-  ORETA_FOOD: ["Rameshwar", "Bharti", "Mangla", "New Staff"],
-  ORETA_HYGIENE: ["Rameshwar", "Bharti", "Mangla", "New Staff"],
-  RNS_EQUIPMENT: ["Madhavi", "Ashok", "Mavshi", "Sachin"],
-  SYMPHONY_EQUIPMENT: ["Kamran", "Bapu", "Mavshi", "Someshwar", "Rahul", "HK", "New Staff"],
+  HYGIENE_REPORT: [],
+  GLASS_REPORT: [],
+  FRIDGE_REPORT: [],
+  KITCHEN: [],
+  PRODUCTION: [],
+  PUFF_ROOM: [],
+  CAKE_ROOM: [],
+  ORETA_SHOP_CLEANING: [],
+  ORETA_EQUIPMENT: [],
+  ORETA_FRIDGE: [],
+  ORETA_GLASS: [],
+  ORETA_MONTHLY: [],
+  ORETA_FOOD: [],
+  ORETA_HYGIENE: [],
+  RNS_EQUIPMENT: [],
+  SYMPHONY_EQUIPMENT: [],
 };
 
-export const ALL_STAFF = [
-  "Shridhar Jadhav",
-  "Pravin Jadhav",
-  "Mavshi",
-  "Sanjay Jadhav",
-  "Suresh",
-  "Sagar Yadav",
-  "Dilip",
-  "Meraj Khan",
-  "Jaseen Siddique",
-  "Nadeem Faruqi",
-  "Rameshwar",
-  "Bharti",
-  "Mangla",
-  "Madhavi",
-  "Ashok",
-  "Sachin",
-  "Kamran",
-  "Bapu",
-  "Someshwar",
-  "Rahul",
-  "HK",
-  "New Staff",
-];
+// Do NOT hardcode staff names here — use the Access Matrix to assign employees to sheets.
+export const ALL_STAFF: string[] = [];
 
 export async function getUserSheetAccess(userId: string): Promise<SheetId[]> {
   const access = await prisma.sheetAccess.findMany({

@@ -49,9 +49,10 @@ export default function OretaEquipmentForm({
   staffList = [],
   supervisorsList = [],
 }: Props) {
-  const availableStaff = staffList.length > 0 ? staffList : ORETA_STAFF;
-  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || SUPERVISORS);
+  const availableStaff = staffList;
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || []);
   const defaultSupervisor = availableSupervisors[0] || "";
+  const defaultStaff = availableStaff[0] || "";
 
   const init: EquipmentCheck[] = ORETA_EQUIPMENT_ITEMS.map((item) => ({
     id: item.id,
@@ -59,7 +60,7 @@ export default function OretaEquipmentForm({
     category: item.category,
     yesNo: "",
     time: "",
-    name: availableStaff.includes(item.defaultCleanedBy) ? item.defaultCleanedBy : (availableStaff[0] || ""),
+    name: availableStaff.includes(item.defaultCleanedBy) ? item.defaultCleanedBy : defaultStaff,
   }));
 
   const [todayEntries, setTodayEntries] = useState<EntryType[]>(initialTodayEntries);
@@ -109,7 +110,7 @@ export default function OretaEquipmentForm({
             category: itemDef.category,
             yesNo: matched ? (matched.yesNo || matched.status || "") : "",
             time: matched ? (matched.time || "") : "",
-            name: matched ? (matched.name || matched.cleanedBy || itemDef.defaultCleanedBy) : itemDef.defaultCleanedBy,
+            name: matched ? (matched.name || matched.cleanedBy || (availableStaff.includes(itemDef.defaultCleanedBy) ? itemDef.defaultCleanedBy : defaultStaff)) : (availableStaff.includes(itemDef.defaultCleanedBy) ? itemDef.defaultCleanedBy : defaultStaff),
           };
         });
         setChecks(normalized);
@@ -119,7 +120,7 @@ export default function OretaEquipmentForm({
     } catch {
       setChecks(init);
     }
-    setSupervisorName(entry.supervisorName || SUPERVISORS[0] || "Aboli Wagh");
+    setSupervisorName(entry.supervisorName || defaultSupervisor);
     setComments(entry.comments || "");
     setCorrectiveAction(entry.correctiveAction || "");
     setIsEditing(true);
@@ -263,7 +264,7 @@ export default function OretaEquipmentForm({
                 <div>
                   <div style={{ fontWeight: 600, fontSize: "0.9rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     <span className="badge badge-submitted">#{todayEntries.length - idx}</span>
-                    <span>Supervisor: <strong>{entry.supervisorName || "Aboli Wagh"}</strong></span>
+                    <span>Supervisor: <strong>{entry.supervisorName || "—"}</strong></span>
                   </div>
                   <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: "2px" }}>
                     ⏰ {new Date(entry.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}

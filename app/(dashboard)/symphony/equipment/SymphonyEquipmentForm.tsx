@@ -49,9 +49,10 @@ export default function SymphonyEquipmentForm({
   staffList = [],
   supervisorsList = [],
 }: Props) {
-  const availableStaff = staffList.length > 0 ? staffList : SYMPHONY_STAFF;
-  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["symphony-world"] || SUPERVISORS);
+  const availableStaff = staffList;
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["symphony-world"] || []);
   const defaultSupervisor = availableSupervisors[0] || "";
+  const defaultStaff = availableStaff[0] || "";
 
   const init: EquipmentCheck[] = SYMPHONY_EQUIPMENT_ITEMS.map((item) => ({
     id: item.id,
@@ -59,7 +60,7 @@ export default function SymphonyEquipmentForm({
     category: item.category,
     yesNo: "",
     time: "",
-    name: availableStaff.includes(item.defaultCleanedBy) ? item.defaultCleanedBy : (availableStaff[0] || ""),
+    name: availableStaff.includes(item.defaultCleanedBy) ? item.defaultCleanedBy : defaultStaff,
   }));
 
   const [todayEntries, setTodayEntries] = useState<EntryType[]>(initialTodayEntries);
@@ -106,7 +107,7 @@ export default function SymphonyEquipmentForm({
             category: itemDef.category,
             yesNo: matched ? (matched.yesNo || matched.status || "") : "",
             time: matched ? (matched.time || "") : "",
-            name: matched ? (matched.name || matched.cleanedBy || itemDef.defaultCleanedBy) : itemDef.defaultCleanedBy,
+            name: matched ? (matched.name || matched.cleanedBy || (availableStaff.includes(itemDef.defaultCleanedBy) ? itemDef.defaultCleanedBy : defaultStaff)) : (availableStaff.includes(itemDef.defaultCleanedBy) ? itemDef.defaultCleanedBy : defaultStaff),
           };
         });
         setChecks(normalized);
@@ -116,7 +117,7 @@ export default function SymphonyEquipmentForm({
     } catch {
       setChecks(init);
     }
-    setSupervisorName(entry.supervisorName || availableSupervisors[0] || "Aboli Wagh");
+    setSupervisorName(entry.supervisorName || defaultSupervisor);
     setComments(entry.comments || "");
     setCorrectiveAction(entry.correctiveAction || "");
     setIsEditing(true);
@@ -532,7 +533,7 @@ export default function SymphonyEquipmentForm({
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.75rem" }}>
                     <div>
-                      <strong>📅 {entry.date}</strong> · Supervisor: <strong>{entry.supervisorName || "Aboli Wagh"}</strong> · Submitted by <strong>{entry.submittedBy?.name || "Admin"}</strong>
+                      <strong>📅 {entry.date}</strong> · Supervisor: <strong>{entry.supervisorName || "—"}</strong> · Submitted by <strong>{entry.submittedBy?.name || "Admin"}</strong>
                     </div>
                     <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                       <span className="badge badge-submitted">{yesItems} / {parsed.length || 32} Items Cleaned</span>

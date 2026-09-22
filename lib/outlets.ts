@@ -136,17 +136,17 @@ export function getOutletByRoute(pathname: string): OutletConfig {
 export interface OretaAreaDefinition {
   id: number;
   area: string;
-  assignedStaff: string[];
-  defaultStaff: string;
+  assignedStaff?: string[];
+  defaultStaff?: string;
   morningDisabled?: boolean;
 }
 
 export const ORETA_HYGIENE_AREAS: OretaAreaDefinition[] = [
-  { id: 1, area: "KITCHEN", assignedStaff: ["Rameshwar", "Bharti"], defaultStaff: "Rameshwar" },
-  { id: 2, area: "WASH ROOM", assignedStaff: ["Mangla", "Bharti"], defaultStaff: "Mangla", morningDisabled: true },
-  { id: 3, area: "OUTDOOR CLEANING", assignedStaff: ["Mangla", "Bharti"], defaultStaff: "Mangla" },
-  { id: 4, area: "GROUND FLOOR", assignedStaff: ["Mangla", "Bharti"], defaultStaff: "Mangla" },
-  { id: 5, area: "MEZZANINE FLOOR", assignedStaff: ["Mangla", "Bharti"], defaultStaff: "Mangla" },
+  { id: 1, area: "KITCHEN" },
+  { id: 2, area: "WASH ROOM", morningDisabled: true },
+  { id: 3, area: "OUTDOOR CLEANING" },
+  { id: 4, area: "GROUND FLOOR" },
+  { id: 5, area: "MEZZANINE FLOOR" },
 ];
 
 // ─── 2. Oreta Equipment Cleaning (41 items) ──────────────────────────────────
@@ -234,18 +234,15 @@ export const ORETA_GLASS_ITEMS = [
 export const ORETA_MONTHLY_ITEMS = [
   { id: 1, task: "Shutter", category: "Physical Security", defaultCleanedBy: "Mangla" },
   { id: 2, task: "Shutter Locks", category: "Physical Security", defaultCleanedBy: "Mangla" },
-  { id: 3, task: "Generator area", category: "Electrical & Power", defaultCleanedBy: "Rameshwar" },
-  { id: 4, task: "Generator maintenance", category: "Electrical & Power", defaultCleanedBy: "Technician / Rameshwar" },
+  { id: 3, task: "Generator area", category: "Electrical & Power", defaultCleanedBy: "Technician" },
+  { id: 4, task: "Generator maintenance", category: "Electrical & Power", defaultCleanedBy: "Technician" },
   { id: 5, task: "Air condition maintenance", category: "HVAC & Climate", defaultCleanedBy: "AC Technician" },
   { id: 6, task: "Fridge maintenance", category: "Refrigeration", defaultCleanedBy: "Chiller Technician" },
 ];
 
-export const ORETA_STAFF = [
-  "Rameshwar",
-  "Bharti",
-  "Mangla",
-  "New Staff",
-];
+// Staff lists are fully dynamic — managed via Admin > Access Matrix.
+// Do NOT hardcode names here.
+export const ORETA_STAFF: string[] = [];
 
 // ─── 6. Oreta Food Safety & Product Logs ───────────────────────────────────────
 export interface FoodGuideline {
@@ -382,7 +379,8 @@ export const RNS_EQUIPMENT_ITEMS = [
   { id: 30, name: "Signage Board", category: "Facility & Environment", defaultCleanedBy: "Ashok" },
 ];
 
-export const RNS_STAFF = ["Madhavi", "Ashok", "Mavshi", "Sachin"];
+// Staff lists are fully dynamic — managed via Admin > Access Matrix. Do NOT hardcode names here.
+export const RNS_STAFF: string[] = [];
 
 // ─── 8. Symphony World Equipment & Hygiene Items (32 items) ───────────────────
 export const SYMPHONY_EQUIPMENT_ITEMS = [
@@ -425,15 +423,8 @@ export const SYMPHONY_EQUIPMENT_ITEMS = [
   { id: 32, name: "Signage board", category: "Facility & Environment", defaultCleanedBy: "Rahul" },
 ];
 
-export const SYMPHONY_STAFF = [
-  "Kamran",
-  "Bapu",
-  "Mavshi",
-  "Someshwar",
-  "Rahul",
-  "HK",
-  "New Staff",
-];
+// Staff lists are fully dynamic — managed via Admin > Access Matrix. Do NOT hardcode names here.
+export const SYMPHONY_STAFF: string[] = [];
 
 // ─── 9. Bakery Facility Categorized Equipment Items ───────────────────────────
 export interface BakeryEquipmentItem {

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import { ORETA_HYGIENE_AREAS, ORETA_STAFF } from "@/lib/outlets";
-import { SUPERVISORS, OUTLET_SUPERVISORS } from "@/lib/permissions";
+import { ORETA_HYGIENE_AREAS } from "@/lib/outlets";
+import { OUTLET_SUPERVISORS } from "@/lib/permissions";
 
 export type ShiftKey = "morning" | "afternoon" | "evening" | "night";
 
@@ -77,31 +77,32 @@ export default function OretaShopCleaningForm({
   staffList = [],
   supervisorsList = [],
 }: Props) {
-  const availableStaff = staffList.length > 0 ? staffList : ORETA_STAFF;
-  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || SUPERVISORS);
+  const availableStaff = staffList;
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || []);
   const defaultSupervisor = availableSupervisors[0] || "";
+  const defaultStaff = availableStaff[0] || "";
 
   const init: AreaRow[] = ORETA_HYGIENE_AREAS.map((item) => ({
     id: item.id,
     area: item.area,
     morning: {
       status: item.morningDisabled ? "N/A" : "",
-      staff: item.morningDisabled ? "—" : (availableStaff.includes(item.defaultStaff) ? item.defaultStaff : (availableStaff[0] || "")),
+      staff: item.morningDisabled ? "—" : defaultStaff,
       time: "",
     },
     afternoon: {
       status: "",
-      staff: availableStaff.includes(item.defaultStaff) ? item.defaultStaff : (availableStaff[0] || ""),
+      staff: defaultStaff,
       time: "",
     },
     evening: {
       status: "",
-      staff: availableStaff.includes(item.defaultStaff) ? item.defaultStaff : (availableStaff[0] || ""),
+      staff: defaultStaff,
       time: "",
     },
     night: {
       status: "",
-      staff: availableStaff.includes(item.defaultStaff) ? item.defaultStaff : (availableStaff[0] || ""),
+      staff: defaultStaff,
       time: "",
     },
   }));
@@ -147,22 +148,22 @@ export default function OretaShopCleaningForm({
               area: def.area,
               morning: found?.morning || {
                 status: def.morningDisabled ? "N/A" : "",
-                staff: def.morningDisabled ? "—" : def.defaultStaff,
+                staff: def.morningDisabled ? "—" : defaultStaff,
                 time: "",
               },
               afternoon: found?.afternoon || {
                 status: "",
-                staff: def.defaultStaff,
+                staff: defaultStaff,
                 time: "",
               },
               evening: found?.evening || {
                 status: "",
-                staff: def.defaultStaff,
+                staff: defaultStaff,
                 time: "",
               },
               night: found?.night || {
                 status: "",
-                staff: def.defaultStaff,
+                staff: defaultStaff,
                 time: "",
               },
             };
@@ -174,7 +175,7 @@ export default function OretaShopCleaningForm({
     } catch {
       setRows(init);
     }
-    setSupervisorName(entry.supervisorName || SUPERVISORS[0] || "Aboli Wagh");
+    setSupervisorName(entry.supervisorName || defaultSupervisor);
     setComments(entry.comments || "");
     setCorrectiveAction(entry.correctiveAction || "");
     setIsEditing(true);
@@ -342,7 +343,7 @@ export default function OretaShopCleaningForm({
                 <div>
                   <div style={{ fontWeight: 600, fontSize: "0.9rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     <span className="badge badge-submitted">#{todayEntries.length - idx}</span>
-                    <span>Supervisor: <strong>{entry.supervisorName || "Aboli Wagh"}</strong></span>
+                    <span>Supervisor: <strong>{entry.supervisorName || "—"}</strong></span>
                   </div>
                   <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: "2px" }}>
                     ⏰ {new Date(entry.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
@@ -438,16 +439,12 @@ export default function OretaShopCleaningForm({
                 <tbody>
                   {rows.map((row) => {
                     const areaDef = ORETA_HYGIENE_AREAS.find((a) => a.id === row.id);
-                    const assigned = areaDef?.assignedStaff || ["Rameshwar"];
 
                     return (
                       <tr key={row.id}>
                         <td style={{ fontWeight: 600 }}>
                           <div>
                             <span>{row.area}</span>
-                          </div>
-                          <div style={{ fontSize: "0.72rem", color: "var(--accent)", marginTop: "2px", fontWeight: 600 }}>
-                            Assigned: {assigned.join(" or ")}
                           </div>
                         </td>
 
@@ -498,16 +495,10 @@ export default function OretaShopCleaningForm({
                                     onChange={(e) => updateCheck(row.id, s, "staff", e.target.value)}
                                     style={{ flex: 1, fontSize: "0.78rem", minHeight: "36px", fontWeight: 600 }}
                                   >
-                                    <optgroup label="Assigned Staff">
-                                      {assigned.map((st) => (
-                                        <option key={st} value={st}>{st}</option>
-                                      ))}
-                                    </optgroup>
-                                    <optgroup label="Other Staff">
-                                      {availableStaff.filter((st) => !assigned.includes(st)).map((st) => (
-                                        <option key={st} value={st}>{st}</option>
-                                      ))}
-                                    </optgroup>
+                                    {availableStaff.map((st) => (
+                                      <option key={st} value={st}>{st}</option>
+                                    ))}
+                                    <option value="—">— None / Other</option>
                                   </select>
                                 </div>
                               </div>

@@ -33,7 +33,11 @@ export default async function AccessPage() {
 
   let access: any[] = [];
   try {
-    access = await prisma.sheetAccess.findMany({ select: { userId: true, sheet: true } });
+    const rawAccess = await prisma.sheetAccess.findMany({ select: { userId: true, sheet: true } });
+    access = rawAccess.map((a: { userId: string; sheet: string }) => ({
+      userId: a.userId,
+      sheet: a.sheet === "ORETA_HYGIENE" ? "ORETA_SHOP_CLEANING" : a.sheet,
+    }));
   } catch (err) {
     console.error("Error loading SheetAccess:", err);
     access = [];

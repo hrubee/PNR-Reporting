@@ -51,7 +51,7 @@ export default function FridgeForm({
   staffList = [],
   supervisorsList = [],
 }: Props) {
-  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || SUPERVISORS);
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || []);
   const defaultSupervisor = availableSupervisors[0] || "";
 
   const init: FridgeCheck[] = items.map((i) => ({
@@ -94,7 +94,7 @@ export default function FridgeForm({
       isNA: c.actualTempMorning === "N/A" && c.actualTempEvening === "N/A",
     }));
     setChecks(parsedChecks);
-    setSupervisedBy(entry.supervisedBy || "Aboli Wagh");
+    setSupervisedBy(entry.supervisedBy || defaultSupervisor);
     setHygiene(entry.hygiene || "Good");
     setComments(entry.comments || "");
     setCorrectiveAction(entry.correctiveAction || "");
@@ -236,7 +236,7 @@ export default function FridgeForm({
                 <div>
                   <div style={{ fontWeight: 600, fontSize: "0.9rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     <span className="badge badge-submitted">#{todayEntries.length - idx}</span>
-                    <span>Supervisor: <strong>{entry.supervisedBy || "Aboli Wagh"}</strong></span>
+                    <span>Supervisor: <strong>{entry.supervisedBy || "—"}</strong></span>
                   </div>
                   <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: "2px" }}>
                     ⏰ {new Date(entry.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}

@@ -93,9 +93,9 @@ export default function OretaFoodForm({
   staffList = [],
   supervisorsList = [],
 }: Props) {
-  const availableStaff = staffList.length > 0 ? staffList : ORETA_STAFF;
-  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || SUPERVISORS);
-  const defaultStaffMember = availableStaff[0] || "Rameshwar";
+  const availableStaff = staffList;
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || []);
+  const defaultStaffMember = availableStaff[0] || "";
   const defaultSupervisor = availableSupervisors[0] || "";
 
   const initTemp: TempCheck[] = ORETA_TEMP_CONTROL_ITEMS.map((item) => ({
@@ -154,7 +154,7 @@ export default function OretaFoodForm({
     setTempChecks(initTemp);
     setVegChecks(initVeg);
     setNonVegChecks(initNonVeg);
-    setSupervisorName(SUPERVISORS[0] || "Aboli Wagh");
+    setSupervisorName(defaultSupervisor);
     setComments("");
     setCorrectiveAction("");
     setIsEditing(true);
@@ -209,7 +209,7 @@ export default function OretaFoodForm({
               openTime: found?.openTime || "",
               useBy: found?.useBy || "",
               wastage: found?.wastage || "",
-              staffName: found?.staffName || "Rameshwar",
+              staffName: found?.staffName || defaultStaffMember,
               hasOpenDate: def.hasOpenDate,
             };
           })
@@ -238,7 +238,7 @@ export default function OretaFoodForm({
               openTime: found?.openTime || "",
               useBy: found?.useBy || "",
               wastage: found?.wastage || "",
-              staffName: found?.staffName || "Rameshwar",
+              staffName: found?.staffName || defaultStaffMember,
             };
           })
         );
@@ -249,7 +249,7 @@ export default function OretaFoodForm({
       setNonVegChecks(initNonVeg);
     }
 
-    setSupervisorName(entry.supervisorName || SUPERVISORS[0] || "Aboli Wagh");
+    setSupervisorName(entry.supervisorName || defaultSupervisor);
     setComments(entry.comments || "");
     setCorrectiveAction(entry.correctiveAction || "");
     setIsEditing(true);
@@ -440,7 +440,7 @@ export default function OretaFoodForm({
                 <div>
                   <div style={{ fontWeight: 600, fontSize: "0.9rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     <span className="badge badge-submitted">#{todayEntries.length - idx}</span>
-                    <span>Supervisor: <strong>{entry.supervisorName || "Aboli Wagh"}</strong></span>
+                    <span>Supervisor: <strong>{entry.supervisorName || "—"}</strong></span>
                   </div>
                   <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: "2px" }}>
                     ⏰ {new Date(entry.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
@@ -979,7 +979,7 @@ export default function OretaFoodForm({
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.75rem" }}>
                     <div>
-                      <strong>📅 {entry.date} ({entry.day})</strong> · Supervisor: <strong>{entry.supervisorName || "Aboli Wagh"}</strong> · Submitted by <strong>{entry.submittedBy?.name || "Admin"}</strong>
+                      <strong>📅 {entry.date} ({entry.day})</strong> · Supervisor: <strong>{entry.supervisorName || "—"}</strong> · Submitted by <strong>{entry.submittedBy?.name || "Admin"}</strong>
                     </div>
                     <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>
                       ⏰ {new Date(entry.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}

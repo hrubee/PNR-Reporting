@@ -66,8 +66,8 @@ export default function GenericChecklistForm({
   staffList = [],
   supervisorsList = [],
 }: Props) {
-  const teamMembers = staffList.length > 0 ? staffList : (SHEET_STAFF[sheetKey] || ALL_STAFF);
-  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || SUPERVISORS);
+  const teamMembers = staffList;
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || []);
   const defaultWorker = teamMembers[0] || "";
   const defaultSupervisor = availableSupervisors[0] || "";
 
@@ -143,7 +143,7 @@ export default function GenericChecklistForm({
     } catch {
       setChecks(init);
     }
-    setSupervisorName(entry.supervisorName || SUPERVISORS[0] || "Aboli Wagh");
+    setSupervisorName(entry.supervisorName || defaultSupervisor);
     setWorkerName(entry.workerName || defaultWorker);
     setComments(entry.comments || "");
     setCorrectiveAction(entry.correctiveAction || "");

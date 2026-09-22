@@ -41,13 +41,13 @@ export default function OretaMonthlyForm({
   staffList = [],
   supervisorsList = [],
 }: Props) {
-  const availableStaff = staffList.length > 0 ? staffList : ORETA_STAFF;
-  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || SUPERVISORS);
+  const availableStaff = staffList;
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || []);
   const defaultSupervisor = availableSupervisors[0] || "";
 
   const serviceStaffList = [
     ...availableStaff,
-    "Technician / Rameshwar",
+    "Technician",
     "AC Technician",
     "Chiller Technician",
     "Pest Control Agency",
@@ -59,7 +59,7 @@ export default function OretaMonthlyForm({
     category: item.category,
     status: "",
     dateCompleted: "",
-    assignedStaff: item.defaultCleanedBy,
+    assignedStaff: availableStaff.includes(item.defaultCleanedBy) ? item.defaultCleanedBy : (availableStaff[0] || "Technician"),
     notes: "",
   }));
 
@@ -102,7 +102,7 @@ export default function OretaMonthlyForm({
               category: m.category || def.category,
               status: m.status || "",
               dateCompleted: m.dateCompleted || "",
-              assignedStaff: m.assignedStaff || def.defaultCleanedBy,
+              assignedStaff: m.assignedStaff || (availableStaff.includes(def.defaultCleanedBy) ? def.defaultCleanedBy : (availableStaff[0] || "Technician")),
               notes: m.notes || "",
             };
           })
@@ -113,7 +113,7 @@ export default function OretaMonthlyForm({
     } catch {
       setChecks(init);
     }
-    setSupervisorName(entry.supervisorName || SUPERVISORS[0] || "Aboli Wagh");
+    setSupervisorName(entry.supervisorName || defaultSupervisor);
     setComments(entry.comments || "");
     setCorrectiveAction(entry.correctiveAction || "");
     setIsEditing(true);
@@ -230,7 +230,7 @@ export default function OretaMonthlyForm({
                 <div>
                   <div style={{ fontWeight: 600, fontSize: "0.9rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     <span className="badge badge-submitted">#{todayEntries.length - idx}</span>
-                    <span>Supervisor: <strong>{entry.supervisorName || "Aboli Wagh"}</strong></span>
+                    <span>Supervisor: <strong>{entry.supervisorName || "—"}</strong></span>
                   </div>
                   <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: "2px" }}>
                     📅 Month: {entry.month}

@@ -92,10 +92,16 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ ok: true, message: "Revoked all access" });
     }
 
+    const expandedSheetsToRevoke = sheetsToRevoke.flatMap((s) =>
+      s === "ORETA_SHOP_CLEANING" || s === "ORETA_HYGIENE"
+        ? ["ORETA_SHOP_CLEANING", "ORETA_HYGIENE"]
+        : [s]
+    );
+
     const res = await prisma.sheetAccess.deleteMany({
       where: {
         userId,
-        sheet: { in: sheetsToRevoke },
+        sheet: { in: expandedSheetsToRevoke },
       },
     });
 

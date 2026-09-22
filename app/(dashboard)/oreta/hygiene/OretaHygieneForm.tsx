@@ -1,8 +1,7 @@
 "use client";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ORETA_HYGIENE_AREAS, ORETA_STAFF } from "@/lib/outlets";
-import { SUPERVISORS } from "@/lib/permissions";
+import { ORETA_HYGIENE_AREAS } from "@/lib/outlets";
 
 interface ShiftCheck {
   status: "YES" | "NO" | "N/A";
@@ -36,6 +35,8 @@ interface OretaHygieneFormProps {
   initialDay: string;
   existingEntry: ExistingEntry | null;
   currentUser: { id: string; name: string; role: string };
+  staffList?: string[];
+  supervisorsList?: string[];
 }
 
 const SHIFT_KEYS = ["morning", "afternoon", "evening", "night"] as const;
@@ -48,26 +49,21 @@ const SHIFT_LABELS: Record<ShiftKey, { label: string; icon: string; time: string
   night: { label: "Night", icon: "🌙", time: "22:00" },
 };
 
-function normalizeStaffName(raw: string, defaultStaff: string): string {
-  if (!raw) return defaultStaff;
-  const upper = raw.toUpperCase().trim();
-  if (upper.includes("RAMESHWAR")) return "Rameshwar";
-  if (upper.includes("BHARTI")) return "Bharti";
-  if (upper.includes("MANGLA")) return "Mangla";
-  if (upper.includes("ARZAAAN")) return defaultStaff;
-  if (upper.includes("NEW")) return "New Staff";
-  if (upper === "—" || upper === "-") return "—";
-  return raw;
-}
-
 export default function OretaHygieneForm({
   initialDate,
   initialDay,
   existingEntry,
   currentUser,
+  staffList = [],
+  supervisorsList = [],
 }: OretaHygieneFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+
+  const availableStaff = staffList;
+  const availableSupervisors = supervisorsList;
+  const defaultSupervisor = availableSupervisors[0] || "";
+  const defaultStaff = availableStaff[0] || "";
 
   const [date, setDate] = useState(initialDate);
   const [day, setDay] = useState(initialDay);
@@ -80,30 +76,29 @@ export default function OretaHygieneForm({
         if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed.map((r) => {
             const areaDef = ORETA_HYGIENE_AREAS.find((a) => a.id === r.id);
-            const defStaff = areaDef?.defaultStaff || "Rameshwar";
             return {
               ...r,
               morning: {
                 ...r.morning,
-                staff: normalizeStaffName(r.morning?.staff, areaDef?.morningDisabled ? "—" : defStaff),
+                staff: r.morning?.staff || (areaDef?.morningDisabled ? "—" : defaultStaff),
               },
               afternoon: {
                 ...r.afternoon,
-                staff: normalizeStaffName(r.afternoon?.staff, defStaff),
+                staff: r.afternoon?.staff || defaultStaff,
               },
               evening: {
                 ...r.evening,
-                staff: normalizeStaffName(r.evening?.staff, defStaff),
+                staff: r.evening?.staff || defaultStaff,
               },
               night: {
                 ...r.night,
-                staff: normalizeStaffName(r.night?.staff, defStaff),
+                staff: r.night?.staff || defaultStaff,
               },
             };
           });
         }
       } catch {
-        // fallback
+        // fall through
       }
     }
 
@@ -112,22 +107,22 @@ export default function OretaHygieneForm({
       area: item.area,
       morning: {
         status: item.morningDisabled ? "N/A" : "YES",
-        staff: item.morningDisabled ? "—" : item.defaultStaff,
+        staff: item.morningDisabled ? "—" : defaultStaff,
         time: "09:00",
       },
       afternoon: {
         status: "YES",
-        staff: item.defaultStaff,
+        staff: defaultStaff,
         time: "14:00",
       },
       evening: {
         status: "YES",
-        staff: item.defaultStaff,
+        staff: defaultStaff,
         time: "18:30",
       },
       night: {
         status: "YES",
-        staff: item.defaultStaff,
+        staff: defaultStaff,
         time: "22:00",
       },
     }));
@@ -135,7 +130,7 @@ export default function OretaHygieneForm({
 
   const [rows, setRows] = useState<AreaRow[]>(buildInitialRows);
   const [supervisorName, setSupervisorName] = useState(
-    existingEntry?.supervisorName || SUPERVISORS[0]
+    existingEntry?.supervisorName || defaultSupervisor
   );
   const [comments, setComments] = useState(existingEntry?.comments || "");
   const [correctiveAction, setCorrectiveAction] = useState(
@@ -389,8 +384,6 @@ export default function OretaHygieneForm({
           <tbody>
             {rows.map((row) => {
               const areaDef = ORETA_HYGIENE_AREAS.find((a) => a.id === row.id);
-              const assigned = areaDef?.assignedStaff || [];
-              const otherStaff = ORETA_STAFF.filter((s) => !assigned.includes(s));
 
               return (
                 <tr key={row.id}>
@@ -399,9 +392,6 @@ export default function OretaHygieneForm({
                   </td>
                   <td className="item-cell">
                     <div style={{ fontWeight: 700, fontSize: "0.95rem" }}>{row.area}</div>
-                    <div style={{ fontSize: "0.72rem", color: "var(--accent)", marginTop: "2px", fontWeight: 600 }}>
-                      Assigned: {assigned.join(" or ")}
-                    </div>
                   </td>
 
                   {SHIFT_KEYS.filter((s) => activeShiftTab === "all" || activeShiftTab === s).map(
@@ -451,21 +441,12 @@ export default function OretaHygieneForm({
                               }}
                             >
                               {isMorningDisabled && <option value="—">— Not Applicable</option>}
-                              <optgroup label="Assigned Floor Staff (Choose Either)">
-                                {assigned.map((emp) => (
-                                  <option key={emp} value={emp}>
-                                    👤 {emp}
-                                  </option>
-                                ))}
-                              </optgroup>
-                              <optgroup label="Other Staff">
-                                {otherStaff.map((emp) => (
-                                  <option key={emp} value={emp}>
-                                    {emp}
-                                  </option>
-                                ))}
-                                {!isMorningDisabled && <option value="—">— None / Other</option>}
-                              </optgroup>
+                              {availableStaff.map((emp) => (
+                                <option key={emp} value={emp}>
+                                  👤 {emp}
+                                </option>
+                              ))}
+                              {!isMorningDisabled && <option value="—">— None / Other</option>}
                             </select>
                           </div>
                         </td>
@@ -489,12 +470,7 @@ export default function OretaHygieneForm({
               onChange={(e) => setSupervisorName(e.target.value)}
               className="form-control"
             >
-              {SUPERVISORS.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-              {ORETA_STAFF.map((s) => (
+              {availableSupervisors.map((s) => (
                 <option key={s} value={s}>
                   {s}
                 </option>

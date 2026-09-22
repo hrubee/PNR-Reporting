@@ -135,10 +135,10 @@ async function main() {
     { name: "Jaseen Siddique", email: "jaseen@pnr.com", outletId: "bakery", sheets: ["CAKE_ROOM"] },
     { name: "Nadeem Faruqi", email: "nadeem@pnr.com", outletId: "bakery", sheets: ["CAKE_ROOM"] },
     // Oreta World Staff
-    { name: "Rameshwar", email: "rameshwar@pnr.com", outletId: "oreta-world", sheets: ["ORETA_HYGIENE", "ORETA_EQUIPMENT", "ORETA_FRIDGE", "ORETA_GLASS", "ORETA_MONTHLY", "ORETA_FOOD"] },
-    { name: "Bharti", email: "bharti@pnr.com", outletId: "oreta-world", sheets: ["ORETA_HYGIENE", "ORETA_EQUIPMENT", "ORETA_FRIDGE", "ORETA_GLASS", "ORETA_MONTHLY", "ORETA_FOOD"] },
-    { name: "Mangla", email: "mangla@pnr.com", outletId: "oreta-world", sheets: ["ORETA_HYGIENE", "ORETA_EQUIPMENT", "ORETA_FRIDGE", "ORETA_GLASS", "ORETA_MONTHLY", "ORETA_FOOD"] },
-    { name: "Arzaaan", email: "arzaaan@pnr.com", outletId: "oreta-world", sheets: ["ORETA_HYGIENE", "ORETA_EQUIPMENT", "ORETA_FRIDGE", "ORETA_GLASS", "ORETA_MONTHLY", "ORETA_FOOD"] },
+    { name: "Rameshwar", email: "rameshwar@pnr.com", outletId: "oreta-world", sheets: ["ORETA_SHOP_CLEANING", "ORETA_EQUIPMENT", "ORETA_FRIDGE", "ORETA_GLASS", "ORETA_MONTHLY", "ORETA_FOOD"] },
+    { name: "Bharti", email: "bharti@pnr.com", outletId: "oreta-world", sheets: ["ORETA_SHOP_CLEANING", "ORETA_EQUIPMENT", "ORETA_FRIDGE", "ORETA_GLASS", "ORETA_MONTHLY", "ORETA_FOOD"] },
+    { name: "Mangla", email: "mangla@pnr.com", outletId: "oreta-world", sheets: ["ORETA_SHOP_CLEANING", "ORETA_EQUIPMENT", "ORETA_FRIDGE", "ORETA_GLASS", "ORETA_MONTHLY", "ORETA_FOOD"] },
+    { name: "Arzaaan", email: "arzaaan@pnr.com", outletId: "oreta-world", sheets: ["ORETA_SHOP_CLEANING", "ORETA_EQUIPMENT", "ORETA_FRIDGE", "ORETA_GLASS", "ORETA_MONTHLY", "ORETA_FOOD"] },
     // RNS World Staff
     { name: "Madhavi", email: "madhavi@pnr.com", outletId: "rns-world", sheets: ["RNS_EQUIPMENT"] },
     { name: "Ashok", email: "ashok@pnr.com", outletId: "rns-world", sheets: ["RNS_EQUIPMENT"] },

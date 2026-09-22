@@ -52,9 +52,9 @@ export default function HygieneForm({
   staffList = [],
   supervisorsList = [],
 }: Props) {
-  const teamMembers = staffList.length > 0 ? staffList : (SHEET_STAFF.HYGIENE_REPORT || ALL_STAFF);
-  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || SUPERVISORS);
-  const defaultWorker = teamMembers[0] || "Shridhar Jadhav";
+  const teamMembers = staffList;
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || []);
+  const defaultWorker = teamMembers[0] || "";
   const defaultSupervisor = availableSupervisors[0] || "";
 
   const initChecks: AreaCheck[] = areas.map((area) => ({
@@ -90,7 +90,7 @@ export default function HygieneForm({
   function startEditSubmission(entry: HygieneEntry) {
     setEditingId(entry.id);
     setAreaChecks(JSON.parse(entry.areaChecks));
-    setSupervisorName(entry.supervisorName || SUPERVISORS[0] || "Aboli Wagh");
+    setSupervisorName(entry.supervisorName || defaultSupervisor);
     setComments(entry.comments || "");
     setCorrectiveAction(entry.correctiveAction || "");
     setIsEditing(true);
@@ -217,7 +217,7 @@ export default function HygieneForm({
                 <div>
                   <div style={{ fontWeight: 600, fontSize: "0.9rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     <span className="badge badge-submitted">#{todayEntries.length - idx}</span>
-                    <span>Supervisor: <strong>{entry.supervisorName || "Aboli Wagh"}</strong></span>
+                    <span>Supervisor: <strong>{entry.supervisorName || "—"}</strong></span>
                   </div>
                   <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: "2px" }}>
                     ⏰ {new Date(entry.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
