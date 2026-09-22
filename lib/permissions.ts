@@ -61,11 +61,21 @@ export const SHEET_ROUTES: Record<SheetId, string> = {
 export const SUPERVISORS = [
   "Aboli Wagh",
   "Sandeep Gargate",
-  "Admin",
-  "Oreta Supervisor",
-  "RNS Supervisor",
-  "Symphony Supervisor",
+  "Arzaaan",
+  "Rukshin",
+  "Navin",
+  "Nisha",
+  "Deva",
+  "Gaurav",
+  "Shagir",
 ];
+
+export const OUTLET_SUPERVISORS: Record<string, string[]> = {
+  bakery: ["Aboli Wagh", "Sandeep Gargate"],
+  "oreta-world": ["Arzaaan", "Rukshin", "Navin"],
+  "rns-world": ["Navin", "Nisha"],
+  "symphony-world": ["Deva", "Gaurav", "Shagir"],
+};
 
 export const SHEET_STAFF: Record<SheetId, string[]> = {
   HYGIENE_REPORT: ["Shridhar Jadhav", "Pravin Jadhav", "Mavshi"],

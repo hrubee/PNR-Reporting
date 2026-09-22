@@ -13,7 +13,7 @@ import {
   TIME_PRESET_OPTIONS,
   ORETA_STAFF,
 } from "@/lib/outlets";
-import { SUPERVISORS } from "@/lib/permissions";
+import { SUPERVISORS, OUTLET_SUPERVISORS } from "@/lib/permissions";
 
 export interface TempCheck {
   id: number;
@@ -29,7 +29,7 @@ export interface VegFillingCheck {
   id: number;
   product: string;
   receivedDate: string;
-  openDate?: string;
+  openDate: string;
   openTime: string;
   useBy: string;
   wastage: string;
@@ -94,9 +94,9 @@ export default function OretaFoodForm({
   supervisorsList = [],
 }: Props) {
   const availableStaff = staffList.length > 0 ? staffList : ORETA_STAFF;
-  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : SUPERVISORS;
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || SUPERVISORS);
   const defaultStaffMember = availableStaff[0] || "Rameshwar";
-  const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
+  const defaultSupervisor = availableSupervisors[0] || "";
 
   const initTemp: TempCheck[] = ORETA_TEMP_CONTROL_ITEMS.map((item) => ({
     id: item.id,

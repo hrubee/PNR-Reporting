@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { ORETA_GLASS_ITEMS, ORETA_STAFF } from "@/lib/outlets";
-import { SUPERVISORS } from "@/lib/permissions";
+import { SUPERVISORS, OUTLET_SUPERVISORS } from "@/lib/permissions";
 
 interface GlassCheck {
   id: number;
@@ -50,8 +50,8 @@ export default function OretaGlassForm({
   supervisorsList = [],
 }: Props) {
   const availableStaff = staffList.length > 0 ? staffList : ORETA_STAFF;
-  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : SUPERVISORS;
-  const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["oreta-world"] || SUPERVISORS);
+  const defaultSupervisor = availableSupervisors[0] || "";
 
   const init: GlassCheck[] = ORETA_GLASS_ITEMS.map((item) => ({
     id: item.id,
@@ -409,7 +409,7 @@ export default function OretaGlassForm({
 
             <div className="form-grid" style={{ marginTop: "1.25rem" }}>
               <div className="form-group">
-                <label>Verified By Supervisor</label>
+                <label>Verified / Supervised By</label>
                 <select
                   value={supervisorName}
                   onChange={(e) => setSupervisorName(e.target.value)}

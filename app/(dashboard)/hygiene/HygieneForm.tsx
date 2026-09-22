@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { SUPERVISORS, SHEET_STAFF, ALL_STAFF } from "@/lib/permissions";
+import { SUPERVISORS, OUTLET_SUPERVISORS, SHEET_STAFF, ALL_STAFF } from "@/lib/permissions";
 
 interface AreaCheck {
   area: string;
@@ -53,9 +53,9 @@ export default function HygieneForm({
   supervisorsList = [],
 }: Props) {
   const teamMembers = staffList.length > 0 ? staffList : (SHEET_STAFF.HYGIENE_REPORT || ALL_STAFF);
-  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : SUPERVISORS;
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || SUPERVISORS);
   const defaultWorker = teamMembers[0] || "Shridhar Jadhav";
-  const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
+  const defaultSupervisor = availableSupervisors[0] || "";
 
   const initChecks: AreaCheck[] = areas.map((area) => ({
     area,
@@ -337,7 +337,7 @@ export default function HygieneForm({
 
             <div className="form-grid" style={{ marginTop: "1.25rem" }}>
               <div className="form-group">
-                <label>Supervisor / Verified By</label>
+                <label>Verified / Supervised By</label>
                 <select
                   value={supervisorName}
                   onChange={(e) => setSupervisorName(e.target.value)}

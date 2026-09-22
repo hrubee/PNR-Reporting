@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { SYMPHONY_EQUIPMENT_ITEMS, SYMPHONY_STAFF } from "@/lib/outlets";
-import { SUPERVISORS } from "@/lib/permissions";
+import { SUPERVISORS, OUTLET_SUPERVISORS } from "@/lib/permissions";
 
 interface EquipmentCheck {
   id: number;
@@ -50,8 +50,8 @@ export default function SymphonyEquipmentForm({
   supervisorsList = [],
 }: Props) {
   const availableStaff = staffList.length > 0 ? staffList : SYMPHONY_STAFF;
-  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : SUPERVISORS;
-  const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["symphony-world"] || SUPERVISORS);
+  const defaultSupervisor = availableSupervisors[0] || "";
 
   const init: EquipmentCheck[] = SYMPHONY_EQUIPMENT_ITEMS.map((item) => ({
     id: item.id,

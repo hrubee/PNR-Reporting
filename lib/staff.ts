@@ -1,5 +1,5 @@
 import { prisma, ensureDbSchema } from "@/lib/db";
-import { SheetId, SHEET_STAFF, SUPERVISORS } from "@/lib/permissions";
+import { SheetId, SHEET_STAFF, SUPERVISORS, OUTLET_SUPERVISORS } from "@/lib/permissions";
 
 export interface StaffMember {
   id: string;
@@ -30,12 +30,7 @@ export const SHEET_TO_OUTLET: Record<SheetId, string> = {
   SYMPHONY_EQUIPMENT: "symphony-world",
 };
 
-export const OUTLET_SUPERVISORS: Record<string, string[]> = {
-  bakery: ["Aboli Wagh", "Sandeep Gargate", "Admin"],
-  "oreta-world": ["Arzaaan", "Rukshin", "Navin", "Admin"],
-  "rns-world": ["Nisha", "Navin", "Admin"],
-  "symphony-world": ["Deva", "Gaurav", "Shagir", "Admin"],
-};
+export { OUTLET_SUPERVISORS };
 
 /**
  * Helper to build Prisma OR condition for multi-outlet support.
@@ -93,7 +88,7 @@ export async function getDynamicStaffForSheet(sheetKey: SheetId, outletId?: stri
 }
 
 /**
- * Returns dynamic supervisor names (ADMIN & SUPERVISOR roles) for an outlet.
+ * Returns dynamic supervisor names (role: SUPERVISOR only) for an outlet.
  * Supports supervisors assigned to multiple outlets via comma-separated IDs.
  */
 export async function getDynamicSupervisors(outletId?: string): Promise<string[]> {
@@ -103,15 +98,8 @@ export async function getDynamicSupervisors(outletId?: string): Promise<string[]
     const supervisors = await prisma.user.findMany({
       where: {
         isActive: true,
-        role: { in: ["ADMIN", "SUPERVISOR"] },
-        ...(outletConds
-          ? {
-              OR: [
-                ...outletConds,
-                { role: "ADMIN" },
-              ],
-            }
-          : {}),
+        role: "SUPERVISOR",
+        ...(outletConds ? { OR: outletConds } : {}),
       },
       select: { name: true },
       orderBy: { name: "asc" },

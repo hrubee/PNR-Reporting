@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { SUPERVISORS, SHEET_STAFF, ALL_STAFF } from "@/lib/permissions";
+import { SUPERVISORS, OUTLET_SUPERVISORS, SHEET_STAFF, ALL_STAFF } from "@/lib/permissions";
 
 interface LocationCheck {
   location: string;
@@ -40,9 +40,9 @@ export default function GlassForm({
   supervisorsList = [],
 }: Props) {
   const teamMembers = staffList.length > 0 ? staffList : (SHEET_STAFF.GLASS_REPORT || ALL_STAFF);
-  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : SUPERVISORS;
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || SUPERVISORS);
   const defaultWorker = teamMembers[0] || "Sanjay Jadhav";
-  const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
+  const defaultSupervisor = availableSupervisors[0] || "";
 
   const init: LocationCheck[] = locations.map((l) => ({
     location: l,
@@ -272,7 +272,7 @@ export default function GlassForm({
 
             <div className="form-grid" style={{ marginTop: "1.25rem" }}>
               <div className="form-group">
-                <label>Supervisor / Verified By</label>
+                <label>Verified / Supervised By</label>
                 <select
                   value={supervisorName}
                   onChange={(e) => setSupervisorName(e.target.value)}

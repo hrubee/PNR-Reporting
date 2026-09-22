@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { SUPERVISORS } from "@/lib/permissions";
+import { SUPERVISORS, OUTLET_SUPERVISORS } from "@/lib/permissions";
 
 interface FridgeItem {
   zone: string;
@@ -51,8 +51,8 @@ export default function FridgeForm({
   staffList = [],
   supervisorsList = [],
 }: Props) {
-  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : SUPERVISORS;
-  const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || SUPERVISORS);
+  const defaultSupervisor = availableSupervisors[0] || "";
 
   const init: FridgeCheck[] = items.map((i) => ({
     ...i,
@@ -261,7 +261,7 @@ export default function FridgeForm({
                 {editingId ? "✏️ Edit Temperature Reading" : "➕ New Temperature Reading"}
               </div>
               <div className="form-group" style={{ minWidth: 220 }}>
-                <label style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Supervised By</label>
+                <label style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Verified / Supervised By</label>
                 <select
                   value={supervisedBy}
                   onChange={(e) => setSupervisedBy(e.target.value)}

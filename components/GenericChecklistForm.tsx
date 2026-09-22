@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { SUPERVISORS, ALL_STAFF, SHEET_STAFF, SheetId } from "@/lib/permissions";
+import { SUPERVISORS, OUTLET_SUPERVISORS, ALL_STAFF, SHEET_STAFF, SheetId } from "@/lib/permissions";
 
 export interface EquipmentItemDef {
   id?: number;
@@ -67,9 +67,9 @@ export default function GenericChecklistForm({
   supervisorsList = [],
 }: Props) {
   const teamMembers = staffList.length > 0 ? staffList : (SHEET_STAFF[sheetKey] || ALL_STAFF);
-  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : SUPERVISORS;
+  const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || SUPERVISORS);
   const defaultWorker = teamMembers[0] || "";
-  const defaultSupervisor = availableSupervisors[0] || "Aboli Wagh";
+  const defaultSupervisor = availableSupervisors[0] || "";
 
   const normalizedEquipment: { id: number; name: string; category: string }[] = equipment.map((item, idx) => {
     if (typeof item === "string") {
@@ -499,7 +499,7 @@ export default function GenericChecklistForm({
 
             <div className="form-grid" style={{ marginTop: "1.25rem" }}>
               <div className="form-group">
-                <label>Supervisor / Verified By</label>
+                <label>Verified / Supervised By</label>
                 <select
                   value={supervisorName}
                   onChange={(e) => setSupervisorName(e.target.value)}
