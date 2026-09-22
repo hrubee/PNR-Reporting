@@ -63,6 +63,7 @@ export async function getDynamicStaffForSheet(sheetKey: SheetId, outletId?: stri
     const users = await prisma.user.findMany({
       where: {
         isActive: true,
+        role: "EMPLOYEE", // STRICTLY ONLY EMPLOYEES: supervisors and admins do not clean
         ...(outletConds ? { AND: [{ OR: outletConds }] } : {}),
         ...(isSingleSheet
           ? {}
@@ -125,6 +126,7 @@ export async function getAllActiveEmployees(outletId?: string): Promise<StaffMem
     const users = await prisma.user.findMany({
       where: {
         isActive: true,
+        role: "EMPLOYEE", // STRICTLY ONLY EMPLOYEES
         ...(outletConds ? { OR: outletConds } : {}),
       },
       select: {

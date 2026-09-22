@@ -59,7 +59,7 @@ export default function OretaGlassForm({
     location: item.location,
     yesNo: "",
     time: "",
-    cleanedBy: availableStaff.includes(item.defaultCleanedBy) ? item.defaultCleanedBy : availableStaff[0] || item.defaultCleanedBy,
+    cleanedBy: availableStaff.includes(item.defaultCleanedBy) ? item.defaultCleanedBy : (availableStaff[0] || ""),
   }));
 
   const [todayEntries, setTodayEntries] = useState<GlassEntryType[]>(initialTodayEntries);

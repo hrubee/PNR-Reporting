@@ -86,22 +86,22 @@ export default function OretaShopCleaningForm({
     area: item.area,
     morning: {
       status: item.morningDisabled ? "N/A" : "",
-      staff: item.morningDisabled ? "—" : (availableStaff.includes(item.defaultStaff) ? item.defaultStaff : availableStaff[0] || item.defaultStaff),
+      staff: item.morningDisabled ? "—" : (availableStaff.includes(item.defaultStaff) ? item.defaultStaff : (availableStaff[0] || "")),
       time: "",
     },
     afternoon: {
       status: "",
-      staff: availableStaff.includes(item.defaultStaff) ? item.defaultStaff : availableStaff[0] || item.defaultStaff,
+      staff: availableStaff.includes(item.defaultStaff) ? item.defaultStaff : (availableStaff[0] || ""),
       time: "",
     },
     evening: {
       status: "",
-      staff: availableStaff.includes(item.defaultStaff) ? item.defaultStaff : availableStaff[0] || item.defaultStaff,
+      staff: availableStaff.includes(item.defaultStaff) ? item.defaultStaff : (availableStaff[0] || ""),
       time: "",
     },
     night: {
       status: "",
-      staff: availableStaff.includes(item.defaultStaff) ? item.defaultStaff : availableStaff[0] || item.defaultStaff,
+      staff: availableStaff.includes(item.defaultStaff) ? item.defaultStaff : (availableStaff[0] || ""),
       time: "",
     },
   }));

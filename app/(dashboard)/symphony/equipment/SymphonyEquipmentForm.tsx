@@ -59,7 +59,7 @@ export default function SymphonyEquipmentForm({
     category: item.category,
     yesNo: "",
     time: "",
-    name: availableStaff.includes(item.defaultCleanedBy) ? item.defaultCleanedBy : availableStaff[0] || item.defaultCleanedBy,
+    name: availableStaff.includes(item.defaultCleanedBy) ? item.defaultCleanedBy : (availableStaff[0] || ""),
   }));
 
   const [todayEntries, setTodayEntries] = useState<EntryType[]>(initialTodayEntries);

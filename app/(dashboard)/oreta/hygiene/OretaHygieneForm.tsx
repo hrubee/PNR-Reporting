@@ -54,7 +54,7 @@ function normalizeStaffName(raw: string, defaultStaff: string): string {
   if (upper.includes("RAMESHWAR")) return "Rameshwar";
   if (upper.includes("BHARTI")) return "Bharti";
   if (upper.includes("MANGLA")) return "Mangla";
-  if (upper.includes("ARZAAAN")) return "Arzaaan";
+  if (upper.includes("ARZAAAN")) return defaultStaff;
   if (upper.includes("NEW")) return "New Staff";
   if (upper === "—" || upper === "-") return "—";
   return raw;
