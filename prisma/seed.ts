@@ -17,83 +17,105 @@ function dayName(daysAgo: number): string {
 }
 
 const HYGIENE_AREAS = [
-  "PRODUCTION ROOM", "OVEN ROOM", "FRIDGE ROOM", "UTILITY AREA",
-  "PUFF DEPARTMENT", "ADMIN", "STORE 1", "PASSAGE GROUND FLOOR",
-  "SECURITY AREA", "TOILET GUEST", "SIR OFFICE", "TOILET",
-  "CAKE ROOM", "PASSAGE FIRST FLOOR", "STORE ROOM 2", "OUTSIDE COMPOUND",
+  "Production Room", "Oven Room", "Fridge Room", "Utility Area",
+  "Puff Department", "Admin", "Store 1", "Passage Ground Floor",
+  "Security Area", "Toilet Guest", "Sir Office", "Toilet",
+  "Cake Room", "Passage First Floor", "Store Room 2", "Outside Compound",
 ];
 
 const GLASS_LOCATIONS = [
-  "OVEN ROOM 1", "PARTITION GLASS 4", "PRODUCTION ROOM 1", "WINDOW 1",
-  "PRODUCTION ROOM DOOR", "PUFF ROOM PARTITION GLASS 2 LEFT",
-  "PUFF ROOM PARTITION GLASS 2 RIGHT", "PUFF ROOM DOOR",
-  "ADMIN DOOR", "ADMIN WINDOW 1", "ADMIN WINDOW 2",
-  "MAIN ENTRANCE DOOR", "STORE ROOM DOOR GROUND",
-  "CAKE ROOM WINDOW 1", "CAKE ROOM WINDOW 2",
+  "Oven Room 1", "Partition Glass 4", "Production Room 1", "Window 1",
+  "Production Room Door", "Puff Room Partition Glass 2 Left",
+  "Puff Room Partition Glass 2 Right", "Puff Room Door",
+  "Admin Door", "Admin Window 1", "Admin Window 2",
+  "Main Entrance Door", "Store Room Door Ground",
+  "Cake Room Window 1", "Cake Room Window 2",
 ];
 
 const FRIDGE_ITEMS = [
-  { zone: "PRODUCTION — FRIDGES", productName: "FRIDGE UNDER TABLE", machineNumber: "1", referenceTemp: "+3 to +8°C" },
-  { zone: "PRODUCTION — FRIDGES", productName: "FRIDGE", machineNumber: "2", referenceTemp: "+3 to +8°C" },
-  { zone: "PRODUCTION — FRIDGES", productName: "FRIDGE", machineNumber: "3", referenceTemp: "+3 to +8°C" },
-  { zone: "PRODUCTION — FRIDGES", productName: "FRIDGE", machineNumber: "4", referenceTemp: "+3 to +8°C" },
-  { zone: "PRODUCTION — FRIDGES", productName: "FRIDGE", machineNumber: "5", referenceTemp: "+3 to +8°C" },
-  { zone: "PRODUCTION — FREEZERS", productName: "FREEZER", machineNumber: "1", referenceTemp: "-18 to -15°C" },
-  { zone: "PRODUCTION — FREEZERS", productName: "FREEZER", machineNumber: "2", referenceTemp: "-18 to -15°C" },
-  { zone: "PRODUCTION — FREEZERS", productName: "FREEZER", machineNumber: "3", referenceTemp: "-18 to -15°C" },
-  { zone: "PRODUCTION — FREEZERS", productName: "FREEZER", machineNumber: "4", referenceTemp: "-18 to -16°C" },
-  { zone: "CAKE ROOM — FRIDGES", productName: "FRIDGE", machineNumber: "1", referenceTemp: "+3 to +8°C" },
-  { zone: "CAKE ROOM — FRIDGES", productName: "COLD ROOM", machineNumber: "1", referenceTemp: "+3 to +8°C" },
-  { zone: "CAKE ROOM — FREEZERS", productName: "FREEZER", machineNumber: "1", referenceTemp: "-18 to -15°C" },
-  { zone: "CAKE ROOM — FREEZERS", productName: "FREEZER", machineNumber: "2", referenceTemp: "-18 to -15°C" },
-  { zone: "STORE ROOM", productName: "FREEZER", machineNumber: "1", referenceTemp: "-18 to -15°C" },
-  { zone: "STORE ROOM", productName: "CHILLER BLASTER", machineNumber: "—", referenceTemp: "—" },
+  // Kitchen
+  { zone: "Kitchen", productName: "Freezer", machineNumber: "1", referenceTemp: "-1 to -18°C" },
+
+  // Fridge Room
+  { zone: "Fridge Room", productName: "Freezer", machineNumber: "1", referenceTemp: "-1 to -18°C" },
+  { zone: "Fridge Room", productName: "Fridge", machineNumber: "1", referenceTemp: "0 to +10°C" },
+  { zone: "Fridge Room", productName: "Fridge", machineNumber: "2", referenceTemp: "0 to +10°C" },
+  { zone: "Fridge Room", productName: "Fridge", machineNumber: "3", referenceTemp: "0 to +10°C" },
+
+  // Production Room
+  { zone: "Production Room", productName: "Freezer", machineNumber: "1", referenceTemp: "-1 to -18°C" },
+  { zone: "Production Room", productName: "Fridge", machineNumber: "1", referenceTemp: "0 to +10°C" },
+
+  // Cake Room
+  { zone: "Cake Room", productName: "Cold Room", machineNumber: "1", referenceTemp: "0 to +10°C" },
+  { zone: "Cake Room", productName: "Freezer", machineNumber: "1", referenceTemp: "-1 to -18°C" },
+  { zone: "Cake Room", productName: "Freezer", machineNumber: "2", referenceTemp: "-1 to -18°C" },
+
+  // Store Room
+  { zone: "Store Room", productName: "Freezer", machineNumber: "1", referenceTemp: "-1 to -18°C" },
+  { zone: "Store Room", productName: "Chiller Blaster", machineNumber: "1", referenceTemp: "—" },
 ];
 
 const KITCHEN_EQUIPMENT = [
-  "OVEN 1", "OVEN 2", "OVEN 3", "ELECTRIC GAS RANGE 1", "ELECTRIC GAS RANGE 2",
-  "GAS BURNER 3 BURNER", "GAS BURNER SINGLE", "WORKING TABLE 1", "WORKING TABLE 2",
-  "WORKING TABLE 3", "WORKING TABLE 4", "WORKING TABLE 5", "WORKING TABLE 6",
-  "WET - DRY DUSTBIN", "MIXER GRINDER", "MASALA GRINDER", "KHEEMA MACHINE",
-  "PROOFER", "TANDOOR", "SINK 1", "CHILLER BLASTER",
+  "Rack Oven", "New Rack Oven", "Deck Oven", "Electric Gas Range 1", "Electric Gas Range 2",
+  "3 Gas Burner", "1 Gas Burner",
+  "Kitchen Work Table 1", "Kitchen Work Table 2", "Kitchen Work Table 3",
+  "Kitchen Work Table 4", "Kitchen Work Table 5", "Kitchen Work Table 6", "Kitchen Work Table 7",
+  "Wet - Dry Dustbin", "Mixer Grinder", "Masala Grinder", "Kheema Machine",
+  "Proofer", "Tandoor", "Sink 1", "Chiller Blaster", "Weighing Scale",
 ];
 
 const PRODUCTION_EQUIPMENT = [
-  "WORKING TABLE 1", "WORKING TABLE 2", "WORKING TABLE 3", "WORKING TABLE 4",
-  "WORKING TABLE 5", "WORKING TABLE 6", "WORKING TABLE 7", "WET - DRY DUSTBIN",
-  "DOUGH KNEADER", "SPIRAL MIXER", "PLANETARY MIXER 1", "PLANETARY MIXER 2",
-  "PLANETARY MIXER 3", "PLANETARY MIXER 4", "PLANETARY MIXER 5", "PLANETARY MIXER 6",
-  "BREAD SLICER 1 / TABLE", "BREAD SLICER 2 / TABLE", "BREAD BUN DIVIDER",
-  "WEIGHING SCALE 1 / TABLE", "WEIGHING SCALE 2 / TABLE", "SEALING MACHINE 1",
-  "SEALING MACHINE 2", "WASH SINK 1", "WASH SINK 2", "FLOUR BIN 1", "FLOUR BIN 2", "FLOUR BIN 3",
+  "PR Working Table 1", "PR Working Table 2", "PR Working Table 3", "PR Working Table 4",
+  "PR Working Table 5", "PR Working Table 6", "PR Working Table 7", "PR Working Table 8", "PR Working Table 9",
+  "Dough Kneader", "Spiral Mixer", "Planetary Mixer 1", "Planetary Mixer 2",
+  "Planetary Mixer 3", "Planetary Mixer 4", "Planetary Mixer 5", "Planetary Mixer 6",
+  "Bread Slicer 1 / Table", "Bread Slicer 2 / Table", "Bread Bun Divider",
+  "Weighing Scale 1 / Table", "Weighing Scale 2 / Table", "Sealing Machine 1",
+  "Sealing Machine 2", "Sealing Machine 3", "Wash Sink 1", "Wash Sink 2", "Flour Bin 1", "Flour Bin 2", "Flour Bin 3",
+  "Wet - Dry Dustbin",
+  "Trollies (1-10)",
 ];
 
 const PUFF_EQUIPMENT = [
-  "DOUGH SHEETER", "TABLE 1", "TABLE 2", "TABLE 3", "TABLE 4",
-  "WASH SINK 1", "OFFICE DESK", "CHAIR", "WET - DRY DUSTBIN",
-  "STORE ROOM 1", "LIFT", "CUPBOARD 1", "CUPBOARD 2", "STORE ROOM 2", "RACKS",
+  "Dough Sheeter", "Table 1", "Table 2", "Table 3", "Table 4",
+  "Wash Sink 1", "Wet - Dry Dustbin", "Office Desk", "Chair",
+];
+
+const STORE_ROOM_EQUIPMENT = [
+  "Store Room 1", "Store Room 2", "Racks", "Cupboard 1", "Cupboard 2", "Lift",
 ];
 
 const CAKE_EQUIPMENT = [
-  "PLANETARY MIXER 1", "PLANETARY MIXER 2", "TABLE 1", "TABLE 2",
-  "TABLE 3", "TABLE 4", "TABLE 5", "MACHINE TABLE 6", "WET - DRY DUSTBIN",
-  "STORE CABINET", "MICROWAVE 1", "WEIGHING SCALE 1", "MICROWAVE 2",
-  "WEIGHING SCALE 2", "OFFICE DESK", "STOOL / CHAIR",
+  "Planetary Mixer 1", "Planetary Mixer 2", "Table 1", "Table 2",
+  "Table 3", "Table 4", "Table 5", "Machine Table 6",
+  "Microwave 1", "Microwave 2", "Weighing Scale",
+  "Store Cabinet", "Wet - Dry Dustbin", "Office Desk", "Stool / Chair",
+];
+
+const DUCT_ITEMS = [
+  "Duct Kitchen 1", "Duct Kitchen 2", "Duct Kitchen 3",
+  "Oven Duct 1", "Oven Duct 2", "Oven Duct 3",
+  "Production Central Duct",
+];
+
+const WET_UTILITY_ITEMS = [
+  "Sink", "Work Table 1", "Work Table 2", "Mori",
 ];
 
 const ORETA_HYGIENE_AREAS = [
-  { id: 1, area: "KITCHEN", morning: "RAMESHWAR / BHARTI", afternoon: "RAMESHWAR / BHARTI", evening: "RAMESHWAR / BHARTI", night: "RAMESHWAR / BHARTI" },
-  { id: 2, area: "WASH ROOM", morning: "—", afternoon: "MANGLA / BHARTI", evening: "MANGLA / BHARTI", night: "MANGLA / BHARTI" },
-  { id: 3, area: "OUTDOOR CLEANING", morning: "MANGLA / BHARTI", afternoon: "MANGLA / BHARTI", evening: "MANGLA / BHARTI", night: "MANGLA / BHARTI" },
-  { id: 4, area: "INSIDE TOP / GROUND CLEANING", morning: "MANGLA / BHARTI", afternoon: "MANGLA / BHARTI", evening: "MANGLA / BHARTI", night: "MANGLA / BHARTI" },
-  { id: 5, area: "CASH COUNTER", morning: "ARZAAAN / NEW", afternoon: "ARZAAAN / NEW", evening: "ARZAAAN / NEW", night: "ARZAAAN / NEW" },
-  { id: 6, area: "DISPLAY COUNTERS", morning: "ARZAAAN / NEW", afternoon: "ARZAAAN / NEW", evening: "ARZAAAN / NEW", night: "ARZAAAN / NEW" },
-  { id: 7, area: "FREEZER", morning: "ARZAAAN / NEW", afternoon: "ARZAAAN / NEW", evening: "ARZAAAN / NEW", night: "ARZAAAN / NEW" },
-  { id: 8, area: "RACKS", morning: "ARZAAAN / NEW", afternoon: "ARZAAAN / NEW", evening: "ARZAAAN / NEW", night: "ARZAAAN / NEW" },
-  { id: 9, area: "STORE", morning: "ARZAAAN / NEW", afternoon: "ARZAAAN / NEW", evening: "ARZAAAN / NEW", night: "ARZAAAN / NEW" },
-  { id: 10, area: "DUSTING", morning: "BHARTI / MANGLA", afternoon: "BHARTI / MANGLA", evening: "BHARTI / MANGLA", night: "BHARTI / MANGLA" },
-  { id: 11, area: "TABLES / CHAIRS", morning: "BHARTI / RAMESHWAR", afternoon: "BHARTI / RAMESHWAR", evening: "BHARTI / RAMESHWAR", night: "BHARTI / RAMESHWAR" },
-  { id: 12, area: "WASHING VESSELS", morning: "BHARTI - RAMESHWAR", afternoon: "BHARTI - RAMESHWAR", evening: "BHARTI - RAMESHWAR", night: "BHARTI - RAMESHWAR" },
+  { id: 1, area: "Kitchen", morning: "Rameshwar / Bharti", afternoon: "Rameshwar / Bharti", evening: "Rameshwar / Bharti", night: "Rameshwar / Bharti" },
+  { id: 2, area: "Wash Room", morning: "—", afternoon: "Mangla / Bharti", evening: "Mangla / Bharti", night: "Mangla / Bharti" },
+  { id: 3, area: "Outdoor Cleaning", morning: "Mangla / Bharti", afternoon: "Mangla / Bharti", evening: "Mangla / Bharti", night: "Mangla / Bharti" },
+  { id: 4, area: "Inside Top / Ground Cleaning", morning: "Mangla / Bharti", afternoon: "Mangla / Bharti", evening: "Mangla / Bharti", night: "Mangla / Bharti" },
+  { id: 5, area: "Cash Counter", morning: "Arzaaan / New", afternoon: "Arzaaan / New", evening: "Arzaaan / New", night: "Arzaaan / New" },
+  { id: 6, area: "Display Counters", morning: "Arzaaan / New", afternoon: "Arzaaan / New", evening: "Arzaaan / New", night: "Arzaaan / New" },
+  { id: 7, area: "Freezer", morning: "Arzaaan / New", afternoon: "Arzaaan / New", evening: "Arzaaan / New", night: "Arzaaan / New" },
+  { id: 8, area: "Racks", morning: "Arzaaan / New", afternoon: "Arzaaan / New", evening: "Arzaaan / New", night: "Arzaaan / New" },
+  { id: 9, area: "Store", morning: "Arzaaan / New", afternoon: "Arzaaan / New", evening: "Arzaaan / New", night: "Arzaaan / New" },
+  { id: 10, area: "Dusting", morning: "Bharti / Mangla", afternoon: "Bharti / Mangla", evening: "Bharti / Mangla", night: "Bharti / Mangla" },
+  { id: 11, area: "Tables / Chairs", morning: "Bharti / Rameshwar", afternoon: "Bharti / Rameshwar", evening: "Bharti / Rameshwar", night: "Bharti / Rameshwar" },
+  { id: 12, area: "Washing Vessels", morning: "Bharti - Rameshwar", afternoon: "Bharti - Rameshwar", evening: "Bharti - Rameshwar", night: "Bharti - Rameshwar" },
 ];
 
 async function main() {
@@ -125,8 +147,8 @@ async function main() {
   const staffList = [
     // Bakery Staff
     { name: "Shridhar Jadhav", email: "shridhar@pnr.com", outletId: "bakery", sheets: ["HYGIENE_REPORT"] },
-    { name: "Pravin Jadhav", email: "pravin@pnr.com", outletId: "bakery", sheets: ["HYGIENE_REPORT", "PRODUCTION", "KITCHEN"] },
-    { name: "Mavshi", email: "mavshi@pnr.com", outletId: "bakery,rns-world,symphony-world", sheets: ["HYGIENE_REPORT", "PRODUCTION", "KITCHEN", "RNS_EQUIPMENT", "SYMPHONY_EQUIPMENT"] },
+    { name: "Pravin Jadhav", email: "pravin@pnr.com", outletId: "bakery", sheets: ["HYGIENE_REPORT", "PRODUCTION", "KITCHEN", "DUCT", "WET_UTILITY", "STORE_ROOM"] },
+    { name: "Mavshi", email: "mavshi@pnr.com", outletId: "bakery,rns-world,symphony-world", sheets: ["HYGIENE_REPORT", "GLASS_REPORT", "FRIDGE_REPORT", "PRODUCTION", "KITCHEN", "DUCT", "WET_UTILITY", "STORE_ROOM", "RNS_EQUIPMENT", "SYMPHONY_EQUIPMENT"] },
     { name: "Sanjay Jadhav", email: "sanjay@pnr.com", outletId: "bakery", sheets: ["GLASS_REPORT"] },
     { name: "Suresh", email: "suresh@pnr.com", outletId: "bakery", sheets: ["GLASS_REPORT", "KITCHEN"] },
     { name: "Sagar Yadav", email: "sagar@pnr.com", outletId: "bakery", sheets: ["PRODUCTION", "KITCHEN"] },

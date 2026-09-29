@@ -30,6 +30,9 @@ model User {
   productionEntries ProductionEntry[]
   puffRoomEntries   PuffRoomEntry[]
   cakeRoomEntries       CakeRoomEntry[]
+  ductEntries           DuctEntry[]
+  wetUtilityEntries     WetUtilityEntry[]
+  storeRoomEntries      StoreRoomEntry[]
   oretaHygieneEntries   OretaHygieneEntry[]
   oretaEquipmentEntries OretaEquipmentEntry[]
   oretaFridgeEntries    OretaFridgeEntry[]
@@ -166,6 +169,63 @@ model PuffRoomEntry {
 
 // ─── CAKE ROOM ────────────────────────────────────────────────────────────────
 model CakeRoomEntry {
+  id            String   @id @default(cuid())
+  date          String
+  submittedById String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  equipmentChecks  String
+  supervisorName   String @default("")
+  workerName       String @default("")
+  comments         String @default("")
+  correctiveAction String @default("")
+
+  submittedBy User @relation(fields: [submittedById], references: [id])
+
+  @@index([date])
+}
+
+// ─── DUCT ─────────────────────────────────────────────────────────────────────
+model DuctEntry {
+  id            String   @id @default(cuid())
+  date          String
+  submittedById String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  equipmentChecks  String
+  supervisorName   String @default("")
+  workerName       String @default("")
+  comments         String @default("")
+  correctiveAction String @default("")
+
+  submittedBy User @relation(fields: [submittedById], references: [id])
+
+  @@index([date])
+}
+
+// ─── WET UTILITY AREA ─────────────────────────────────────────────────────────
+model WetUtilityEntry {
+  id            String   @id @default(cuid())
+  date          String
+  submittedById String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  equipmentChecks  String
+  supervisorName   String @default("")
+  workerName       String @default("")
+  comments         String @default("")
+  correctiveAction String @default("")
+
+  submittedBy User @relation(fields: [submittedById], references: [id])
+
+  @@index([date])
+}
+
+// ─── STORE ROOM ───────────────────────────────────────────────────────────────
+model StoreRoomEntry {
   id            String   @id @default(cuid())
   date          String
   submittedById String

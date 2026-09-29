@@ -89,7 +89,16 @@ export default function HygieneForm({
 
   function startEditSubmission(entry: HygieneEntry) {
     setEditingId(entry.id);
-    setAreaChecks(JSON.parse(entry.areaChecks));
+    try {
+      const parsed: AreaCheck[] = JSON.parse(entry.areaChecks);
+      const updatedChecks: AreaCheck[] = areas.map((area) => {
+        const found = parsed.find((p) => p.area.trim().toLowerCase() === area.trim().toLowerCase());
+        return found ? { ...found, area } : { area, checkedBy: "", time: "" };
+      });
+      setAreaChecks(updatedChecks);
+    } catch {
+      setAreaChecks(initChecks);
+    }
     setSupervisorName(entry.supervisorName || defaultSupervisor);
     setComments(entry.comments || "");
     setCorrectiveAction(entry.correctiveAction || "");

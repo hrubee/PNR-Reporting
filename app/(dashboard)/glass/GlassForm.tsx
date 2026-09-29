@@ -75,7 +75,16 @@ export default function GlassForm({
 
   function startEditSubmission(entry: GlassEntryType) {
     setEditingId(entry.id);
-    setChecks(JSON.parse(entry.locationChecks));
+    try {
+      const parsed: LocationCheck[] = JSON.parse(entry.locationChecks);
+      const updatedChecks: LocationCheck[] = locations.map((loc) => {
+        const found = parsed.find((p) => p.location.trim().toLowerCase() === loc.trim().toLowerCase());
+        return found ? { ...found, location: loc } : { location: loc, name: "" };
+      });
+      setChecks(updatedChecks);
+    } catch {
+      setChecks(init);
+    }
     setSupervisorName(entry.supervisorName || defaultSupervisor);
     setComments(entry.comments || "");
     setCorrectiveAction(entry.correctiveAction || "");

@@ -1,64 +1,47 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
-import { hasSheetAccess, getTodayString, formatDate, getDayName } from "@/lib/permissions";
-import HygieneForm from "./HygieneForm";
+import { hasSheetAccess, getTodayString, formatDate } from "@/lib/permissions";
+import { BAKERY_WET_UTILITY_ITEMS } from "@/lib/outlets";
+import GenericChecklistForm from "@/components/GenericChecklistForm";
 
-const AREAS = [
-  "Production Room",
-  "Oven Room",
-  "Fridge Room",
-  "Utility Area",
-  "Puff Department",
-  "Admin",
-  "Store 1",
-  "Passage Ground Floor",
-  "Security Area",
-  "Toilet Guest",
-  "Sir Office",
-  "Toilet",
-  "Cake Room",
-  "Passage First Floor",
-  "Store Room 2",
-  "Outside Compound",
-];
-
-export default async function HygienePage() {
+export default async function WetUtilityPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
   const user = session.user as { id: string; name: string; role: string };
 
-  const canAccess = await hasSheetAccess(user.id, "HYGIENE_REPORT", user.role);
+  const canAccess = await hasSheetAccess(user.id, "WET_UTILITY", user.role);
   if (!canAccess) redirect("/dashboard");
 
   const today = getTodayString();
-  const todayEntries = await prisma.hygieneEntry.findMany({
+  const todayEntries = await prisma.wetUtilityEntry.findMany({
     where: { date: today },
     orderBy: { createdAt: "desc" },
     include: { submittedBy: true },
   });
 
-  const history = await prisma.hygieneEntry.findMany({
+  const history = await prisma.wetUtilityEntry.findMany({
     orderBy: { createdAt: "desc" },
     take: 100,
     include: { submittedBy: true },
   });
 
   const { getDynamicStaffForSheet, getDynamicSupervisors } = await import("@/lib/staff");
-  const staffList = await getDynamicStaffForSheet("HYGIENE_REPORT", "bakery");
+  const staffList = await getDynamicStaffForSheet("WET_UTILITY", "bakery");
   const supervisorsList = await getDynamicSupervisors("bakery");
 
   return (
-    <HygieneForm
-      areas={AREAS}
+    <GenericChecklistForm
+      title="Wet Utility Area Report"
+      icon="🚰"
+      sheet="wet-utility"
+      sheetKey="WET_UTILITY"
+      equipment={BAKERY_WET_UTILITY_ITEMS}
       today={today}
       todayLabel={formatDate(today)}
-      dayName={getDayName(today)}
       todayEntries={JSON.parse(JSON.stringify(todayEntries))}
       history={JSON.parse(JSON.stringify(history))}
-      userId={user.id}
       userName={user.name}
-      isAdmin={user.role === "ADMIN"}
       staffList={staffList}
       supervisorsList={supervisorsList}
     />

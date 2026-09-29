@@ -13,7 +13,7 @@ export default async function AccessPage() {
   let users: any[] = [];
   try {
     users = await prisma.user.findMany({
-      where: { isActive: true, role: "EMPLOYEE" }, // Only employees — supervisors auto-have full access
+      where: { isActive: true, role: { in: ["EMPLOYEE", "SUP_EMPLOYEE", "sup employee"] } },
       orderBy: { name: "asc" },
       select: { id: true, name: true, email: true, role: true, outletId: true, jobTitle: true },
     });
@@ -21,7 +21,7 @@ export default async function AccessPage() {
     console.error("Error loading users in AccessPage:", err);
     try {
       users = await prisma.user.findMany({
-        where: { isActive: true, role: "EMPLOYEE" },
+        where: { isActive: true, role: { in: ["EMPLOYEE", "SUP_EMPLOYEE", "sup employee"] } },
         orderBy: { name: "asc" },
         select: { id: true, name: true, email: true, role: true },
       });

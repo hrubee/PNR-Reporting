@@ -10,6 +10,9 @@ export type SheetId =
   | "PRODUCTION"
   | "PUFF_ROOM"
   | "CAKE_ROOM"
+  | "DUCT"
+  | "WET_UTILITY"
+  | "STORE_ROOM"
   | "ORETA_SHOP_CLEANING"
   | "ORETA_EQUIPMENT"
   | "ORETA_FRIDGE"
@@ -28,6 +31,9 @@ export const SHEET_LABELS: Record<SheetId, string> = {
   PRODUCTION: "Production",
   PUFF_ROOM: "Puff Room",
   CAKE_ROOM: "Cake Room",
+  DUCT: "Duct",
+  WET_UTILITY: "Wet Utility Area",
+  STORE_ROOM: "Store Room",
   ORETA_SHOP_CLEANING: "House Keeping",
   ORETA_EQUIPMENT: "Equipment Cleaning",
   ORETA_FRIDGE: "Fridge & Display Temp",
@@ -47,6 +53,9 @@ export const SHEET_ROUTES: Record<SheetId, string> = {
   PRODUCTION: "/production",
   PUFF_ROOM: "/puff-room",
   CAKE_ROOM: "/cake-room",
+  DUCT: "/duct",
+  WET_UTILITY: "/wet-utility",
+  STORE_ROOM: "/store-room",
   ORETA_SHOP_CLEANING: "/oreta/shop-cleaning",
   ORETA_EQUIPMENT: "/oreta/equipment",
   ORETA_FRIDGE: "/oreta/fridge",
@@ -87,6 +96,9 @@ export const SHEET_STAFF: Record<SheetId, string[]> = {
   PRODUCTION: [],
   PUFF_ROOM: [],
   CAKE_ROOM: [],
+  DUCT: [],
+  WET_UTILITY: [],
+  STORE_ROOM: [],
   ORETA_SHOP_CLEANING: [],
   ORETA_EQUIPMENT: [],
   ORETA_FRIDGE: [],
@@ -146,4 +158,12 @@ export function formatDate(dateStr: string): string {
 export function getDayName(dateStr: string): string {
   const d = new Date(dateStr + "T00:00:00");
   return d.toLocaleDateString("en-IN", { weekday: "long" });
+}
+
+export function toTitleCase(str: string): string {
+  if (!str) return "";
+  return str.replace(/\b[a-zA-Z]+/g, (match) => {
+    if (match.toUpperCase() === "PR") return "PR";
+    return match.charAt(0).toUpperCase() + match.slice(1).toLowerCase();
+  });
 }

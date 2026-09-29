@@ -216,6 +216,51 @@ export async function ensureDbSchema() {
       );
     `).catch(() => {});
 
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "DuctEntry" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "date" TEXT NOT NULL,
+        "submittedById" TEXT NOT NULL REFERENCES "User"("id"),
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "equipmentChecks" TEXT NOT NULL,
+        "supervisorName" TEXT NOT NULL DEFAULT '',
+        "workerName" TEXT NOT NULL DEFAULT '',
+        "comments" TEXT NOT NULL DEFAULT '',
+        "correctiveAction" TEXT NOT NULL DEFAULT ''
+      );
+    `).catch(() => {});
+
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "WetUtilityEntry" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "date" TEXT NOT NULL,
+        "submittedById" TEXT NOT NULL REFERENCES "User"("id"),
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "equipmentChecks" TEXT NOT NULL,
+        "supervisorName" TEXT NOT NULL DEFAULT '',
+        "workerName" TEXT NOT NULL DEFAULT '',
+        "comments" TEXT NOT NULL DEFAULT '',
+        "correctiveAction" TEXT NOT NULL DEFAULT ''
+      );
+    `).catch(() => {});
+
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "StoreRoomEntry" (
+        "id" TEXT NOT NULL PRIMARY KEY,
+        "date" TEXT NOT NULL,
+        "submittedById" TEXT NOT NULL REFERENCES "User"("id"),
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "equipmentChecks" TEXT NOT NULL,
+        "supervisorName" TEXT NOT NULL DEFAULT '',
+        "workerName" TEXT NOT NULL DEFAULT '',
+        "comments" TEXT NOT NULL DEFAULT '',
+        "correctiveAction" TEXT NOT NULL DEFAULT ''
+      );
+    `).catch(() => {});
+
     // Ensure default admin user exists
     const adminCount = await prisma.user.count({ where: { role: "ADMIN" } }).catch(() => 0);
     if (adminCount === 0) {

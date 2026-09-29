@@ -19,6 +19,9 @@ export const SHEET_TO_OUTLET: Record<SheetId, string> = {
   PRODUCTION: "bakery",
   PUFF_ROOM: "bakery",
   CAKE_ROOM: "bakery",
+  DUCT: "bakery",
+  WET_UTILITY: "bakery",
+  STORE_ROOM: "bakery",
   ORETA_SHOP_CLEANING: "oreta-world",
   ORETA_EQUIPMENT: "oreta-world",
   ORETA_FRIDGE: "oreta-world",
@@ -46,10 +49,11 @@ export function getOutletFilterConditions(outletId?: string) {
 }
 
 /**
- * Returns dynamic staff names for a specific sheet based on Outlet Assignment.
- * ACCESS MATRIX DISABLED:
- * Any active employee assigned to this sheet's outlet is visible in the dropdown.
- * If a user is NOT assigned to this outlet (or unassigned), they will NOT be visible.
+ * Returns dynamic staff names for a specific sheet.
+ * Governed by the Access Matrix (sheetAccess table) and outlet isolation:
+ *   1. Employee must belong to the sheet's outlet (or "all").
+ *   2. Employee must have explicit sheetAccess for that sheet granted in the Access Matrix.
+ * Toggling an employee ON in the Access Matrix makes their name visible in this sheet's dropdowns.
  */
 export async function getDynamicStaffForSheet(sheetKey: SheetId, outletId?: string): Promise<string[]> {
   await ensureDbSchema();
@@ -59,13 +63,18 @@ export async function getDynamicStaffForSheet(sheetKey: SheetId, outletId?: stri
     const outletConds = getOutletFilterConditions(targetOutlet);
     if (!outletConds) return [];
 
+    const sheetAliases = (sheetKey === "ORETA_SHOP_CLEANING" || sheetKey === "ORETA_HYGIENE")
+      ? ["ORETA_SHOP_CLEANING", "ORETA_HYGIENE"]
+      : [sheetKey];
+
     // Query active employees and sup employees assigned to this sheet's outlet
-    // Supervisors will NOT have their names in the cleaning dropdown
+    // AND granted access to this sheet in the Access Matrix (sheetAccess table)
     const users = await prisma.user.findMany({
       where: {
         isActive: true,
         role: { in: ["EMPLOYEE", "SUP_EMPLOYEE", "sup employee"] },
         OR: outletConds,
+        sheetAccess: { some: { sheet: { in: sheetAliases } } },
       },
       select: { name: true },
       orderBy: { name: "asc" },

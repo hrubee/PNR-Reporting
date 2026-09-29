@@ -9,6 +9,9 @@ const SHEETS = [
   { key: "PRODUCTION", label: "Production", icon: "🏭", outlet: "Bakery", outletId: "bakery" },
   { key: "PUFF_ROOM", label: "Puff Room", icon: "🥐", outlet: "Bakery", outletId: "bakery" },
   { key: "CAKE_ROOM", label: "Cake Room", icon: "🎂", outlet: "Bakery", outletId: "bakery" },
+  { key: "DUCT", label: "Duct", icon: "💨", outlet: "Bakery", outletId: "bakery" },
+  { key: "WET_UTILITY", label: "Wet Utility Area", icon: "🚰", outlet: "Bakery", outletId: "bakery" },
+  { key: "STORE_ROOM", label: "Store Room", icon: "📦", outlet: "Bakery", outletId: "bakery" },
   // Oreta World
   { key: "ORETA_SHOP_CLEANING", label: "House Keeping", icon: "🧹", outlet: "Oreta World", outletId: "oreta-world" },
   { key: "ORETA_EQUIPMENT", label: "Oreta Equipment", icon: "⚙️", outlet: "Oreta World", outletId: "oreta-world" },
@@ -152,8 +155,8 @@ export default function AccessMatrixClient({
       </div>
       <div
         style={{
-          background: "rgba(245, 158, 11, 0.12)",
-          border: "1px solid #f59e0b",
+          background: "rgba(37, 99, 235, 0.08)",
+          border: "1px solid rgba(37, 99, 235, 0.25)",
           borderRadius: "8px",
           padding: "1rem 1.25rem",
           marginBottom: "1.5rem",
@@ -162,17 +165,13 @@ export default function AccessMatrixClient({
           gap: "0.75rem",
         }}
       >
-        <span style={{ fontSize: "1.4rem" }}>ℹ️</span>
+        <span style={{ fontSize: "1.4rem" }}>🔐</span>
         <div>
-          <div style={{ fontWeight: 700, color: "#d97706", fontSize: "0.95rem" }}>
-            Access Matrix is currently disabled
+          <div style={{ fontWeight: 700, color: "var(--accent)", fontSize: "0.95rem" }}>
+            Staff Dropdown Visibility Control
           </div>
           <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: 1.5 }}>
-            Staff dropdown visibility is now governed directly by <strong>Outlet Assignment</strong> in the{" "}
-            <a href="/admin/users" style={{ color: "var(--accent)", textDecoration: "underline", fontWeight: 600 }}>
-              Users Management
-            </a>{" "}
-            section. Any employee or supervisor assigned to an outlet automatically appears in all dropdowns for that outlet. Users not assigned to an outlet will not appear in any dropdowns.
+            Toggling a sheet <strong>ON</strong> adds that employee&apos;s name to the staff dropdown list in that specific reporting tab. Toggling <strong>OFF</strong> immediately removes their name from that sheet&apos;s dropdown.
           </p>
         </div>
       </div>

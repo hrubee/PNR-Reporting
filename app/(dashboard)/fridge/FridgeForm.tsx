@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SUPERVISORS, OUTLET_SUPERVISORS } from "@/lib/permissions";
 
 interface FridgeItem {
@@ -12,6 +12,7 @@ interface FridgeItem {
 interface FridgeCheck extends FridgeItem {
   actualTempMorning: string;
   actualTempEvening: string;
+  cleanedBy?: string;
   isNA?: boolean;
 }
 
@@ -38,8 +39,28 @@ interface Props {
   supervisorsList?: string[];
 }
 
-const CHILLER_TEMPS = ["N/A", "+3.0°C", "+3.5°C", "+4.0°C", "+4.5°C", "+5.0°C", "+5.5°C", "+6.0°C", "+6.5°C", "+7.0°C", "+8.0°C"];
-const FREEZER_TEMPS = ["N/A", "-15.0°C", "-15.5°C", "-16.0°C", "-16.5°C", "-17.0°C", "-17.5°C", "-18.0°C", "-18.5°C", "-19.0°C"];
+const CHILLER_TEMPS = [
+  "N/A",
+  "0.0°C", "+0.5°C", "+1.0°C", "+1.5°C", "+2.0°C", "+2.5°C", "+3.0°C", "+3.5°C",
+  "+4.0°C", "+4.5°C", "+5.0°C", "+5.5°C", "+6.0°C", "+6.5°C", "+7.0°C", "+7.5°C",
+  "+8.0°C", "+8.5°C", "+9.0°C", "+9.5°C", "+10.0°C",
+];
+
+const FREEZER_TEMPS = [
+  "N/A",
+  "-1.0°C", "-1.5°C", "-2.0°C", "-2.5°C", "-3.0°C", "-3.5°C", "-4.0°C", "-4.5°C",
+  "-5.0°C", "-5.5°C", "-6.0°C", "-6.5°C", "-7.0°C", "-7.5°C", "-8.0°C", "-8.5°C",
+  "-9.0°C", "-9.5°C", "-10.0°C", "-10.5°C", "-11.0°C", "-11.5°C", "-12.0°C", "-12.5°C",
+  "-13.0°C", "-13.5°C", "-14.0°C", "-14.5°C", "-15.0°C", "-15.5°C", "-16.0°C", "-16.5°C",
+  "-17.0°C", "-17.5°C", "-18.0°C",
+];
+
+export function isFreezerUnit(item: { productName?: string; zone?: string; referenceTemp?: string }) {
+  const p = (item.productName || "").trim().toLowerCase();
+  const z = (item.zone || "").trim().toLowerCase();
+  const r = (item.referenceTemp || "").trim().toLowerCase();
+  return p.includes("freezer") || z.includes("freezer") || r.includes("-18") || r.includes("-1") || r.includes("minus");
+}
 
 export default function FridgeForm({
   items,
@@ -51,13 +72,16 @@ export default function FridgeForm({
   staffList = [],
   supervisorsList = [],
 }: Props) {
+  const teamMembers = staffList;
   const availableSupervisors = supervisorsList.length > 0 ? supervisorsList : (OUTLET_SUPERVISORS["bakery"] || []);
+  const defaultWorker = teamMembers.length === 1 ? teamMembers[0] : "";
   const defaultSupervisor = "";
 
   const init: FridgeCheck[] = items.map((i) => ({
     ...i,
     actualTempMorning: "",
     actualTempEvening: "",
+    cleanedBy: defaultWorker,
     isNA: false,
   }));
 
@@ -76,6 +100,20 @@ export default function FridgeForm({
   const [alert, setAlert] = useState<{ type: "success" | "error"; msg: string } | null>(null);
   const [selectedDate, setSelectedDate] = useState(today);
 
+  useEffect(() => {
+    if (!editingId) {
+      setChecks(
+        items.map((i) => ({
+          ...i,
+          actualTempMorning: "",
+          actualTempEvening: "",
+          cleanedBy: defaultWorker,
+          isNA: false,
+        }))
+      );
+    }
+  }, [items, defaultWorker, editingId]);
+
   function startNewSubmission() {
     setEditingId(null);
     setChecks(init);
@@ -89,11 +127,55 @@ export default function FridgeForm({
 
   function startEditSubmission(entry: FridgeEntryType) {
     setEditingId(entry.id);
-    const parsedChecks: FridgeCheck[] = JSON.parse(entry.fridgeChecks).map((c: FridgeCheck) => ({
-      ...c,
-      isNA: c.actualTempMorning === "N/A" && c.actualTempEvening === "N/A",
-    }));
-    setChecks(parsedChecks);
+    try {
+      const parsedChecks: FridgeCheck[] = JSON.parse(entry.fridgeChecks);
+      const updatedChecks = items.map((item) => {
+        const existing = parsedChecks.find(
+          (p) =>
+            p.zone.trim().toLowerCase() === item.zone.trim().toLowerCase() &&
+            p.machineNumber.trim().toLowerCase() === item.machineNumber.trim().toLowerCase() &&
+            p.productName.trim().toLowerCase() === item.productName.trim().toLowerCase()
+        );
+
+        if (existing) {
+          const isFreezer = isFreezerUnit(item);
+          let mTemp = existing.actualTempMorning || "";
+          let eTemp = existing.actualTempEvening || "";
+          // Strip out incompatible temps if an item shifted types
+          if (isFreezer && mTemp.startsWith("+")) mTemp = "";
+          if (isFreezer && eTemp.startsWith("+")) eTemp = "";
+          if (!isFreezer && mTemp.startsWith("-")) mTemp = "";
+          if (!isFreezer && eTemp.startsWith("-")) eTemp = "";
+
+          return {
+            ...existing,
+            zone: item.zone,
+            productName: item.productName,
+            machineNumber: item.machineNumber,
+            referenceTemp: item.referenceTemp,
+            actualTempMorning: mTemp,
+            actualTempEvening: eTemp,
+            cleanedBy: existing.cleanedBy || (existing as any).name || defaultWorker,
+            isNA: (existing.actualTempMorning === "N/A" && existing.actualTempEvening === "N/A") || existing.isNA || false,
+          };
+        }
+        return {
+          zone: item.zone,
+          productName: item.productName,
+          machineNumber: item.machineNumber,
+          referenceTemp: item.referenceTemp,
+          actualTempMorning: "",
+          actualTempEvening: "",
+          cleanedBy: defaultWorker,
+          remarksMorning: "",
+          remarksEvening: "",
+          isNA: false,
+        };
+      });
+      setChecks(updatedChecks);
+    } catch {
+      setChecks(init);
+    }
     setSupervisedBy(entry.supervisedBy || defaultSupervisor);
     setHygiene(entry.hygiene || "Good");
     setComments(entry.comments || "");
@@ -126,10 +208,16 @@ export default function FridgeForm({
     setChecks(copy);
   }
 
+  function updateCleanedBy(idx: number, val: string) {
+    const copy = [...checks];
+    copy[idx] = { ...copy[idx], cleanedBy: val };
+    setChecks(copy);
+  }
+
   function setAllWorkingTemps(morning: boolean) {
     const copy = checks.map((c) => {
       if (c.isNA) return c;
-      const isFreezer = c.zone.includes("FREEZER");
+      const isFreezer = isFreezerUnit(c);
       const defaultVal = isFreezer ? "-18.0°C" : "+4.5°C";
       return {
         ...c,
@@ -240,7 +328,6 @@ export default function FridgeForm({
                   </div>
                   <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: "2px" }}>
                     ⏰ {new Date(entry.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
-                    {entry.hygiene && ` • Hygiene: ${entry.hygiene}`}
                     {entry.comments && ` • "${entry.comments}"`}
                   </div>
                 </div>
@@ -260,18 +347,8 @@ export default function FridgeForm({
               <div className="card-title">
                 {editingId ? "✏️ Edit Temperature Reading" : "➕ New Temperature Reading"}
               </div>
-              <div className="form-group" style={{ minWidth: 220 }}>
-                <label style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Verified / Supervised By</label>
-                <select
-                  value={supervisedBy}
-                  onChange={(e) => setSupervisedBy(e.target.value)}
-                  style={{ fontWeight: 600, color: "var(--accent)" }}
-                >
-                  <option value="">-- Select Supervisor --</option>
-                  {availableSupervisors.map((sup) => (
-                    <option key={sup} value={sup}>{sup}</option>
-                  ))}
-                </select>
+              <div style={{ display: "flex", gap: "0.75rem", fontSize: "0.82rem", color: "var(--text-muted)" }}>
+                <span>📅 {todayLabel}</span>
               </div>
             </div>
 
@@ -292,33 +369,62 @@ export default function FridgeForm({
               >
                 🌙 Set Evening Normals (+5.0°C / -18°C)
               </button>
+              {teamMembers.length === 1 ? (
+                <button
+                  type="button"
+                  className="btn btn-sm btn-secondary"
+                  onClick={() => setChecks((prev) => prev.map((c) => ({ ...c, cleanedBy: teamMembers[0] })))}
+                >
+                  🧹 All Cleaned by {teamMembers[0]}
+                </button>
+              ) : teamMembers.length > 1 ? (
+                <div style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
+                  <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>🧹 Assign All:</span>
+                  <select
+                    style={{ fontSize: "0.78rem", padding: "0.25rem 0.5rem", borderRadius: "4px", border: "1px solid var(--border)", background: "var(--bg-input)", color: "var(--text-primary)" }}
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        const val = e.target.value;
+                        setChecks((prev) => prev.map((c) => ({ ...c, cleanedBy: val })));
+                      }
+                    }}
+                    defaultValue=""
+                  >
+                    <option value="" disabled>-- Cleaned By --</option>
+                    {teamMembers.map((m) => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : null}
             </div>
 
             <div style={{ overflowX: "auto" }}>
               <table className="checklist-table">
                 <thead>
                   <tr>
-                    <th style={{ width: "35%" }}>Product / Machine</th>
-                    <th style={{ width: "20%" }}>Status</th>
-                    <th style={{ width: "22%" }}>☀️ Morning Temp</th>
-                    <th style={{ width: "22%" }}>🌙 Evening Temp</th>
+                    <th style={{ width: "26%" }}>Product / Machine</th>
+                    <th style={{ width: "16%" }}>Status</th>
+                    <th style={{ width: "19%" }}>☀️ Morning Temp</th>
+                    <th style={{ width: "19%" }}>🌙 Evening Temp</th>
+                    <th style={{ width: "20%" }}>Cleaned by</th>
                   </tr>
                 </thead>
                 <tbody>
                   {zones.map((zone) => (
                     <React.Fragment key={`zone-group-${zone}`}>
                       <tr className="zone-row">
-                        <td colSpan={4}>{zone}</td>
+                        <td colSpan={5}>{zone}</td>
                       </tr>
                       {checks.map((row, idx) => {
                         if (row.zone !== zone) return null;
-                        const isFreezer = row.zone.includes("FREEZER");
+                        const isFreezer = isFreezerUnit(row);
                         const options = isFreezer ? FREEZER_TEMPS : CHILLER_TEMPS;
 
                         return (
                           <tr key={idx} className={row.isNA ? "row-na" : ""}>
                             <td style={{ fontWeight: 600 }}>
-                              <span>{row.productName} #{row.machineNumber}</span>
+                              <span>{row.productName}{row.machineNumber && row.machineNumber !== "—" ? ` #${row.machineNumber}` : ""}</span>
                               <span style={{ fontSize: "0.75rem", color: "var(--accent)", background: "rgba(120,53,15,0.09)", padding: "2px 8px", borderRadius: "99px", fontWeight: 600 }}>
                                 {row.referenceTemp}
                               </span>
@@ -351,6 +457,9 @@ export default function FridgeForm({
                                       onChange={(e) => updateTemp(idx, "actualTempMorning", e.target.value)}
                                     >
                                       <option value="">Select Temp</option>
+                                      {row.actualTempMorning && !options.includes(row.actualTempMorning) && (
+                                        <option value={row.actualTempMorning}>{row.actualTempMorning}</option>
+                                      )}
                                       {options.map((t) => (
                                         <option key={t} value={t}>{t}</option>
                                       ))}
@@ -371,6 +480,9 @@ export default function FridgeForm({
                                       onChange={(e) => updateTemp(idx, "actualTempEvening", e.target.value)}
                                     >
                                       <option value="">Select Temp</option>
+                                      {row.actualTempEvening && !options.includes(row.actualTempEvening) && (
+                                        <option value={row.actualTempEvening}>{row.actualTempEvening}</option>
+                                      )}
                                       {options.map((t) => (
                                         <option key={t} value={t}>{t}</option>
                                       ))}
@@ -378,6 +490,21 @@ export default function FridgeForm({
                                   </div>
                                 </div>
                               )}
+                            </td>
+                            <td>
+                              <select
+                                value={row.cleanedBy || ""}
+                                onChange={(e) => updateCleanedBy(idx, e.target.value)}
+                                style={{ width: "100%", padding: "0.45rem", fontSize: "0.82rem" }}
+                              >
+                                <option value="">-- Select Staff --</option>
+                                {row.cleanedBy && !teamMembers.includes(row.cleanedBy) && (
+                                  <option value={row.cleanedBy}>{row.cleanedBy}</option>
+                                )}
+                                {teamMembers.map((m) => (
+                                  <option key={m} value={m}>{m}</option>
+                                ))}
+                              </select>
                             </td>
                           </tr>
                         );
@@ -390,12 +517,16 @@ export default function FridgeForm({
 
             <div className="form-grid" style={{ marginTop: "1.25rem" }}>
               <div className="form-group">
-                <label>Hygiene Status</label>
-                <select value={hygiene} onChange={(e) => setHygiene(e.target.value)}>
-                  <option value="Good">🟢 Good / Normal</option>
-                  <option value="Cleaned & Sanitized">✨ Cleaned & Sanitized</option>
-                  <option value="Defrosted">🧊 Ice Defrosted</option>
-                  <option value="Under Maintenance">⚠️ Under Maintenance</option>
+                <label>Verified / Supervised By</label>
+                <select
+                  value={supervisedBy}
+                  onChange={(e) => setSupervisedBy(e.target.value)}
+                  style={{ fontWeight: 600, color: "var(--accent)" }}
+                >
+                  <option value="">-- Select Supervisor --</option>
+                  {availableSupervisors.map((sup) => (
+                    <option key={sup} value={sup}>{sup}</option>
+                  ))}
                 </select>
               </div>
               <div className="form-group">
@@ -485,7 +616,7 @@ export default function FridgeForm({
                     </div>
                     <div style={{ overflowX: "auto" }}>
                       <table className="checklist-table">
-                        <thead><tr><th>Product</th><th>#</th><th>Ref</th><th>Morning</th><th>Evening</th></tr></thead>
+                        <thead><tr><th>Product</th><th>#</th><th>Ref</th><th>Morning</th><th>Evening</th><th>Cleaned By</th></tr></thead>
                         <tbody>
                           {fchecks.map((r, i) => (
                             <tr key={i}>
@@ -494,6 +625,7 @@ export default function FridgeForm({
                               <td><span style={{ fontSize: "0.78rem", color: "var(--accent)" }}>{r.referenceTemp}</span></td>
                               <td>{r.actualTempMorning || "—"}</td>
                               <td>{r.actualTempEvening || "—"}</td>
+                              <td style={{ fontWeight: 500 }}>{r.cleanedBy || "—"}</td>
                             </tr>
                           ))}
                         </tbody>

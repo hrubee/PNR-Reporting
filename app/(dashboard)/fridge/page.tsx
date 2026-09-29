@@ -5,21 +5,27 @@ import { hasSheetAccess, getTodayString, formatDate } from "@/lib/permissions";
 import FridgeForm from "./FridgeForm";
 
 export const FRIDGE_ITEMS = [
-  { zone: "PRODUCTION — FRIDGES", productName: "FRIDGE UNDER TABLE", machineNumber: "1", referenceTemp: "+3 to +8°C" },
-  { zone: "PRODUCTION — FRIDGES", productName: "FRIDGE", machineNumber: "2", referenceTemp: "+3 to +8°C" },
-  { zone: "PRODUCTION — FRIDGES", productName: "FRIDGE", machineNumber: "3", referenceTemp: "+3 to +8°C" },
-  { zone: "PRODUCTION — FRIDGES", productName: "FRIDGE", machineNumber: "4", referenceTemp: "+3 to +8°C" },
-  { zone: "PRODUCTION — FRIDGES", productName: "FRIDGE", machineNumber: "5", referenceTemp: "+3 to +8°C" },
-  { zone: "PRODUCTION — FREEZERS", productName: "FREEZER", machineNumber: "1", referenceTemp: "-18 to -15°C" },
-  { zone: "PRODUCTION — FREEZERS", productName: "FREEZER", machineNumber: "2", referenceTemp: "-18 to -15°C" },
-  { zone: "PRODUCTION — FREEZERS", productName: "FREEZER", machineNumber: "3", referenceTemp: "-18 to -15°C" },
-  { zone: "PRODUCTION — FREEZERS", productName: "FREEZER", machineNumber: "4", referenceTemp: "-18 to -16°C" },
-  { zone: "CAKE ROOM — FRIDGES", productName: "FRIDGE", machineNumber: "1", referenceTemp: "+3 to +8°C" },
-  { zone: "CAKE ROOM — FRIDGES", productName: "COLD ROOM", machineNumber: "1", referenceTemp: "+3 to +8°C" },
-  { zone: "CAKE ROOM — FREEZERS", productName: "FREEZER", machineNumber: "1", referenceTemp: "-18 to -15°C" },
-  { zone: "CAKE ROOM — FREEZERS", productName: "FREEZER", machineNumber: "2", referenceTemp: "-18 to -15°C" },
-  { zone: "STORE ROOM", productName: "FREEZER", machineNumber: "1", referenceTemp: "-18 to -15°C" },
-  { zone: "STORE ROOM", productName: "CHILLER BLASTER", machineNumber: "—", referenceTemp: "—" },
+  // Kitchen
+  { zone: "Kitchen", productName: "Freezer", machineNumber: "1", referenceTemp: "-1 to -18°C" },
+
+  // Fridge Room
+  { zone: "Fridge Room", productName: "Freezer", machineNumber: "1", referenceTemp: "-1 to -18°C" },
+  { zone: "Fridge Room", productName: "Fridge", machineNumber: "1", referenceTemp: "0 to +10°C" },
+  { zone: "Fridge Room", productName: "Fridge", machineNumber: "2", referenceTemp: "0 to +10°C" },
+  { zone: "Fridge Room", productName: "Fridge", machineNumber: "3", referenceTemp: "0 to +10°C" },
+
+  // Production Room
+  { zone: "Production Room", productName: "Freezer", machineNumber: "1", referenceTemp: "-1 to -18°C" },
+  { zone: "Production Room", productName: "Fridge", machineNumber: "1", referenceTemp: "0 to +10°C" },
+
+  // Cake Room
+  { zone: "Cake Room", productName: "Cold Room", machineNumber: "1", referenceTemp: "0 to +10°C" },
+  { zone: "Cake Room", productName: "Freezer", machineNumber: "1", referenceTemp: "-1 to -18°C" },
+  { zone: "Cake Room", productName: "Freezer", machineNumber: "2", referenceTemp: "-1 to -18°C" },
+
+  // Store Room
+  { zone: "Store Room", productName: "Freezer", machineNumber: "1", referenceTemp: "-1 to -18°C" },
+  { zone: "Store Room", productName: "Chiller Blaster", machineNumber: "1", referenceTemp: "—" },
 ];
 
 export default async function FridgePage() {

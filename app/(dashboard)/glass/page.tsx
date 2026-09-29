@@ -5,13 +5,21 @@ import { hasSheetAccess, getTodayString, formatDate } from "@/lib/permissions";
 import GlassForm from "./GlassForm";
 
 const LOCATIONS = [
-  "OVEN ROOM 1", "PARTITION GLASS 4",
-  "PRODUCTION ROOM 1", "WINDOW 1",
-  "PRODUCTION ROOM DOOR",
-  "PUFF ROOM PARTITION GLASS 2 LEFT", "PUFF ROOM PARTITION GLASS 2 RIGHT", "PUFF ROOM DOOR",
-  "ADMIN DOOR", "ADMIN WINDOW 1", "ADMIN WINDOW 2",
-  "MAIN ENTRANCE DOOR", "STORE ROOM DOOR GROUND",
-  "CAKE ROOM WINDOW 1", "CAKE ROOM WINDOW 2",
+  "Oven Room 1",
+  "Partition Glass 4",
+  "Production Room 1",
+  "Window 1",
+  "Production Room Door",
+  "Puff Room Partition Glass 2 Left",
+  "Puff Room Partition Glass 2 Right",
+  "Puff Room Door",
+  "Admin Door",
+  "Admin Window 1",
+  "Admin Window 2",
+  "Main Entrance Door",
+  "Store Room Door Ground",
+  "Cake Room Window 1",
+  "Cake Room Window 2",
 ];
 
 export default async function GlassPage() {

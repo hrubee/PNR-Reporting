@@ -123,9 +123,27 @@ export default function GenericChecklistForm({
       if (Array.isArray(parsed) && parsed.length > 0) {
         const normalized = normalizedEquipment.map((itemDef) => {
           const matched = parsed.find(
-            (p: any) =>
-              (p.equipment && p.equipment.trim().toLowerCase() === itemDef.name.trim().toLowerCase()) ||
-              (p.name && p.name.trim().toLowerCase() === itemDef.name.trim().toLowerCase())
+            (p: any) => {
+              const pName = ((p.equipment || p.name) || "").trim().toLowerCase();
+              const defName = itemDef.name.trim().toLowerCase();
+              if (pName === defName) return true;
+              if (defName === "3 gas burner" && (pName === "gas burner 3 burner" || pName === "gas burned 3 burner")) return true;
+              if (defName === "1 gas burner" && (pName === "gas burner single" || pName === "gas burner 1 burner" || pName === "single gas burner")) return true;
+              if (defName === "rack oven" && pName === "oven 1") return true;
+              if (defName === "new rack oven" && pName === "oven 2") return true;
+              if (defName === "deck oven" && pName === "oven 3") return true;
+              if (defName.startsWith("kitchen work table ") && pName.startsWith("working table ")) {
+                const defNum = defName.replace("kitchen work table ", "").trim();
+                const pNum = pName.replace("working table ", "").trim();
+                if (defNum === pNum) return true;
+              }
+              if (defName.startsWith("pr working table ") && (pName.startsWith("working table ") || pName.startsWith("pr working table "))) {
+                const defNum = defName.replace("pr working table ", "").trim();
+                const pNum = pName.replace("working table ", "").replace("pr working table ", "").trim();
+                if (defNum === pNum) return true;
+              }
+              return false;
+            }
           );
           return {
             id: itemDef.id,

@@ -58,6 +58,15 @@ async function getSheetStatuses(userId: string, role: string, today: string) {
         case "CAKE_ROOM":
           submitted = !!(await prisma.cakeRoomEntry.findFirst({ where: { date: today } }));
           break;
+        case "DUCT":
+          submitted = !!(await prisma.ductEntry.findFirst({ where: { date: today } }));
+          break;
+        case "WET_UTILITY":
+          submitted = !!(await prisma.wetUtilityEntry.findFirst({ where: { date: today } }));
+          break;
+        case "STORE_ROOM":
+          submitted = !!(await prisma.storeRoomEntry.findFirst({ where: { date: today } }));
+          break;
         case "ORETA_HYGIENE":
         case "ORETA_SHOP_CLEANING":
           submitted = !!(await prisma.oretaHygieneEntry.findFirst({ where: { date: today } }));

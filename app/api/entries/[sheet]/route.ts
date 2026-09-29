@@ -133,6 +133,45 @@ export async function POST(
         }
         return NextResponse.json(await prisma.cakeRoomEntry.create({ data: { ...data, date, submittedById: user.id } }));
       }
+      case "duct": {
+        const data = {
+          equipmentChecks: typeof body.equipmentChecks === "string" ? body.equipmentChecks : JSON.stringify(body.equipmentChecks),
+          supervisorName: body.supervisorName || "",
+          workerName: body.workerName || "",
+          comments: body.comments || "",
+          correctiveAction: body.correctiveAction || "",
+        };
+        if (id) {
+          return NextResponse.json(await prisma.ductEntry.update({ where: { id }, data }));
+        }
+        return NextResponse.json(await prisma.ductEntry.create({ data: { ...data, date, submittedById: user.id } }));
+      }
+      case "wet-utility": {
+        const data = {
+          equipmentChecks: typeof body.equipmentChecks === "string" ? body.equipmentChecks : JSON.stringify(body.equipmentChecks),
+          supervisorName: body.supervisorName || "",
+          workerName: body.workerName || "",
+          comments: body.comments || "",
+          correctiveAction: body.correctiveAction || "",
+        };
+        if (id) {
+          return NextResponse.json(await prisma.wetUtilityEntry.update({ where: { id }, data }));
+        }
+        return NextResponse.json(await prisma.wetUtilityEntry.create({ data: { ...data, date, submittedById: user.id } }));
+      }
+      case "store-room": {
+        const data = {
+          equipmentChecks: typeof body.equipmentChecks === "string" ? body.equipmentChecks : JSON.stringify(body.equipmentChecks),
+          supervisorName: body.supervisorName || "",
+          workerName: body.workerName || "",
+          comments: body.comments || "",
+          correctiveAction: body.correctiveAction || "",
+        };
+        if (id) {
+          return NextResponse.json(await prisma.storeRoomEntry.update({ where: { id }, data }));
+        }
+        return NextResponse.json(await prisma.storeRoomEntry.create({ data: { ...data, date, submittedById: user.id } }));
+      }
       case "oreta-shop-cleaning":
       case "oreta-hygiene": {
         const data = {
@@ -284,6 +323,12 @@ export async function GET(
         return NextResponse.json(await prisma.puffRoomEntry.findMany({ where, orderBy: { createdAt: "desc" }, take: 60, include: { submittedBy: true } }));
       case "cake-room":
         return NextResponse.json(await prisma.cakeRoomEntry.findMany({ where, orderBy: { createdAt: "desc" }, take: 60, include: { submittedBy: true } }));
+      case "duct":
+        return NextResponse.json(await prisma.ductEntry.findMany({ where, orderBy: { createdAt: "desc" }, take: 60, include: { submittedBy: true } }));
+      case "wet-utility":
+        return NextResponse.json(await prisma.wetUtilityEntry.findMany({ where, orderBy: { createdAt: "desc" }, take: 60, include: { submittedBy: true } }));
+      case "store-room":
+        return NextResponse.json(await prisma.storeRoomEntry.findMany({ where, orderBy: { createdAt: "desc" }, take: 60, include: { submittedBy: true } }));
       case "oreta-shop-cleaning":
       case "oreta-hygiene":
         return NextResponse.json(await prisma.oretaHygieneEntry.findMany({ where, orderBy: { createdAt: "desc" }, take: 60, include: { submittedBy: true } }));

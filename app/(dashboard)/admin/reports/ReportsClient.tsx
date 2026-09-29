@@ -10,6 +10,9 @@ const SHEETS = [
   { key: "production", label: "Production", icon: "🏭", route: "/production", outlet: "bakery" },
   { key: "puffRoom", label: "Puff Room", icon: "🥐", route: "/puff-room", outlet: "bakery" },
   { key: "cakeRoom", label: "Cake Room", icon: "🎂", route: "/cake-room", outlet: "bakery" },
+  { key: "duct", label: "Duct", icon: "💨", route: "/duct", outlet: "bakery" },
+  { key: "wetUtility", label: "Wet Utility Area", icon: "🚰", route: "/wet-utility", outlet: "bakery" },
+  { key: "storeRoom", label: "Store Room", icon: "📦", route: "/store-room", outlet: "bakery" },
   // Oreta World sheets
   { key: "oretaHygiene", label: "House Keeping", icon: "🧹", route: "/oreta/shop-cleaning", outlet: "oreta-world" },
   { key: "oretaEquipment", label: "Equipment Cleaning", icon: "⚙️", route: "/oreta/equipment", outlet: "oreta-world" },
